@@ -1,0 +1,13 @@
+These .txt files contain data sets for dictionaries that were used
+in testing fast phonetic search with a Trie that also considers
+Edit Distance.
+
+`gazetteer_entries.txt` contains a list of input words to place in
+a Trie structure.
+_Note from Tommy: I believe these are from Princeton Word Net_
+
+`misspell_words_text.txt` contains the misspelled variants
+of words based on the [Commonly Misspelled English words page](https://en.wikipedia.org/wiki/Commonly_misspelled_English_words).
+
+`wikipedia_answer_key.txt` contains commonly misspelled words and the correct
+spelling separated by a semi-colon.
