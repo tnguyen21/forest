@@ -19,6 +19,6 @@ class TrieNode:
         """
         self.char = char
         self.node_level = node_level
-        self.is_end_of_word = False
-        self.children = {}
-        self.parent = None
+        self.is_end_of_word = is_end_of_word
+        self.children = children
+        self.parent = parent
