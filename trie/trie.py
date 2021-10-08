@@ -2,8 +2,15 @@ from trienode import TrieNode
 
 
 class Trie:
-    def __init__(self):
-        self.root = TrieNode("")
+    def __init__(
+        self,
+        root: TrieNode = TrieNode("", node_level=0),
+        entry_list: [str] = [],
+        max_current_search_level: int = 0,
+    ):
+        self.root = root
+        self.entry_list = entry_list
+        self.max_current_search_level = max_current_search_level
 
     def insert(self, word):
         """Insert a word into the trie"""
