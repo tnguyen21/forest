@@ -61,6 +61,52 @@ class Trie:
         # Sort the results in reverse order and return
         return sorted(self.output, key=lambda x: x[1], reverse=True)
 
+    def search(self, word, maxCost):
+        """
+        Copied from http://stevehanov.ca/blog/index.php?id=114
+        Here for testing purposes only
+        """
+        currentRow = range(len(word) + 1)
+        results = []
+        # recursively search each branch of the trie
+        for letter in self.root.children:
+            self.searchRecursive(self.root.children[letter], letter, word, currentRow, results, maxCost) # noqa E501
+
+        return results
+
+    # This recursive helper is used by the search function above. It assumes
+    # that the previousRow has been filled in already.
+    def searchRecursive(self, node, letter, word, previousRow, results, maxCost): # noqa E501
+        """
+        Copied from http://stevehanov.ca/blog/index.php?id=114
+        Here for testing purposes only
+        """
+        columns = len(word) + 1
+        currentRow = [previousRow[0] + 1]
+
+        # Build one row for the letter, with a column for each letter in
+        # the target word, plus one for the empty string at column 0
+        for column in range(1, columns):
+            insertCost = currentRow[column - 1] + 1
+            deleteCost = previousRow[column] + 1
+
+            if word[column - 1] != letter:
+                replaceCost = previousRow[column - 1] + 1
+            else:
+                replaceCost = previousRow[column - 1]
+
+            currentRow.append(min(insertCost, deleteCost, replaceCost))
+
+        # if the last entry in the row indicates the optimal cost is less than
+        # the maximum cost, and there is a word in this trie node, then add it.
+        if currentRow[-1] <= maxCost and node.word is not None:
+            results.append((node.word, currentRow[-1]))
+        # if any entries in the row are less than the maximum cost, then
+        # recursively search each branch of the trie
+        if min(currentRow) <= maxCost:
+            for letter in node.children:
+                self.searchRecursive(node.children[letter], letter, word, currentRow, results, maxCost) # noqa E501
+
 
 if __name__ == "__main__":
     t = Trie()
