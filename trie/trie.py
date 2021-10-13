@@ -1,6 +1,7 @@
 from trienode import TrieNode
 from util.string_utils import preprocess_string
 
+
 class Trie:
     def __init__(
         self,
@@ -15,12 +16,13 @@ class Trie:
     def insert(self, word):
         """
         Insert a word into the trie
-        
+
         Args:
             word: the word to be inserted
         """
         node = self.root
         node_level = 0
+        word = preprocess_string(word)
         for char in word:
             node_level += 1
             if char in node.children:
