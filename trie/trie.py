@@ -1,5 +1,5 @@
 from trienode import TrieNode
-
+from util.string_utils import preprocess_string
 
 class Trie:
     def __init__(
