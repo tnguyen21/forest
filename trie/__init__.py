@@ -1,1 +1,1 @@
-from .core import Trie
+from .trie import Trie
