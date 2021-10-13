@@ -14,7 +14,7 @@ class TrieNode:
             char: character that this trie node represents
             node_level: level of this node in the trie
             is_end_of_word: bool whether this node is the end of a word
-            children: dictionary of children nodes
+            children: dictionary of children nodes {key: str, value: TrieNode}
             parent: parent node
         """
         self.char = char
