@@ -13,17 +13,27 @@ class Trie:
         self.max_current_search_level = max_current_search_level
 
     def insert(self, word):
-        """Insert a word into the trie"""
+        """
+        Insert a word into the trie
+        
+        Args:
+            word: the word to be inserted
+        """
         node = self.root
+        node_level = 0
         for char in word:
+            node_level += 1
             if char in node.children:
                 node = node.children[char]
             else:
-                new_node = TrieNode(char)
+                # quirk of impl, need to name parent argument
+                # since in constructor we can also pass in
+                # is_end_of_word and dict of children during contruction
+                new_node = TrieNode(char, node_level, parent=node)
                 node.children[char] = new_node
                 node = new_node
-        node.is_end = True
-        node.counter += 1
+        # out of for loop, end of word is reached
+        node.is_end_of_word = True
 
     def dfs(self, node, prefix):
         """Depth-first traversal of the trie
