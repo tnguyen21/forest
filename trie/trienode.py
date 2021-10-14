@@ -1,10 +1,20 @@
+""" trie/trienode.py
+
+File which contains the TrieNode class.
+
+TrieNode is a helper for Trie, encapsulating the necessary
+data that nodes need to store to make a trie and related
+novelty algorithms work.
+"""
+
+
 class TrieNode:
     def __init__(
         self,
         char: str,
         node_level: int = 0,
         is_end_of_word: bool = False,
-        parent: 'TrieNode' = None
+        parent: "TrieNode" = None,
     ):
         """
         Constructor for node in Trie

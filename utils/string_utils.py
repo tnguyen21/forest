@@ -1,4 +1,8 @@
-# util/string_utils.py
+""" util/string_utils.py
+
+File for string utilities (mostly regularizing inputs)
+"""
+
 
 def string_preprocess(string: str) -> str:
     """
@@ -13,4 +17,4 @@ def string_preprocess(string: str) -> str:
     """
     string = string.lower()
     string = string.lstrip().rstrip()
-    return ''.join(c for c in string if c.isalnum())
+    return "".join(c for c in string if c.isalnum())

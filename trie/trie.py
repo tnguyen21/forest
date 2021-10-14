@@ -1,3 +1,8 @@
+""" trie/trie.py
+
+File which holds the Trie class and associated
+algorithms.
+"""
 from .trienode import TrieNode
 from utils.string_utils import string_preprocess
 
@@ -30,7 +35,7 @@ class Trie:
             else:
                 # quirk of impl, need to name parent argument
                 # since in constructor we can also pass in
-                # is_end_of_word and dict of children during contruction
+                # is_end_of_word
                 new_node = TrieNode(char, node_level, parent=node)
                 node.children[char] = new_node
                 node = new_node
@@ -41,9 +46,9 @@ class Trie:
         """Depth-first traversal of the trie
 
         Args:
-            - node: the node to start with
-            - prefix: the current prefix, for tracing a
-                word while traversing the trie
+            node: the node to start with
+            prefix: the current prefix, for tracing a
+                    word while traversing the trie
         """
         if node.is_end_of_word:
             self.output.append((prefix + node.char, node.node_level))
@@ -52,7 +57,9 @@ class Trie:
             self.dfs(child, prefix + node.char)
 
     def query(self, x):
-        """Given an input (a prefix), retrieve all words stored in
+        """
+
+        Given an input (a prefix), retrieve all words stored in
         the trie with that prefix, sort the words by the number of
         times they have been inserted
         """
@@ -72,10 +79,3 @@ class Trie:
 
         # Sort the results in reverse order and return
         return sorted(self.output, key=lambda x: x[1], reverse=True)
-
-
-if __name__ == "__main__":
-    t = Trie()
-    t.insert("bag")
-    t.insert("brave")
-    print(t.query("b"))
