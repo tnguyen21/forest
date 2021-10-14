@@ -12,11 +12,10 @@ class Trie:
         self,
         root: TrieNode = TrieNode("", node_level=0),
         entry_list: [str] = [],
-        max_current_search_level: int = 0,
     ):
         self.root = root
         self.entry_list = entry_list
-        self.max_current_search_level = max_current_search_level
+        self.max_current_search_level = 0
 
     def insert(self, word):
         """
@@ -25,9 +24,16 @@ class Trie:
         Args:
             word: the word to be inserted
         """
+
+        # preprocess the word
+        word = string_preprocess(word)
+
+        # add to entry list
+        self.entry_list.append(word)
+
+        # begin process for appending word to trie
         node = self.root
         node_level = 0
-        word = string_preprocess(word)
         for char in word:
             node_level += 1
             if char in node.children:
@@ -41,6 +47,11 @@ class Trie:
                 node = new_node
         # out of for loop, end of word is reached
         node.is_end_of_word = True
+
+        # update max_current_search_level if inserted word increase
+        # height of tree
+        if node_level > self.max_current_search_level:
+            self.max_current_search_level = node_level
 
     def dfs(self, node, prefix):
         """Depth-first traversal of the trie
