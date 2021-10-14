@@ -1,5 +1,5 @@
-from trienode import TrieNode
-from util.string_utils import preprocess_string
+from .trienode import TrieNode
+from utils.string_utils import string_preprocess
 
 
 class Trie:
@@ -22,7 +22,7 @@ class Trie:
         """
         node = self.root
         node_level = 0
-        word = preprocess_string(word)
+        word = string_preprocess(word)
         for char in word:
             node_level += 1
             if char in node.children:
@@ -45,8 +45,8 @@ class Trie:
             - prefix: the current prefix, for tracing a
                 word while traversing the trie
         """
-        if node.is_end:
-            self.output.append((prefix + node.char, node.counter))
+        if node.is_end_of_word:
+            self.output.append((prefix + node.char, node.node_level))
 
         for child in node.children.values():
             self.dfs(child, prefix + node.char)
