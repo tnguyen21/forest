@@ -4,7 +4,6 @@ class TrieNode:
         char: str,
         node_level: int = 0,
         is_end_of_word: bool = False,
-        children: dict = {},
         parent: 'TrieNode' = None
     ):
         """
@@ -20,5 +19,5 @@ class TrieNode:
         self.char = char
         self.node_level = node_level
         self.is_end_of_word = is_end_of_word
-        self.children = children
         self.parent = parent
+        self.children = {}
