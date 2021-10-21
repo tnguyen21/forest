@@ -12,8 +12,6 @@ class TrieNode:
     def __init__(
         self,
         char: str,
-        node_level: int = 0,
-        is_end_of_word: bool = False,
         parent: "TrieNode" = None,
     ):
         """
@@ -26,8 +24,38 @@ class TrieNode:
             children: dictionary of children nodes {key: str, value: TrieNode}
             parent: parent node
         """
-        self.char = char
-        self.node_level = node_level
-        self.is_end_of_word = is_end_of_word
-        self.parent = parent
+        self.char = char  # dont know if size of tree will be character, this might take too much memory
+        self.node_level = parent.node_level + 1 if parent else 0
+        self.is_end_of_word = False
+        self.parent = parent  # not usual, might prove useful for an algo impl later, but may also remove
         self.children = {}
+        self.edit_distance = 0
+
+    def add_entry(self, word: str):
+        """
+        Recursively add word to a trie
+
+        Args:
+            word: word to add to trie
+
+        Return:
+            Node representing the end of the word
+        """
+        if word == "":
+            self.is_end_of_word = True
+            return self
+        else:
+            if word[0] in self.children:
+                return self.children[word[0]].add_entry(word[1:])
+            else:
+                self.children[word[0]] = TrieNode(word[0], self)
+                return self.children[word[0]].add_entry(word[1:])
+            return self
+
+    def dump(self):
+        """
+        Dump the contents of the trie to a string
+        """
+        print(" " * (self.node_level + 1) * 3, self.char)
+        for child in self.children:
+            self.children[child].dump()
