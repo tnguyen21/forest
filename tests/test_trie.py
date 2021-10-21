@@ -3,30 +3,30 @@ from .context import trie
 
 
 class TestTrieMethods(unittest.TestCase):
-    def test_single_char_insert(self):
+    def test_single_char_add_entry(self):
         t = trie.Trie()
-        t.insert("a")
+        t.add_entry("a")
         self.assertEqual(t.root.children["a"].char, "a")
 
-    def test_multi_char_insert(self):
+    def test_multi_char_add_entry(self):
         t = trie.Trie()
-        t.insert("aa")
+        t.add_entry("aa")
         self.assertEqual(t.root.children["a"].char, "a")
         self.assertEqual(t.root.children["a"].children["a"].char, "a")
 
-    def test_multi_word_same_prefix_insert(self):
+    def test_multi_word_same_prefix_add_entry(self):
         t = trie.Trie()
-        t.insert("aa")
-        t.insert("ab")
+        t.add_entry("aa")
+        t.add_entry("ab")
         self.assertEqual(t.root.children["a"].char, "a")
         # we expect two children, one to have value 'a', another of value 'b'
         self.assertEqual(t.root.children["a"].children["a"].char, "a")
         self.assertEqual(t.root.children["a"].children["b"].char, "b")
 
-    def test_multi_word_diff_prefix_insert(self):
+    def test_multi_word_diff_prefix_add_entry(self):
         t = trie.Trie()
-        t.insert("a")
-        t.insert("b")
+        t.add_entry("a")
+        t.add_entry("b")
         self.assertEqual(t.root.children["a"].char, "a")
         self.assertEqual(t.root.children["b"].char, "b")
 
