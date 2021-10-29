@@ -10,12 +10,14 @@ from utils.string_utils import string_preprocess
 class Trie:
     def __init__(
         self,
-        root: TrieNode = TrieNode(""),
-        entry_list: [str] = [],
+        max_edit_distance: int = 2,
     ):
-        self.root = root
-        self.entry_list = entry_list  # think about removing this
+        self.root = TrieNode("", self)
+        self.entry_list = []  # think about removing this
         self.max_current_search_level = 0
+        self.max_edit_distance = max_edit_distance
+        self.active_nodes = {}
+        self.max_depth = 0
 
     def dump(self):
         """
@@ -31,7 +33,7 @@ class Trie:
             word: the word to be inserted
         """
         # add to entry list, check for duplicates
-        if word in entry_list:
+        if word in self.entry_list:
             self.entry_list.append(word)
 
         # return last node added (pointer to last node)
@@ -76,19 +78,35 @@ class Trie:
         # Sort the results in reverse order and return
         return sorted(self.output, key=lambda x: x[1], reverse=True)
 
-    def similarity_search(self, prefix: str, max_edit_distance: int) -> [str]:
+    def search(self, word: str, max_edit_distance: int = -1) -> [str]:
         """
-        Given a prefix, conduct a similarity search on the trie using the
+        Given a word, conduct a similarity search on the trie using the
         notion of an "edit distance" and keeping track of how edit distance
         changes as we traverse the trie.
 
         Args:
-            prefix: the prefix to search for
-
+            word: the prefix to search for
+            max_edit_distance: the maximum edit distance to allow
         Returns:
             A list of words in the trie that are within the edit distance
-            of the prefix
+            of the word
         """
+        if max_edit_distance < 0:
+            max_edit_distance = self.max_edit_distance
+        
+        # reset active nodes
+        self.active_nodes = {}
+
+        # initialize levels for active nodes
+        for level in range(self.max_depth + 1):
+            self.active_nodes[level] = []
+
+        # initialize lists for each level in active nodes
+        for level in range(0, max_edit_distance + 1):
+            self.active_nodes[level] = []
+
+        self.root.search_reset(max_edit_distance)
+
         # init lists of active nodes
         # only valid for edit distance = 2, we want to dynamically generate these lists depending on max_edit_distance
         # suggestion: use a dictionary and dynamically populate it given max_edit_distance
@@ -96,14 +114,6 @@ class Trie:
         # these nodes have to access to dicionry to know whether they are active or not
         # prefer to store tree pointer in each node
         # structure needs to be property in tree that is accessible in each node
-        _level_zero_nodes = [self.root]
-        _level_one_nodes = [self.root.children]
-        _level_two_nodes = [
-            self.root.children[child].children for child in self.root.children
-        ]
+
         # think of nodes having responsibility to add/remove themselves to active nodes
         # edit distance is only valid when it's in active nodes -- otherwise we need to do something to make sure it has an accurate value when it gets added/removed from active nodes
-
-        print(_level_zero_nodes)
-        print(_level_one_nodes)
-        print(_level_two_nodes)
