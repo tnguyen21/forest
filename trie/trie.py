@@ -97,14 +97,10 @@ class Trie:
         # reset active nodes
         self.active_nodes = {}
 
-        # initialize levels for active nodes
+        # initialize lists for each level in active nodes
         for level in range(self.max_depth + 1):
             self.active_nodes[level] = []
-
-        # initialize lists for each level in active nodes
-        for level in range(0, max_edit_distance + 1):
-            self.active_nodes[level] = []
-
+        
         self.root.search_reset(max_edit_distance)
 
         # init lists of active nodes
