@@ -56,7 +56,6 @@ class TrieNode:
             else:
                 self.children[word[0]] = TrieNode(word[0], self.trie, self)
                 return self.children[word[0]].add_entry(word[1:])
-            return self
 
     def search_reset(self, max_edit_distance: int):
         """
