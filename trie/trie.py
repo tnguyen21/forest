@@ -94,14 +94,14 @@ class Trie:
         """
         if max_edit_distance < 0:
             max_edit_distance = self.max_edit_distance
-        
+
         # init lists of active nodes
         self.active_nodes = {}
 
         # initialize lists for each level in active nodes
         for level in range(self.max_depth + 1):
             self.active_nodes[level] = []
-        
+
         self.root.search_reset(max_edit_distance)
 
         # think of nodes having responsibility to add/remove themselves to active nodes

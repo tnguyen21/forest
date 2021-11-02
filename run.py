@@ -23,4 +23,3 @@ if __name__ == "__main__":
     # t.similarity_search("b", 2)
     t.search("")
     t.dump()
-

@@ -8,11 +8,14 @@ novelty algorithms work.
 """
 
 
+from trie.trie import Trie
+
+
 class TrieNode:
     def __init__(
         self,
         char: str,
-        trie: "Trie",
+        trie: Trie,
         parent: "TrieNode" = None,
     ):
         """
@@ -63,7 +66,7 @@ class TrieNode:
         """
         # initialize edit distance
         self.edit_distance = self.node_level
-        
+
         # include node in list of active nodes
         self.trie.active_nodes[self.node_level].append(self)
 
@@ -71,7 +74,7 @@ class TrieNode:
         if self.node_level < max_edit_distance:
             for child in self.children:
                 self.children[child].search_reset(max_edit_distance)
-        
+
         return
 
     def dump(self):
