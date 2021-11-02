@@ -3,7 +3,7 @@
 File which holds the Trie class and associated
 algorithms.
 """
-from typing import List
+from typing import List, Tuple
 from .trienode import TrieNode
 from utils.string_utils import string_preprocess
 
@@ -26,7 +26,7 @@ class Trie:
         """
         self.root.dump()
 
-    def add_entry(self, word):
+    def add_entry(self, word) -> TrieNode:
         """
         Insert a word into the trie
 
@@ -34,12 +34,14 @@ class Trie:
             word: the word to be inserted
         """
         # add to entry list, check for duplicates
-        if word in self.entry_list:
+        if word not in self.entry_list:
             self.entry_list.append(word)
 
         # return last node added (pointer to last node)
         # TODO we want to connect this last node to entry list
         end_node = self.root.add_entry(word)
+        
+        return end_node
 
     def dfs(self, node, prefix):
         """
@@ -79,7 +81,7 @@ class Trie:
         # Sort the results in reverse order and return
         return sorted(self.output, key=lambda x: x[1], reverse=True)
 
-    def search(self, word: str, max_edit_distance: int = -1) -> List[(str, int)]:
+    def search(self, word: str, max_edit_distance: int = -1) -> List[Tuple[str, int]]:
         """
         Given a word, conduct a similarity search on the trie using the
         notion of an "edit distance" and keeping track of how edit distance

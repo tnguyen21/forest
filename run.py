@@ -10,7 +10,7 @@ import Levenshtein as lv
 
 if __name__ == "__main__":
     t = Trie()
-    t.add_entry("bag")
+    bag_node = t.add_entry("bag")
     t.add_entry("brave")
     t.add_entry("baker")
     t.add_entry("bake")
@@ -23,3 +23,4 @@ if __name__ == "__main__":
     # t.similarity_search("b", 2)
     t.search("")
     t.dump()
+    print(bag_node.get_word())

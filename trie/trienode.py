@@ -8,14 +8,11 @@ novelty algorithms work.
 """
 
 
-from trie.trie import Trie
-
-
 class TrieNode:
     def __init__(
         self,
         char: str,
-        trie: Trie,
+        trie: "Trie",
         parent: "TrieNode" = None,
     ):
         """
@@ -30,11 +27,10 @@ class TrieNode:
         """
         self.char = char  # dont know if size of tree will be character, this might take too much memory
         self.node_level = parent.node_level + 1 if parent else 0
-        self.is_end_of_word = False
-        self.parent = parent  # not usual, might prove useful for an algo impl later, but may also remove
+        self.parent = parent
         self.children = {}
+        self.is_end_of_word = False
         self.edit_distance = 0
-        self.word = ""  # consider keeping this, store word in node, can take out parent and is_end_of_word
         self.trie = trie
 
     def add_entry(self, word: str):
@@ -60,9 +56,19 @@ class TrieNode:
                 self.children[word[0]] = TrieNode(word[0], self.trie, self)
                 return self.children[word[0]].add_entry(word[1:])
 
+    def get_word(self, word: str = ""):
+        """
+        Get the word associated with this node.
+        """
+        if self.parent is None:
+            return word
+        else:
+            return self.parent.get_word(self.char + word)
+
     def search_reset(self, max_edit_distance: int):
         """
-        Reset the search to the root of the trie
+        Reset the search to the root of the trie. Helper for
+        fuzzy search algorithm.
         """
         # initialize edit distance
         self.edit_distance = self.node_level
