@@ -3,6 +3,7 @@
 File which holds the Trie class and associated
 algorithms.
 """
+from typing import List
 from .trienode import TrieNode
 from utils.string_utils import string_preprocess
 
