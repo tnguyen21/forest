@@ -78,7 +78,7 @@ class Trie:
         # Sort the results in reverse order and return
         return sorted(self.output, key=lambda x: x[1], reverse=True)
 
-    def search(self, word: str, max_edit_distance: int = -1) -> [str]:
+    def search(self, word: str, max_edit_distance: int = -1) -> List[(str, int)]:
         """
         Given a word, conduct a similarity search on the trie using the
         notion of an "edit distance" and keeping track of how edit distance
@@ -89,12 +89,12 @@ class Trie:
             max_edit_distance: the maximum edit distance to allow
         Returns:
             A list of words in the trie that are within the edit distance
-            of the word
+            of the word. with their edit distance
         """
         if max_edit_distance < 0:
             max_edit_distance = self.max_edit_distance
         
-        # reset active nodes
+        # init lists of active nodes
         self.active_nodes = {}
 
         # initialize lists for each level in active nodes
@@ -102,14 +102,6 @@ class Trie:
             self.active_nodes[level] = []
         
         self.root.search_reset(max_edit_distance)
-
-        # init lists of active nodes
-        # only valid for edit distance = 2, we want to dynamically generate these lists depending on max_edit_distance
-        # suggestion: use a dictionary and dynamically populate it given max_edit_distance
-        # nodes in this dictionary are considerd "active"
-        # these nodes have to access to dicionry to know whether they are active or not
-        # prefer to store tree pointer in each node
-        # structure needs to be property in tree that is accessible in each node
 
         # think of nodes having responsibility to add/remove themselves to active nodes
         # edit distance is only valid when it's in active nodes -- otherwise we need to do something to make sure it has an accurate value when it gets added/removed from active nodes
