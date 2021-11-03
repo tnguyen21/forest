@@ -81,6 +81,31 @@ class Trie:
         # Sort the results in reverse order and return
         return sorted(self.output, key=lambda x: x[1], reverse=True)
 
+    def is_active_nodes_empty(self):
+        """
+        Check if active nodes is empty
+        """
+        active_nodes_empty = True
+        for level in range(self.max_depth + 1):
+            if len(self.active_nodes[level]) > 0:
+                active_nodes_empty = False
+                break
+        
+        return active_nodes_empty
+    
+    def is_all_active_nodes_end_of_words(self):
+        """
+        Check if all active nodes are end of words
+        """
+        all_active_nodes_end_of_words = True
+        for level in range(self.max_depth + 1):
+            for node in self.active_nodes[level]:
+                if not node.is_end_of_word:
+                    active_nodes_end_of_words = False
+                    break
+        
+        return active_nodes_end_of_words
+
     def search(self, word: str, max_edit_distance: int = -1) -> List[Tuple[str, int]]:
         """
         Given a word, conduct a similarity search on the trie using the
@@ -108,3 +133,43 @@ class Trie:
 
         # think of nodes having responsibility to add/remove themselves to active nodes
         # edit distance is only valid when it's in active nodes -- otherwise we need to do something to make sure it has an accurate value when it gets added/removed from active nodes
+
+        for char in word:
+            # do checks for if we want to continue search
+            if self.is_active_nodes_empty() or self.is_all_active_nodes_end_of_words():
+                break
+            
+            for level in range(self.max_depth, 0, -1):
+                # want to work from highest ED towards lowest ED
+                for node in self.active_nodes[level]:
+                    # try to move "pointers" forward
+                    for child_char in node.children:
+                        if child_char != char:
+                            node.children[child_char].edit_distance = level + 1
+                        self.active_nodes[level + 1].append(node.children[child_char])
+                    
+                    if node.char != char:
+                        node.edit_distance += 1
+            
+            # clean up nodes where ED's are > max_edit_distance
+            # ? can we do this in the above loop and save on iterationg
+            # ? through the whole active nodes list again?
+            for level in range(self.max_depth, 0, -1):
+                for node in self.active_nodes[level]:
+                    if node.edit_distance > max_edit_distance:
+                        self.active_nodes[level].remove(node)
+            
+            # temp debugging print
+            for level in range(self.max_depth + 1):
+                output = []
+                for node in self.active_nodes[level]:
+                    output.append(f"({node.get_word()}, {node.edit_distance})")
+                
+                print(f"level {level}", ", ".join(output))
+            print("---")
+
+        for level in self.active_nodes:
+            for node in self.active_nodes[level]:
+                print(node.get_word())
+
+        return List[Tuple[str, int]]  #TODO 
