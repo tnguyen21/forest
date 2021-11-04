@@ -40,7 +40,7 @@ class Trie:
         # return last node added (pointer to last node)
         # TODO we want to connect this last node to entry list
         end_node = self.root.add_entry(word)
-        
+
         return end_node
 
     def dfs(self, node, prefix):
@@ -90,9 +90,9 @@ class Trie:
             if len(self.active_nodes[level]) > 0:
                 active_nodes_empty = False
                 break
-        
+
         return active_nodes_empty
-    
+
     def is_all_active_nodes_end_of_words(self):
         """
         Check if all active nodes are end of words
@@ -103,7 +103,7 @@ class Trie:
                 if not node.is_end_of_word:
                     active_nodes_end_of_words = False
                     break
-        
+
         return active_nodes_end_of_words
 
     def search(self, word: str, max_edit_distance: int = -1) -> List[Tuple[str, int]]:
@@ -131,45 +131,58 @@ class Trie:
 
         self.root.search_reset(max_edit_distance)
 
-        # think of nodes having responsibility to add/remove themselves to active nodes
-        # edit distance is only valid when it's in active nodes -- otherwise we need to do something to make sure it has an accurate value when it gets added/removed from active nodes
-
         for char in word:
-            # do checks for if we want to continue search
-            if self.is_active_nodes_empty() or self.is_all_active_nodes_end_of_words():
+            if self.is_active_nodes_empty():
                 break
-            
-            for level in range(self.max_depth, 0, -1):
+
+            for level in range(self.max_depth, -1, -1):
                 # want to work from highest ED towards lowest ED
                 for node in self.active_nodes[level]:
+                    # TODO get min value between current node ED and child ED
+                    # NOTE this is okay for when child node is not in active nodes, BUT
+                    # should do a check if it's already in active nodes
                     # try to move "pointers" forward
                     for child_char in node.children:
+                        child_node = node.children[child_char]
+
+                        if child_node in self.active_nodes.get(level + 1, []):
+                            tmp_ed = child_node.edit_distance
+                        else:
+                            tmp_ed = max_edit_distance + 1
+
+                        # if children don't match, increase ED for those nodes
+                        # take the smaller of this ED or the ED
                         if child_char != char:
-                            node.children[child_char].edit_distance = level + 1
-                        self.active_nodes[level + 1].append(node.children[child_char])
-                    
-                    if node.char != char:
-                        node.edit_distance += 1
-            
+                            child_node.edit_distance = min(
+                                node.edit_distance + 1, tmp_ed
+                            )
+                        else:
+                            child_node.edit_distance = min(node.edit_distance, tmp_ed)
+
+                        self.active_nodes[level + 1].append(child_node)
+                        # TODO find a more efficient way to avoid duplicate pointers to the same node
+                        self.active_nodes[level + 1] = list(
+                            set(self.active_nodes[level + 1])
+                        )
+
+                    # pointer "stays still" -- we always increment
+                    node.edit_distance += 1
+
             # clean up nodes where ED's are > max_edit_distance
-            # ? can we do this in the above loop and save on iterationg
-            # ? through the whole active nodes list again?
-            for level in range(self.max_depth, 0, -1):
-                for node in self.active_nodes[level]:
-                    if node.edit_distance > max_edit_distance:
-                        self.active_nodes[level].remove(node)
-            
-            # temp debugging print
-            for level in range(self.max_depth + 1):
-                output = []
-                for node in self.active_nodes[level]:
-                    output.append(f"({node.get_word()}, {node.edit_distance})")
-                
-                print(f"level {level}", ", ".join(output))
-            print("---")
+            # NOTE ideally, we rm nodes the instant EDs cross threshold
+            for i in range(self.max_depth + 1):
+                filtered_nodes = [
+                    n
+                    for n in self.active_nodes[i]
+                    if n.edit_distance <= max_edit_distance
+                ]
+                self.active_nodes[i] = filtered_nodes
+
+        output = []
 
         for level in self.active_nodes:
             for node in self.active_nodes[level]:
-                print(node.get_word())
+                if (node.is_end_of_word) and (node.edit_distance < max_edit_distance):
+                    output.append((node.get_word(), node.edit_distance))
 
-        return List[Tuple[str, int]]  #TODO 
+        return output
