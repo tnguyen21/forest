@@ -1,1 +1,2 @@
 python-Levenshtein==0.12.2
+phonetics==1.0.5
