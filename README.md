@@ -13,6 +13,12 @@ Implementation of a Trie that considers edit distance.
 │       README                         <- explains what each data set is and how they are formatted
 │       wikipedia_answer_key.txt
 │
+│───experiments                        <- dir which holds explanations, scripts, and sample results from small experiments
+│       └───word_len_experiment
+│               driver.py              <- script to run experiment
+│               README.md              <- README for this particular experiment
+|               *.pkl                  <- serialized object of results
+│
 ├───tests                              <- tests to evaluate behavior of data structure and algorithm lives here
 │       context.py                     <- allows for importing other files as modules
 │       test_trie.py                   <- tests behavior of the Trie and related algorithms
