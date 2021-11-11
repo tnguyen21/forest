@@ -22,7 +22,10 @@ if __name__ == "__main__":
     # print("search word: airport", similar_words)
 
     # NOTE look at this with dumps, should return with ED 1
-    similar_words = t.search(word="aiport", max_edit_distance=2)
+    # similar_words = t.search(word="aiport", max_edit_distance=2)
+    # print("search word: aiport", similar_words)
+
+    similar_words = t.search(word="aiport", max_edit_distance=1)
     print("search word: aiport", similar_words)
 
     # # NOTE look at this, should return with ED 2

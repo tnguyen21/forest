@@ -111,6 +111,7 @@ if __name__ == "__main__":
         edit_distance_data = {0: [], 1: [], 2: []}
 
         for word in list_of_words:
+            # TODO - log off time it takes to search w. different EDs
             for i in range(3):
                 # ! there are some bugs when ED = 0
                 # ! we should get exact matches but we dont

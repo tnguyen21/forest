@@ -142,6 +142,12 @@ class Trie:
                     # NOTE this is okay for when child node is not in active nodes, BUT
                     # should do a check if it's already in active nodes
                     # try to move "pointers" forward
+                    # NOTE 
+                    # every time we move forward, we need to keep moving forward
+                    
+                    # NOTE going to remove this loop -- replace with recursive fn
+                    # that is something like update_futher_children(curr_node, curr_char)
+                    # this function shoulve have this for loop
                     for child_char in node.children:
                         child_node = node.children[child_char]
 
@@ -164,6 +170,16 @@ class Trie:
                         self.active_nodes[level + 1] = list(
                             set(self.active_nodes[level + 1])
                         )
+
+                        # TODO keep matching child's children (i.e. down the trie)
+                        # we'll have to recursively call children for every query
+                        # down the trie until we "run out of space" (i.e. max_edit_distance reached)
+                        # OR if it's the end of a word
+                        # NOTE
+                        if child_node.edit_distance <= max_edit_distance:
+                            # call update_further_children(child_node, char) again
+                            pass
+                    
 
                     # pointer "stays still" -- we always increment
                     node.edit_distance += 1
