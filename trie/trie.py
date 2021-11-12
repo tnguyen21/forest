@@ -106,6 +106,41 @@ class Trie:
 
         return active_nodes_end_of_words
 
+    def update_further_children(self, node: "TrieNode", char: str) -> None:
+        """
+        Update further children of the node recursively until
+        max_edit_distance is hit or the end of the trie is reached
+        Args:
+            node: the node to start with
+            char: the current char being searched with
+        """
+        for child_char in node.children:
+            child_node = node.children[child_char]
+
+            if child_node in self.active_nodes.get(node.node_level + 1, []):
+                tmp_ed = child_node.edit_distance
+            else:
+                tmp_ed = self.max_edit_distance + 1
+
+            # if children don't match, increase ED for those nodes
+            # take the smaller of this ED or the ED
+            if child_char != char:
+                child_node.edit_distance = min(node.edit_distance + 1, tmp_ed)
+            else:
+                child_node.edit_distance = min(node.edit_distance, tmp_ed)
+
+            self.active_nodes[node.node_level + 1].append(child_node)
+            # TODO find a more efficient way to avoid duplicate pointers to the same node
+            self.active_nodes[node.node_level + 1] = list(
+                set(self.active_nodes[node.node_level + 1])
+            )
+
+            # keep matching child's children (i.e. down the trie)
+            # until max_edit_distance is hit or the end of the trie is reached
+            if child_node.edit_distance <= self.max_edit_distance:
+                self.update_further_children(child_node, char)
+        return
+
     def search(self, word: str, max_edit_distance: int = -1) -> List[Tuple[str, int]]:
         """
         Given a word, conduct a similarity search on the trie using the
@@ -121,7 +156,8 @@ class Trie:
         """
         if max_edit_distance < 0:
             max_edit_distance = self.max_edit_distance
-
+        else:
+            self.max_edit_distance = max_edit_distance
         # init lists of active nodes
         self.active_nodes = {}
 
@@ -129,7 +165,7 @@ class Trie:
         for level in range(self.max_depth + 1):
             self.active_nodes[level] = []
 
-        self.root.search_reset(max_edit_distance)
+        self.root.search_reset(self.max_edit_distance)
 
         for char in word:
             if self.is_active_nodes_empty():
@@ -138,59 +174,22 @@ class Trie:
             for level in range(self.max_depth, -1, -1):
                 # want to work from highest ED towards lowest ED
                 for node in self.active_nodes[level]:
-                    # TODO get min value between current node ED and child ED
-                    # NOTE this is okay for when child node is not in active nodes, BUT
-                    # should do a check if it's already in active nodes
-                    # try to move "pointers" forward
-                    # NOTE 
-                    # every time we move forward, we need to keep moving forward
-                    
-                    # NOTE going to remove this loop -- replace with recursive fn
-                    # that is something like update_futher_children(curr_node, curr_char)
-                    # this function shoulve have this for loop
-                    for child_char in node.children:
-                        child_node = node.children[child_char]
 
-                        if child_node in self.active_nodes.get(level + 1, []):
-                            tmp_ed = child_node.edit_distance
-                        else:
-                            tmp_ed = max_edit_distance + 1
-
-                        # if children don't match, increase ED for those nodes
-                        # take the smaller of this ED or the ED
-                        if child_char != char:
-                            child_node.edit_distance = min(
-                                node.edit_distance + 1, tmp_ed
-                            )
-                        else:
-                            child_node.edit_distance = min(node.edit_distance, tmp_ed)
-
-                        self.active_nodes[level + 1].append(child_node)
-                        # TODO find a more efficient way to avoid duplicate pointers to the same node
-                        self.active_nodes[level + 1] = list(
-                            set(self.active_nodes[level + 1])
-                        )
-
-                        # TODO keep matching child's children (i.e. down the trie)
-                        # we'll have to recursively call children for every query
-                        # down the trie until we "run out of space" (i.e. max_edit_distance reached)
-                        # OR if it's the end of a word
-                        # NOTE
-                        if child_node.edit_distance <= max_edit_distance:
-                            # call update_further_children(child_node, char) again
-                            pass
-                    
+                    # look at all children of the node and then
+                    # attempt to move down the trie until we hit the
+                    # end of the trie or the max_edit_distance is hit
+                    self.update_further_children(node, char)
 
                     # pointer "stays still" -- we always increment
                     node.edit_distance += 1
 
-            # clean up nodes where ED's are > max_edit_distance
+            # clean up nodes where ED's are > self.max_edit_distance
             # NOTE ideally, we rm nodes the instant EDs cross threshold
             for i in range(self.max_depth + 1):
                 filtered_nodes = [
                     n
                     for n in self.active_nodes[i]
-                    if n.edit_distance <= max_edit_distance
+                    if n.edit_distance <= self.max_edit_distance
                 ]
                 self.active_nodes[i] = filtered_nodes
 
@@ -198,7 +197,9 @@ class Trie:
 
         for level in self.active_nodes:
             for node in self.active_nodes[level]:
-                if (node.is_end_of_word) and (node.edit_distance < max_edit_distance):
+                if (node.is_end_of_word) and (
+                    node.edit_distance <= self.max_edit_distance
+                ):
                     output.append((node.get_word(), node.edit_distance))
 
         return output
