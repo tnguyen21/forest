@@ -101,10 +101,10 @@ class Trie:
         for level in range(self.max_depth + 1):
             for node in self.active_nodes[level]:
                 if not node.is_end_of_word:
-                    active_nodes_end_of_words = False
+                    all_active_nodes_end_of_words = False
                     break
 
-        return active_nodes_end_of_words
+        return all_active_nodes_end_of_words
 
     def update_further_children(self, node: "TrieNode", char: str) -> None:
         """
