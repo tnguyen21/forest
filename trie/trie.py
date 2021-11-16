@@ -129,11 +129,8 @@ class Trie:
             else:
                 child_node.edit_distance = min(node.edit_distance, tmp_ed)
 
-            self.active_nodes[node.node_level + 1].append(child_node)
-            # TODO find a more efficient way to avoid duplicate pointers to the same node
-            self.active_nodes[node.node_level + 1] = list(
-                set(self.active_nodes[node.node_level + 1])
-            )
+            if child_node not in self.active_nodes.get(node.node_level + 1, []):
+                self.active_nodes[node.node_level + 1].append(child_node)
 
             # keep matching child's children (i.e. down the trie)
             # until max_edit_distance is hit or the end of the trie is reached

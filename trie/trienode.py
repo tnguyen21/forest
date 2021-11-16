@@ -75,10 +75,6 @@ class TrieNode:
 
         # include node in list of active nodes
         self.trie.active_nodes[self.node_level].append(self)
-        # TODO find a more efficient way to avoid duplicate pointers to the same node
-        self.trie.active_nodes[self.node_level] = list(
-            set(self.trie.active_nodes[self.node_level])
-        )
 
         # initialize children if within edit distance level
         if self.node_level < max_edit_distance:
