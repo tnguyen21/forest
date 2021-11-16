@@ -14,7 +14,7 @@ one liner to get words of specific length:
 cat <txt_file> | grep -x '.\{<length>\}'
 """
 
-# * hacky way to add to python path -- need to find better way to mangage imports
+# TODO hacky way to add to python path -- need to find better way to mangage imports
 import sys
 import os
 
@@ -107,26 +107,38 @@ if __name__ == "__main__":
 
     print("Performing queries...")
     for list_of_words in lists_of_words:
+        print(f"Querying words that are of len: {len(list_of_words[0])}")
         # temporary place to store amount of results for given query
-        edit_distance_data = {0: [], 1: [], 2: []}
+        edit_distance_data = {
+            0: {"avg_query_results_len": [], "avg_run_time": []},
+            1: {"avg_query_results_len": [], "avg_run_time": []},
+            2: {"avg_query_results_len": [], "avg_run_time": []},
+        }
 
         for word in list_of_words:
-            # TODO - log off time it takes to search w. different EDs
             for i in range(3):
-                # ! there are some bugs when ED = 0
-                # ! we should get exact matches but we dont
-                print(f"query: {word}\nedit distance: {i}")
+                # print(f"query: {word}\nedit distance: {i}")
+                search_start_time = datetime.now()
                 results = trie.search(word, max_edit_distance=i)
-                print(f"results: {results}")
-                print("-----")
-                edit_distance_data[i].append(len(results))
+                search_end_time = datetime.now()
+                # print(f"results: {results}")
+                # print("-----")
+                edit_distance_data[i]["avg_query_results_len"].append(len(results))
+                edit_distance_data[i]["avg_run_time"].append(
+                    (search_end_time - search_start_time).total_seconds()
+                )
 
-        # avg len of results for each edit distance
         for i in range(3):
-            edit_distance_data[i] = sum(edit_distance_data[i]) / len(
-                edit_distance_data[i]
-            )
-        logging_data["query_results_len"][len(list_of_words[0])] = edit_distance_data
+            # avg len of results for each edit distance
+            edit_distance_data[i]["avg_query_results_len"] = sum(
+                edit_distance_data[i]["avg_query_results_len"]
+            ) / len(edit_distance_data[i]["avg_query_results_len"])
+
+            # avg run time for each edit distance
+            edit_distance_data[i]["avg_run_time"] = sum(
+                edit_distance_data[i]["avg_run_time"]
+            ) / len(edit_distance_data[i]["avg_run_time"])
+        logging_data["query_results_metrics"][len(list_of_words[0])] = edit_distance_data
 
     end_time = datetime.now()
 
