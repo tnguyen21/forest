@@ -30,9 +30,12 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', 
+    parser.add_argument(
+        "--data_path",
         help="Path to .txt file containing words",
-        default=None, required=True)
+        default=None,
+        required=True,
+    )
     args = parser.parse_args()
 
     trie = Trie()
@@ -145,7 +148,9 @@ if __name__ == "__main__":
             edit_distance_data[i]["avg_run_time"] = sum(
                 edit_distance_data[i]["avg_run_time"]
             ) / len(edit_distance_data[i]["avg_run_time"])
-        logging_data["query_results_metrics"][len(list_of_words[0])] = edit_distance_data
+        logging_data["query_results_metrics"][
+            len(list_of_words[0])
+        ] = edit_distance_data
 
     end_time = datetime.now()
 
