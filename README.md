@@ -32,6 +32,8 @@ Implementation of a Trie that considers edit distance.
 
 TODO
 
+TODO - note about pre-commit
+
 ## Experments
 
 TODO
