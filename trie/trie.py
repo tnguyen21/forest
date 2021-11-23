@@ -9,11 +9,7 @@ from Levenshtein import jaro_winkler
 
 
 class Trie:
-    def __init__(
-        self,
-        max_edit_distance: int = 2,
-        max_jaro_distance: float = 0.5,
-    ):
+    def __init__(self, max_edit_distance: int = 2, max_jaro_distance: float = 0.5):
         self.root = TrieNode("", self)
         self.entry_list = []  # think about removing this
         self.max_current_search_level = 0
@@ -206,7 +202,7 @@ class Trie:
                         (
                             node.get_word(),
                             node.edit_distance,
-                            round(jaro_winkler_distance, 4)
+                            round(jaro_winkler_distance, 4),
                         )
                     )
 
