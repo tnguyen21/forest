@@ -192,11 +192,13 @@ class Trie:
 
         for level in self.active_nodes:
             for node in self.active_nodes[level]:
-                jaro_winkler_distance = jaro_winkler(node.get_word(), word)
+                # jaro_winkler calculates _similarity_ between 2 strings
+                # to get distance, we should take the inversion (1 - similarity)
+                jaro_winkler_distance = 1 - jaro_winkler(node.get_word(), word)
                 if (
                     (node.is_end_of_word)
                     and (node.edit_distance <= self.max_edit_distance)
-                    and (jaro_winkler_distance > self.max_jaro_distance)
+                    and (jaro_winkler_distance < self.max_jaro_distance)
                 ):
                     output.append(
                         (
