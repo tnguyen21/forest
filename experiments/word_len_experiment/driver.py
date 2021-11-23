@@ -113,7 +113,7 @@ if __name__ == "__main__":
     ]
 
     # store some data for query results
-    logging_data = {"query_results_len": {}}
+    logging_data = {"query_results_metrics": {}}
 
     print("Performing queries...")
     for list_of_words in lists_of_words:
