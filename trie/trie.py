@@ -9,11 +9,14 @@ from Levenshtein import jaro_winkler
 
 
 class Trie:
+    # TODO set min_jaro_distance to 0 -- this is assuming we only want to care for
+    # ED's when we initalize trie
     def __init__(self, max_edit_distance: int = 2, max_jaro_distance: float = 0.5):
         self.root = TrieNode("", self)
         self.entry_list = []  # think about removing this
         self.max_current_search_level = 0
         self.max_edit_distance = max_edit_distance
+        # TODO change to min_jaro_distance
         self.max_jaro_distance = max_jaro_distance
         self.active_nodes = {}
         self.max_depth = 0
@@ -170,6 +173,7 @@ class Trie:
 
             for level in range(self.max_depth, -1, -1):
                 # want to work from highest ED towards lowest ED
+                # ? can we just create this list with valid ED's
                 for node in self.active_nodes[level]:
 
                     # look at all children of the node and then
@@ -178,10 +182,13 @@ class Trie:
                     self.update_further_children(node, char)
 
                     # pointer "stays still" -- we always increment
+                    # ? here we can check that if increase ED brings over
+                    # ? max of ED, if it does we should rm this from active_nodes
                     node.edit_distance += 1
 
             # clean up nodes where ED's are > self.max_edit_distance
             # NOTE ideally, we rm nodes the instant EDs cross threshold
+            # TODO remove this, ensure that this doesn't run at all
             for i in range(self.max_depth + 1):
                 filtered_nodes = [
                     n
@@ -196,6 +203,7 @@ class Trie:
             for node in self.active_nodes[level]:
                 # jaro_winkler calculates _similarity_ between 2 strings
                 # to get distance, we should take the inversion (1 - similarity)
+                # TODO use similarity instead of distance
                 jaro_winkler_distance = 1 - jaro_winkler(node.get_word(), word)
                 if (
                     (node.is_end_of_word)
