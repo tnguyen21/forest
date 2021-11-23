@@ -5,18 +5,20 @@ algorithms.
 """
 from typing import List, Tuple
 from .trienode import TrieNode
-from utils.string_utils import string_preprocess
+from Levenshtein import jaro_winkler
 
 
 class Trie:
     def __init__(
         self,
         max_edit_distance: int = 2,
+        max_jaro_distance: float = 0.5,
     ):
         self.root = TrieNode("", self)
         self.entry_list = []  # think about removing this
         self.max_current_search_level = 0
         self.max_edit_distance = max_edit_distance
+        self.max_jaro_distance = max_jaro_distance
         self.active_nodes = {}
         self.max_depth = 0
 
@@ -194,9 +196,18 @@ class Trie:
 
         for level in self.active_nodes:
             for node in self.active_nodes[level]:
-                if (node.is_end_of_word) and (
-                    node.edit_distance <= self.max_edit_distance
+                jaro_winkler_distance = jaro_winkler(node.get_word(), word)
+                if (
+                    (node.is_end_of_word)
+                    and (node.edit_distance <= self.max_edit_distance)
+                    and (jaro_winkler_distance > self.max_jaro_distance)
                 ):
-                    output.append((node.get_word(), node.edit_distance))
+                    output.append(
+                        (
+                            node.get_word(),
+                            node.edit_distance,
+                            round(jaro_winkler_distance, 4)
+                        )
+                    )
 
         return output
