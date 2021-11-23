@@ -26,14 +26,21 @@ sys.path.insert(
 from trie import Trie
 from datetime import datetime
 import pickle
+import argparse
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_path', 
+        help="Path to .txt file containing words",
+        default=None, required=True)
+    args = parser.parse_args()
+
     trie = Trie()
 
     start_time = datetime.now()
     # load word list into trie
     print("Loading word list into trie...")
-    with open("datasets/gazetteer_entries.txt", "r") as f:
+    with open(args.data_path, "r") as f:
         # TODO - this is pretty slow, can we find ways to speed it up?
         for line in f:
             word = line.strip()
