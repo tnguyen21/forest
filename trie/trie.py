@@ -127,7 +127,9 @@ class Trie:
             else:
                 child_node.edit_distance = min(node.edit_distance, tmp_ed)
 
-            if child_node not in self.active_nodes.get(node.node_level + 1, []):
+            if (child_node.edit_distance <= self.max_edit_distance) and (
+                child_node not in self.active_nodes.get(node.node_level + 1, [])
+            ):
                 self.active_nodes[node.node_level + 1].append(child_node)
 
             # keep matching child's children (i.e. down the trie)
