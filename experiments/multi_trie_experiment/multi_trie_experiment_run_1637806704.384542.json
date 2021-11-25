@@ -1,0 +1,7 @@
+{
+  "query_loading_time": 0.0020241737365722656,
+  "trie_loading_time": 171.3583128452301,
+  "avg_one_trie_search_time": 9.666783332824707,
+  "avg_multi_trie_search_time": 7.916309674580892,
+  "total_time": 224.11255502700806
+}
