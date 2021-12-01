@@ -13,3 +13,5 @@ of words based on the [Commonly Misspelled English words page](https://en.wikipe
 
 `wikipedia_answer_key.txt` contains commonly misspelled words and the correct
 spelling separated by a semi-colon.
+
+`all_drugs.csv` is a list of ~5000 drug names used in clinical settings. These drug names are misspelled fairly often due to their length and complexity, and good candidates to test the performance and correctness of our fuzzy search implementation.
