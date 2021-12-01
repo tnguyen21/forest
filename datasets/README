@@ -4,7 +4,6 @@ Edit Distance.
 
 `gazetteer_entries.txt` contains a list of input words to place in
 a Trie structure.
-_Note from Tommy: I believe these are from Princeton Word Net_
 
 `gazetteer_entries_subset.txt` contains a list of words that have been selected as a subset of words to query for while performing experiments. The list is constructed of words that vary from length 4-9, eight words each.
 
