@@ -1,11 +1,11 @@
 """ trie/forest.py
 - try with 2 trees
 - being able to run in ||
-- being able to set diff 
-# ! include phonetics outside of the trie 
+- being able to set diff
+# ! include phonetics outside of the trie
 TODO
 """
-# from typing import Callable
+from typing import List, Tuple
 from .trie import Trie
 
 # ? How do we store multiple dictionaries and keep phonetic representations of them?
@@ -27,9 +27,15 @@ class Forest:
         """
         self.tries.append(trie)
 
-    def search(self, word: str, max_edit_distance: int):
+    def search(self, word: str) -> List[Tuple[str, float, float]]:
         """
-        TODO
+        Conduct search with query word in parallel on all
+        tries in the trie
+        Args:
+            word: query word
+        Return:
+            list of tuples that has potential patch with
+                edit distance and jaro-winkler value
         """
         tentative_results = []
 
@@ -39,7 +45,7 @@ class Forest:
         # search each trie for the
         for i, trie in enumerate(self.tries):
             print(f"Searching Trie {i}")
-            results = trie.search(word, max_edit_distance)
+            results = trie.search(word)
             print("Search results:", results)
 
         # ? Do we want to just return all results?
