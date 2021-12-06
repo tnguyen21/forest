@@ -185,7 +185,6 @@ class Trie:
 
             # clean up nodes where ED's are > self.max_edit_distance
             # NOTE ideally, we rm nodes the instant EDs cross threshold
-            # TODO remove this, ensure that this doesn't run at all
             for i in range(self.max_depth + 1):
                 filtered_nodes = [
                     n
