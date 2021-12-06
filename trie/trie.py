@@ -9,15 +9,12 @@ from Levenshtein import jaro_winkler
 
 
 class Trie:
-    # TODO set min_jaro_distance to 0 -- this is assuming we only want to care for
-    # ED's when we initalize trie
-    def __init__(self, max_edit_distance: int = 2, max_jaro_distance: float = 0.5):
+    def __init__(self, max_edit_distance: int = 2, min_jaro_similarity: float = 0.0):
         self.root = TrieNode("", self)
         self.entry_list = []  # think about removing this
         self.max_current_search_level = 0
         self.max_edit_distance = max_edit_distance
-        # TODO change to min_jaro_distance
-        self.max_jaro_distance = max_jaro_distance
+        self.min_jaro_similarity = min_jaro_similarity
         self.active_nodes = {}
         self.max_depth = 0
 
@@ -202,19 +199,19 @@ class Trie:
         for level in self.active_nodes:
             for node in self.active_nodes[level]:
                 # jaro_winkler calculates _similarity_ between 2 strings
-                # to get distance, we should take the inversion (1 - similarity)
-                # TODO use similarity instead of distance
-                jaro_winkler_distance = 1 - jaro_winkler(node.get_word(), word)
+                # * by default min_jaro_sim = 0; so if we don't use a threshold
+                # * this just slows down our search
+                jaro_winkler_similarity = jaro_winkler(node.get_word(), word)
                 if (
                     (node.is_end_of_word)
                     and (node.edit_distance <= self.max_edit_distance)
-                    and (jaro_winkler_distance < self.max_jaro_distance)
+                    and (jaro_winkler_similarity > self.min_jaro_similarity)
                 ):
                     output.append(
                         (
                             node.get_word(),
                             node.edit_distance,
-                            round(jaro_winkler_distance, 4),
+                            round(jaro_winkler_similarity, 4),
                         )
                     )
 
