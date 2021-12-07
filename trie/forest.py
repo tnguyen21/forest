@@ -12,11 +12,11 @@ from .trie import Trie
 # ? How do we store multiple phonetic representations of the same dictionary?
 # ? How do we store these within Tries?
 
-# * Current idea would just be to create a bunch of dictionaries and a bunch
-# * of tries...but that seems too memory intensive.
+
 class Forest:
     def __init__(self):
         self.tries = []
+        self.phonetic_map = {}
 
     def _dummy_phonetics(word: str) -> str:
         """
@@ -52,8 +52,27 @@ class Forest:
         """
         for t in self.tries:
             if len(entry) >= t["min_word_len"] and len(entry) <= t["max_word_len"]:
-                # TODO keep track of phonetic representation and original word
+                # check if phonetic function is in our map
+                if t["phonetic_representation"] not in self.phonetic_map:
+                    self.phonetic_map[t["phonetic_representation"]] = {}
+
+                # convert entry into phonetic representation (if any is needed)
                 phoneticized_entry = t["phonetic_representation"](entry)
+
+                # check if phoneticized entry exist in phonetic map
+                if (
+                    phoneticized_entry
+                    not in self.phonetic_map[t["phonetic_representation"]]
+                ):
+                    self.phonetic_map[t["phonetic_representation"]][
+                        phoneticized_entry
+                    ] = []
+
+                # add original entry to phonetic map
+                self.phonetic_map[t["phonetic_representation"]][
+                    phoneticized_entry
+                ].append(entry)
+
                 t["trie"].add_entry(phoneticized_entry)
 
     def search(self, word: str) -> List[Tuple[str, int, float]]:
