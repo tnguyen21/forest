@@ -6,8 +6,11 @@ tiny experiments to get minimum functionality working.
 """
 
 from trie import Trie, Forest
+from pprint import pprint
+from phonetics import metaphone
 
-if __name__ == "__main__":
+
+def mock_trie() -> Trie:
     t = Trie()
     t.add_entry("special")
     t.add_entry("specific")
@@ -16,35 +19,44 @@ if __name__ == "__main__":
     t.add_entry("external")
     t.add_entry("extreme")
     t.add_entry("airport")
-    # print(t1.search("spice", 2))
 
-    # t2 = Trie()
+    return t
 
-    # forest = Forest()
-    # forest.add_trie(t1)
-    # forest.add_trie(t2)
 
-    # results = forest.search("spice", 1)
+def mock_forest() -> Forest:
+    f = Forest()
 
-    similar_words = t.search(word="airport", max_edit_distance=2)
-    print("search word: airport", similar_words)
+    f.add_trie(Trie(), min_word_len=0, max_word_len=7)
+    f.add_trie(Trie(), min_word_len=5, max_word_len=99)
 
-    # NOTE look at this with dumps, should return with ED 1
-    similar_words = t.search(word="aiport", max_edit_distance=2)
-    print("search word: aiport\nedit distance: 2\nresults:", similar_words)
+    f.add_trie(
+        Trie(), min_word_len=0, max_word_len=7, phonetic_representation=metaphone
+    )
+    f.add_trie(
+        Trie(), min_word_len=5, max_word_len=99, phonetic_representation=metaphone
+    )
 
-    similar_words = t.search(word="aiport", max_edit_distance=1)
-    print("search word: aiport\nedit distance: 1\nresults:", similar_words)
+    return f
 
-    # NOTE look at this, should return with ED 2
-    similar_words = t.search(word="aipot", max_edit_distance=2)
-    print("search word: aipot\nedit distance: 2\nresults:", similar_words)
 
-    # similar_words = t.search(word="irport", max_edit_distance=2)
-    # print("search word: irport", similar_words)
+if __name__ == "__main__":
+    forest = mock_forest()
+    # add first 500 words of test dictionary
+    i = 0
+    with open("datasets/gazetteer_entries.txt", "r") as f:
+        for line in f:
+            word = line.strip()
+            forest.add_entry(word)
+            i += 1
+            if i > 500:
+                break
 
-    # similar_words = t.search(word="rport", max_edit_distance=2)
-    # print("search word: rport", similar_words)
+    print("Number of tries in forest: ", len(forest.tries))
 
-    # similar_words = t.search(word="port", max_edit_distance=2)
-    # print("search word: port", similar_words)
+    query = "abandon"
+    print("query: ", query)
+    # TODO this phonetics library is pretty buggy, look into other ones
+    print("metaphone: ", metaphone(query))
+
+    results = forest.search(query)
+    pprint(results)
