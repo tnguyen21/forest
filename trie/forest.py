@@ -1,9 +1,11 @@
 """ trie/forest.py
-- try with 2 trees
-- being able to run in ||
-- being able to set diff
-# ! include phonetics outside of the trie
-TODO
+
+Forest data structure which contains a list of Tries, each with different
+hyperparameters (e.g. ED thresholds, phonetic representation, word length limits)
+
+Provides interface to add tries and entries to the Forest, and conduct queries
+across all Tries in the forest.
+
 """
 from typing import Callable, List, Tuple
 from .trie import Trie
