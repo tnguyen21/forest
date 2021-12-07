@@ -18,9 +18,9 @@ class Forest:
     def __init__(self):
         self.tries = []
 
-    def _dummy_phonetics(self, word: str) -> str:
+    def _dummy_phonetics(word: str) -> str:
         """
-        Dummy phonetic representation
+        Dummy phonetic representation to be
         """
         return word
 
@@ -46,18 +46,15 @@ class Forest:
         }
         self.tries.append(trie_data)
 
-    def add_entry(self, entry: str, phonetic_representation: str):
+    def add_entry(self, entry: str):
         """
         Add entry to all tries in the forest
         """
         for t in self.tries:
             if len(entry) >= t["min_word_len"] and len(entry) <= t["max_word_len"]:
-                if t["phonetic_representation"] is not None:
-                    # TODO keep track of phonetic representation and original word
-                    phoneticized_entry = t["phonetic_representation"](entry)
-                    t["trie"].add_entry(phoneticized_entry)
-                else:
-                    t["trie"].add_entry(entry, phonetic_representation)
+                # TODO keep track of phonetic representation and original word
+                phoneticized_entry = t["phonetic_representation"](entry)
+                t["trie"].add_entry(phoneticized_entry)
 
     def search(self, word: str) -> List[Tuple[str, int, float]]:
         """
@@ -79,7 +76,7 @@ class Forest:
             phoneticized_word = t["phonetic_representation"](word)
 
             results = t["trie"].search(phoneticized_word)
-            tentative_results.extend(results)
+            tentative_results.append(results)
 
         # ? Do we want to just return all results?
         # ? Or do we want some notion of "best" result?
