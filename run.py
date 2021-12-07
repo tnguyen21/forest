@@ -26,14 +26,22 @@ def mock_trie() -> Trie:
 def mock_forest() -> Forest:
     f = Forest()
 
-    f.add_trie(Trie(), min_word_len=0, max_word_len=7)
-    f.add_trie(Trie(), min_word_len=5, max_word_len=99)
+    f.add_trie(Trie(), min_word_len=0, max_word_len=7, max_edit_distance=1)
+    f.add_trie(Trie(), min_word_len=5, max_word_len=99, max_edit_distance=2)
 
     f.add_trie(
-        Trie(), min_word_len=0, max_word_len=7, phonetic_representation=metaphone
+        Trie(),
+        min_word_len=0,
+        max_word_len=7,
+        max_edit_distance=1,
+        phonetic_representation=metaphone,
     )
     f.add_trie(
-        Trie(), min_word_len=5, max_word_len=99, phonetic_representation=metaphone
+        Trie(),
+        min_word_len=5,
+        max_word_len=99,
+        max_edit_distance=2,
+        phonetic_representation=metaphone,
     )
 
     return f
@@ -48,10 +56,12 @@ if __name__ == "__main__":
             word = line.strip()
             forest.add_entry(word)
             i += 1
-            if i > 500:
+            if i > 100:
                 break
-
     print("Number of tries in forest: ", len(forest.tries))
+    print("Phonetic map:")
+    pprint(forest.phonetic_map)
+    print("=" * 5)
 
     query = "abandon"
     print("query: ", query)
