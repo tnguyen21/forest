@@ -26,20 +26,18 @@ def mock_trie() -> Trie:
 def mock_forest() -> Forest:
     f = Forest()
 
-    f.add_trie(Trie(), min_word_len=0, max_word_len=7, max_edit_distance=1)
-    f.add_trie(Trie(), min_word_len=5, max_word_len=99, max_edit_distance=2)
+    f.add_trie(min_entry_len=0, max_entry_len=7, max_edit_distance=1)
+    f.add_trie(min_entry_len=5, max_entry_len=99, max_edit_distance=2)
 
     f.add_trie(
-        Trie(),
-        min_word_len=0,
-        max_word_len=7,
+        min_entry_len=0,
+        max_entry_len=7,
         max_edit_distance=1,
         phonetic_representation=metaphone,
     )
     f.add_trie(
-        Trie(),
-        min_word_len=5,
-        max_word_len=99,
+        min_entry_len=5,
+        max_entry_len=99,
         max_edit_distance=2,
         phonetic_representation=metaphone,
     )

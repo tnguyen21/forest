@@ -28,22 +28,21 @@ class Forest:
 
     def add_trie(
         self,
-        trie: Trie,
-        min_word_len: int,
-        max_word_len: int,
+        min_entry_len: int = -1,
+        max_entry_len: int = 999,
         phonetic_representation: Callable = _dummy_phonetics,
         max_edit_distance: int = 2,
         min_jaro_winkler_sim: float = 0.0,
     ):
         """
-        Add Trie to Forest with additional parameters
+        Add Trie to Forest with additional parameters.
         Args:
         """
         trie = Trie(max_edit_distance, min_jaro_winkler_sim)
         trie_data = {
             "trie": trie,
-            "min_word_len": min_word_len,
-            "max_word_len": max_word_len,
+            "min_entry_len": min_entry_len,
+            "max_entry_len": max_entry_len,
             "phonetic_representation": phonetic_representation,
         }
         self.tries.append(trie_data)
@@ -53,7 +52,7 @@ class Forest:
         Add entry to all tries in the forest
         """
         for t in self.tries:
-            if len(entry) >= t["min_word_len"] and len(entry) <= t["max_word_len"]:
+            if len(entry) >= t["min_entry_len"] and len(entry) <= t["max_entry_len"]:
                 # check if phonetic function is in our map
                 if t["phonetic_representation"] not in self.phonetic_map:
                     self.phonetic_map[t["phonetic_representation"]] = {}
@@ -81,6 +80,9 @@ class Forest:
         """
         Conduct search with query word in parallel on all
         tries in the trie
+
+        * Note that words queried in the trie should be of length
+        * [min_word_len - ED, max_word_len + ED]
         Args:
             word: query word
         Return:
@@ -96,10 +98,22 @@ class Forest:
             # convert word into phonetic representation (if any is needed)
             phoneticized_word = t["phonetic_representation"](word)
 
-            results = t["trie"].search(phoneticized_word)
-            tentative_results.append(results)
+            # calculate if query is valid for trie based on entry len
+            query_lower_bound = t["min_entry_len"] - t["trie"].max_edit_distance
+            query_upper_bound = t["max_entry_len"] + t["trie"].max_edit_distance
+            if (
+                len(phoneticized_word) >= query_lower_bound
+                and len(phoneticized_word) <= query_upper_bound
+            ):
+                results = t["trie"].search(phoneticized_word)
+                tentative_results.append(results)
 
         # ? Do we want to just return all results?
         # ? Or do we want some notion of "best" result?
         # ? Or do we want to return the best result for each trie?
+        # TODO want to know where entry is coming from
+        # ? figure out a way to weight similiarity scores
+        # TODO do post processing to get unique results with different scores
+        # ? calc both sim scores between phonetic repr and original words?
+        # * ultimately asking what are entries that are similar to my query
         return tentative_results
