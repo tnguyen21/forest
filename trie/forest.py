@@ -7,12 +7,8 @@ Provides interface to add tries and entries to the Forest, and conduct queries
 across all Tries in the forest.
 
 """
-from typing import Callable, List, Tuple
+from typing import Union, Callable, List, Tuple
 from .trie import Trie
-
-# ? How do we store multiple dictionaries and keep phonetic representations of them?
-# ? How do we store multiple phonetic representations of the same dictionary?
-# ? How do we store these within Tries?
 
 
 class Forest:
@@ -20,17 +16,11 @@ class Forest:
         self.tries = []
         self.phonetic_map = {}
 
-    def _dummy_phonetics(word: str) -> str:
-        """
-        Dummy phonetic representation to be
-        """
-        return word
-
     def add_trie(
         self,
         min_entry_len: int = -1,
         max_entry_len: int = 999,
-        phonetic_representation: Callable = _dummy_phonetics,
+        phonetic_representation: Union[Callable, None] = None,
         max_edit_distance: int = 2,
         min_jaro_winkler_sim: float = 0.0,
     ):
@@ -53,28 +43,33 @@ class Forest:
         """
         for t in self.tries:
             if len(entry) >= t["min_entry_len"] and len(entry) <= t["max_entry_len"]:
-                # check if phonetic function is in our map
-                if t["phonetic_representation"] not in self.phonetic_map:
-                    self.phonetic_map[t["phonetic_representation"]] = {}
-
                 # convert entry into phonetic representation (if any is needed)
-                phoneticized_entry = t["phonetic_representation"](entry)
+                # and add to phonetic map
+                if t["phonetic_representation"] is not None:
+                    # check if phonetic function is in our map
+                    if t["phonetic_representation"] not in self.phonetic_map:
+                        self.phonetic_map[t["phonetic_representation"]] = {}
 
-                # check if phoneticized entry exist in phonetic map
-                if (
-                    phoneticized_entry
-                    not in self.phonetic_map[t["phonetic_representation"]]
-                ):
+                    phoneticized_entry = t["phonetic_representation"](entry)
+
+                    # check if phoneticized entry exist in phonetic map
+                    if (
+                        phoneticized_entry
+                        not in self.phonetic_map[t["phonetic_representation"]]
+                    ):
+                        self.phonetic_map[t["phonetic_representation"]][
+                            phoneticized_entry
+                        ] = []
+
+                    # add original entry to phonetic map
                     self.phonetic_map[t["phonetic_representation"]][
                         phoneticized_entry
-                    ] = []
+                    ].append(entry)
 
-                # add original entry to phonetic map
-                self.phonetic_map[t["phonetic_representation"]][
-                    phoneticized_entry
-                ].append(entry)
-
-                t["trie"].add_entry(phoneticized_entry)
+                    t["trie"].add_entry(phoneticized_entry)
+                # if there is no phonetic representation, just add entry
+                else:
+                    t["trie"].add_entry(entry)
 
     def search(self, word: str) -> List[Tuple[str, int, float]]:
         """
@@ -92,28 +87,40 @@ class Forest:
         tentative_results = []
 
         # search each trie for the word
-        for i, t in enumerate(self.tries):
-            print(f"Searching Trie {i}/{len(self.tries)}")
-
+        for t in self.tries:
             # convert word into phonetic representation (if any is needed)
-            phoneticized_word = t["phonetic_representation"](word)
+            if t["phonetic_representation"] is not None:
+                word = t["phonetic_representation"](word)
 
             # calculate if query is valid for trie based on entry len
             query_lower_bound = t["min_entry_len"] - t["trie"].max_edit_distance
             query_upper_bound = t["max_entry_len"] + t["trie"].max_edit_distance
-            if (
-                len(phoneticized_word) >= query_lower_bound
-                and len(phoneticized_word) <= query_upper_bound
-            ):
-                results = t["trie"].search(phoneticized_word)
-                tentative_results.append(results)
+            if len(word) >= query_lower_bound and len(word) <= query_upper_bound:
+                results = t["trie"].search(word)
 
-        # ? Do we want to just return all results?
+                # if phonetic representation exists, need to do post-processing
+                if t["phonetic_representation"] is not None:
+                    mapped_words = [
+                        (
+                            self.phonetic_map[t["phonetic_representation"]][word],
+                            ed,
+                            jw_sim,
+                        )
+                        for word, ed, jw_sim in results
+                    ]
+                    mapped_results = []
+                    for words, ed, jw_sim in mapped_words:
+                        for word in words:
+                            mapped_results.append((word, ed, jw_sim))
+                    tentative_results.append(mapped_results)
+                # if phonetic representation does not exist, just add results
+                else:
+                    tentative_results.append(results)
+
         # ? Or do we want some notion of "best" result?
         # ? Or do we want to return the best result for each trie?
         # TODO want to know where entry is coming from
         # ? figure out a way to weight similiarity scores
-        # TODO do post processing to get unique results with different scores
         # ? calc both sim scores between phonetic repr and original words?
         # * ultimately asking what are entries that are similar to my query
         return tentative_results
