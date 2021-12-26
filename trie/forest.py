@@ -8,6 +8,10 @@ across all Tries in the forest.
 
 """
 from typing import Union, Callable, List, Tuple
+
+from phonetics import metaphone, dmetaphone, soundex, nysiis
+from Levenshtein import jaro_winkler, distance
+
 from .trie import Trie
 
 
@@ -77,14 +81,16 @@ class Forest:
         tries in the trie
 
         * Note that words queried in the trie should be of length
-        * [min_word_len - ED, max_word_len + ED]
+        * [min_entry_len - ED, max_entry_len + ED]
         Args:
             word: query word
         Return:
             list of tuples that has potential matches of query with
                 edit distance and jaro-winkler similiarity
         """
+        # all of this is used for post processing at the end
         tentative_results = []
+        original_word = word
 
         # search each trie for the word
         for t in self.tries:
@@ -117,10 +123,60 @@ class Forest:
                 else:
                     tentative_results.append(results)
 
+        # more post processing -- it's at this point we will lose the
+        # association of a result to a particular trie
+        # TODO move this into its own function?
+        resulting_words = []
+        for results in tentative_results:
+            for word, _, _ in results:
+                if word not in resulting_words:
+                    resulting_words.append(word)
+
+        formatted_results = []
+
+        for results in tentative_results:
+            for result_word, _, _ in results:
+                formatted_result = {}
+
+                formatted_result["original_word"] = original_word
+                formatted_result["result_word"] = result_word
+                formatted_result["original_edit_distance"] = distance(
+                    original_word, result_word
+                )
+                formatted_result["original_jaro_winkler_similarity"] = round(
+                    jaro_winkler(original_word, result_word), 4
+                )
+
+                # double metaphone representation and metrics
+                # * double metaphone returns two results -- we use the first
+                dmetaphone_query = dmetaphone(original_word)[0]
+                dmetaphone_result = dmetaphone(result_word)[0]
+                formatted_result["dmetaphone_query"] = dmetaphone_query
+                formatted_result["dmetaphone_result"] = dmetaphone_result
+                formatted_result["dmetaphone_edit_distance"] = distance(
+                    dmetaphone_result, dmetaphone_query
+                )
+                formatted_result["dmetaphone_jaro_winkler_similarity"] = round(
+                    jaro_winkler(dmetaphone_result, dmetaphone_query), 4
+                )
+
+                formatted_results.append(formatted_result)
+
         # ? Or do we want some notion of "best" result?
         # ? Or do we want to return the best result for each trie?
         # TODO want to know where entry is coming from
         # ? figure out a way to weight similiarity scores
         # ? calc both sim scores between phonetic repr and original words?
         # * ultimately asking what are entries that are similar to my query
-        return tentative_results
+        # TODO should come up with some way to determine what we want returned from the search method
+        # TODO i.e. don't always need to return ED, JW sim score, etc -- come up with an interface
+        # TODO to allow users to specify what they want returned
+        # * ---
+        # TODO include length of original search word for each phonetic representation
+        # TODO include original search word as well
+        # TODO include len of phonetic representations
+        # TODO include length of resulting word as well
+        #! each word should appear in result once -- will be an object with all information someone would need
+        # * ---
+        # TODO would be nice to just see all similarity score for each phonetic representations we have in each trie
+        return formatted_results

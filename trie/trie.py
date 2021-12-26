@@ -138,7 +138,9 @@ class Trie:
                 self.update_further_children(child_node, char)
         return
 
-    def search(self, word: str, max_edit_distance: int = -1) -> List[Tuple[str, int]]:
+    def search(
+        self, word: str, max_edit_distance: int = -1
+    ) -> List[Tuple[str, int, float]]:
         """
         Given a word, conduct a similarity search on the trie using the
         notion of an "edit distance" and keeping track of how edit distance
