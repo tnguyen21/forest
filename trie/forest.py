@@ -160,6 +160,42 @@ class Forest:
                     jaro_winkler(dmetaphone_result, dmetaphone_query), 4
                 )
 
+                # metaphone representation and metrics
+                metaphone_query = metaphone(original_word)[0]
+                metaphone_result = metaphone(result_word)[0]
+                formatted_result["metaphone_query"] = metaphone_query
+                formatted_result["metaphone_result"] = metaphone_result
+                formatted_result["metaphone_edit_distance"] = distance(
+                    metaphone_result, metaphone_query
+                )
+                formatted_result["metaphone_jaro_winkler_similarity"] = round(
+                    jaro_winkler(metaphone_result, metaphone_query), 4
+                )
+
+                # soundex representation and metrics
+                soundex_query = soundex(original_word)[0]
+                soundex_result = soundex(result_word)[0]
+                formatted_result["soundex_query"] = soundex_query
+                formatted_result["soundex_result"] = soundex_result
+                formatted_result["soundex_edit_distance"] = distance(
+                    soundex_result, soundex_query
+                )
+                formatted_result["soundex_jaro_winkler_similarity"] = round(
+                    jaro_winkler(soundex_result, soundex_query), 4
+                )
+
+                # nysiis representation and metrics
+                nysiis_query = nysiis(original_word)[0]
+                nysiis_result = nysiis(result_word)[0]
+                formatted_result["nysiis_query"] = nysiis_query
+                formatted_result["nysiis_result"] = nysiis_result
+                formatted_result["nysiis_edit_distance"] = distance(
+                    nysiis_result, nysiis_query
+                )
+                formatted_result["nysiis_jaro_winkler_similarity"] = round(
+                    jaro_winkler(nysiis_result, nysiis_query), 4
+                )
+
                 formatted_results.append(formatted_result)
 
         # ? Or do we want some notion of "best" result?
