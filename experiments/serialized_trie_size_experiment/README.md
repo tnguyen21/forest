@@ -21,4 +21,12 @@ Below runs ran on local laptop. Specs are as follows:
 - System Type: x64-based PC
 - Processor: Intel(R) Code(TM) i7-8550U CPI @ 1.8 GHz
 - RAM: 12 GB
+
+# of bytes | filename
+  812599 gazetteer_entries.txt
+11274297 pwn_trie_test.pkl
+
+serialized Trie file loaded with all PWN words is about ~13x larger,
+but loading in a serialized Trie is ~100x faster than loading in the dictionary
+and appending each word to the Trie.
 ```
