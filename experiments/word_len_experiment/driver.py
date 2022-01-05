@@ -26,6 +26,7 @@ sys.path.insert(
 from trie import Trie
 from datetime import datetime
 import pickle
+import json
 import argparse
 
 if __name__ == "__main__":
@@ -49,6 +50,11 @@ if __name__ == "__main__":
             word = line.strip()
             trie.add_entry(word)
     print("Done.")
+
+    # given that this object exists and is on local disk, we can load it
+    # and save ~1.5 minutes of loading words
+    # with open("experiments/word_len_experiment/pwn_trie_test.pkl", "rb") as f:
+    #     trie = pickle.load(f)
 
     # NOTE these were hand picked from the word list to test
     four_letter_words = ["zeta", "yolk", "yogi", "wide", "vent", "user", "swim", "tame"]
@@ -154,11 +160,11 @@ if __name__ == "__main__":
 
     end_time = datetime.now()
 
-    logging_data["runtime"] = end_time - start_time
+    logging_data["runtime"] = (end_time - start_time).total_seconds()
 
     # log off results
     print("Logging results...")
-    with open(f"word_len_experiment_run_{datetime.now().timestamp()}.pkl", "wb") as f:
-        pickle.dump(logging_data, f)
+    with open(f"word_len_experiment_run_{datetime.now().timestamp()}.json", "w") as f:
+        json.dump(logging_data, f)
 
     print("Done!")
