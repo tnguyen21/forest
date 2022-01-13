@@ -5,15 +5,16 @@ import { Routes, Route } from "react-router-dom";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 
-import Home from "./pages/Home";
+import MainDemo from "./pages/MainDemo";
+import About from "./pages/About";
 
 function App() {
   return (
     <div className="App">
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/test" element={<div>placeholder test</div>} />
+        <Route path="/" element={<MainDemo />} />
+        <Route path="/about" element={<About />} />
       </Routes>
       <Footer />
     </div>

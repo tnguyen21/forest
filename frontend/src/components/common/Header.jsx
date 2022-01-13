@@ -31,7 +31,7 @@ const StyledLink = styled(Link)`
 function Header() {
   return (
     <HeaderContainer>
-      <Title>Trie-based NER Demo</Title>
+      <Title>Drexel Senior Design</Title>
       <StyledLink to="/">Home</StyledLink>
       <StyledLink to="/about">About</StyledLink>
     </HeaderContainer>

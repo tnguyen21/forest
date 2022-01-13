@@ -41,7 +41,10 @@ function Footer() {
         <CreditLink href="http://github.com/tnguyen21">
           Tommy Bui Nguyen
         </CreditLink>{" "}
-        for Senior Design at Drexel University
+        for Senior Design at{" "}
+        <CreditLink href="https://drexel.edu/cci/">
+          Drexel University
+        </CreditLink>
       </Credits>
       <SocialIcon href="https://github.com/tnguyen21/trie">
         <GitHubIcon />
