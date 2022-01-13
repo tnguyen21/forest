@@ -5,7 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 
-import MainDemo from "./pages/MainDemo";
+import MainDemo from "./pages/MainDemo/MainDemo";
 import About from "./pages/About";
 
 function App() {
