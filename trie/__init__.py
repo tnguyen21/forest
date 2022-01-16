@@ -1,2 +1,2 @@
 from .trie import Trie
-from .forest import Forest
+from .phonetic_trie import PhoneticTrie

@@ -1,4 +1,4 @@
-""" trie/forest.py
+""" phonetic_trie.py
 
 Forest data structure which contains a list of Tries, each with different
 hyperparameters (e.g. ED thresholds, phonetic representation, word length limits)
@@ -15,7 +15,7 @@ from Levenshtein import jaro_winkler, distance
 from .trie import Trie
 
 
-class Forest:
+class PhoneticTrie:
     def __init__(self):
         self.tries = []
         self.phonetic_map = {}
@@ -29,7 +29,7 @@ class Forest:
         min_jaro_winkler_sim: float = 0.0,
     ):
         """
-        Add Trie to Forest with additional parameters.
+        Add Trie to PhoneticTries with additional parameters.
         Args:
         """
         trie = Trie(max_edit_distance, min_jaro_winkler_sim)
@@ -133,12 +133,20 @@ class Forest:
                     resulting_words.append(word)
 
         formatted_results = []
+        resulting_words = []
 
         for results in tentative_results:
             for result_word, _, _ in results:
-                formatted_result = {}
+                if result_word in resulting_words:
+                    # if word is already in resulting words,
+                    # don't add it again
+                    continue
 
-                formatted_result["original_word"] = original_word
+                resulting_words.append(result_word)
+                formatted_result = {}
+                formatted_result[
+                    "original_word"
+                ] = original_word  # todo rename to be more descrpitive
                 formatted_result["result_word"] = result_word
                 formatted_result["original_edit_distance"] = distance(
                     original_word, result_word
