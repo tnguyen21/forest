@@ -133,78 +133,70 @@ class PhoneticTrie:
                     resulting_words.append(word)
 
         formatted_results = []
-        resulting_words = []
 
-        for results in tentative_results:
-            for result_word, _, _ in results:
-                if result_word in resulting_words:
-                    # if word is already in resulting words,
-                    # don't add it again
-                    continue
+        for result_word in resulting_words:
+            formatted_result = {}
+            formatted_result[
+                "original_word"
+            ] = original_word  # todo rename to be more descrpitive
+            formatted_result["result_word"] = result_word
+            formatted_result["original_edit_distance"] = distance(
+                original_word, result_word
+            )
+            formatted_result["original_jaro_winkler_similarity"] = round(
+                jaro_winkler(original_word, result_word), 4
+            )
 
-                resulting_words.append(result_word)
-                formatted_result = {}
-                formatted_result[
-                    "original_word"
-                ] = original_word  # todo rename to be more descrpitive
-                formatted_result["result_word"] = result_word
-                formatted_result["original_edit_distance"] = distance(
-                    original_word, result_word
-                )
-                formatted_result["original_jaro_winkler_similarity"] = round(
-                    jaro_winkler(original_word, result_word), 4
-                )
+            # double metaphone representation and metrics
+            # * double metaphone returns two results -- we use the first
+            dmetaphone_query = dmetaphone(original_word)[0]
+            dmetaphone_result = dmetaphone(result_word)[0]
+            formatted_result["dmetaphone_query"] = dmetaphone_query
+            formatted_result["dmetaphone_result"] = dmetaphone_result
+            formatted_result["dmetaphone_edit_distance"] = distance(
+                dmetaphone_result, dmetaphone_query
+            )
+            formatted_result["dmetaphone_jaro_winkler_similarity"] = round(
+                jaro_winkler(dmetaphone_result, dmetaphone_query), 4
+            )
 
-                # double metaphone representation and metrics
-                # * double metaphone returns two results -- we use the first
-                dmetaphone_query = dmetaphone(original_word)[0]
-                dmetaphone_result = dmetaphone(result_word)[0]
-                formatted_result["dmetaphone_query"] = dmetaphone_query
-                formatted_result["dmetaphone_result"] = dmetaphone_result
-                formatted_result["dmetaphone_edit_distance"] = distance(
-                    dmetaphone_result, dmetaphone_query
-                )
-                formatted_result["dmetaphone_jaro_winkler_similarity"] = round(
-                    jaro_winkler(dmetaphone_result, dmetaphone_query), 4
-                )
+            # metaphone representation and metrics
+            metaphone_query = metaphone(original_word)[0]
+            metaphone_result = metaphone(result_word)[0]
+            formatted_result["metaphone_query"] = metaphone_query
+            formatted_result["metaphone_result"] = metaphone_result
+            formatted_result["metaphone_edit_distance"] = distance(
+                metaphone_result, metaphone_query
+            )
+            formatted_result["metaphone_jaro_winkler_similarity"] = round(
+                jaro_winkler(metaphone_result, metaphone_query), 4
+            )
 
-                # metaphone representation and metrics
-                metaphone_query = metaphone(original_word)[0]
-                metaphone_result = metaphone(result_word)[0]
-                formatted_result["metaphone_query"] = metaphone_query
-                formatted_result["metaphone_result"] = metaphone_result
-                formatted_result["metaphone_edit_distance"] = distance(
-                    metaphone_result, metaphone_query
-                )
-                formatted_result["metaphone_jaro_winkler_similarity"] = round(
-                    jaro_winkler(metaphone_result, metaphone_query), 4
-                )
+            # soundex representation and metrics
+            soundex_query = soundex(original_word)[0]
+            soundex_result = soundex(result_word)[0]
+            formatted_result["soundex_query"] = soundex_query
+            formatted_result["soundex_result"] = soundex_result
+            formatted_result["soundex_edit_distance"] = distance(
+                soundex_result, soundex_query
+            )
+            formatted_result["soundex_jaro_winkler_similarity"] = round(
+                jaro_winkler(soundex_result, soundex_query), 4
+            )
 
-                # soundex representation and metrics
-                soundex_query = soundex(original_word)[0]
-                soundex_result = soundex(result_word)[0]
-                formatted_result["soundex_query"] = soundex_query
-                formatted_result["soundex_result"] = soundex_result
-                formatted_result["soundex_edit_distance"] = distance(
-                    soundex_result, soundex_query
-                )
-                formatted_result["soundex_jaro_winkler_similarity"] = round(
-                    jaro_winkler(soundex_result, soundex_query), 4
-                )
+            # nysiis representation and metrics
+            nysiis_query = nysiis(original_word)[0]
+            nysiis_result = nysiis(result_word)[0]
+            formatted_result["nysiis_query"] = nysiis_query
+            formatted_result["nysiis_result"] = nysiis_result
+            formatted_result["nysiis_edit_distance"] = distance(
+                nysiis_result, nysiis_query
+            )
+            formatted_result["nysiis_jaro_winkler_similarity"] = round(
+                jaro_winkler(nysiis_result, nysiis_query), 4
+            )
 
-                # nysiis representation and metrics
-                nysiis_query = nysiis(original_word)[0]
-                nysiis_result = nysiis(result_word)[0]
-                formatted_result["nysiis_query"] = nysiis_query
-                formatted_result["nysiis_result"] = nysiis_result
-                formatted_result["nysiis_edit_distance"] = distance(
-                    nysiis_result, nysiis_query
-                )
-                formatted_result["nysiis_jaro_winkler_similarity"] = round(
-                    jaro_winkler(nysiis_result, nysiis_query), 4
-                )
-
-                formatted_results.append(formatted_result)
+            formatted_results.append(formatted_result)
 
         # ? Or do we want some notion of "best" result?
         # ? Or do we want to return the best result for each trie?
