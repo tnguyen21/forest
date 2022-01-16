@@ -126,11 +126,11 @@ class PhoneticTrie:
         # more post processing -- it's at this point we will lose the
         # association of a result to a particular trie
         # TODO move this into its own function?
-        resulting_words = []
+        resulting_words = set()
         for results in tentative_results:
             for word, _, _ in results:
                 if word not in resulting_words:
-                    resulting_words.append(word)
+                    resulting_words.add(word)
 
         formatted_results = []
 
