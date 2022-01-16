@@ -1,25 +1,38 @@
 import { React, useState } from "react";
 import styled from "styled-components";
 
-import { exampleText } from "./constants";
+import { exampleText, mockAnnotations } from "./constants";
 
 import Container from "@mui/material/Container";
-import { Box, TextField, Typography } from "@mui/material";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import AnnotatedText from "./AnnotatedText";
+import { Button, Box, TextField, Typography } from "@mui/material";
 
 const PageTitle = styled.h2`
   font-family: "Roboto", sans-serif;
-  font-size: 1.5rem;got
+  font-size: 1.5rem;
 `;
 
 const inputStyles = {
   style: {
-    fontSize: ".8rem",
+    fontSize: ".9rem",
     fontFamily: "Roboto mono",
+    padding: ".5rem",
   },
 };
 
 function MainDemo() {
   const [inputText, setInputText] = useState(exampleText);
+  const [annotatedText, setAnnotatedText] = useState(null);
+
+  const handleInputChange = (event) => {
+    setInputText(event.target.value);
+  };
+
+  const annotateText = (text) => {
+    // TODO eventually do some API call or something
+    setAnnotatedText(text);
+  };
 
   return (
     <Container>
@@ -30,7 +43,7 @@ function MainDemo() {
       </Box>
       <Box
         sx={{
-          "& .MuiTextField-root": { m: 1, maxWidth: "100%" },
+          "& .MuiTextField-root": { maxWidth: "100%", mb: 2 },
         }}
       >
         <TextField
@@ -38,14 +51,20 @@ function MainDemo() {
           label="Text Input"
           multiline
           rows={6}
+          onChange={handleInputChange}
           inputProps={inputStyles}
           defaultValue={inputText}
           variant="standard"
         />
+        <Button
+          variant="contained"
+          startIcon={<PlayArrowIcon />}
+          onClick={() => annotateText(inputText)}
+        >
+          Annotate
+        </Button>
       </Box>
-      <Box sx={{ mt: "3rem", width: "100%", height: 150 }}>
-        <Typography>Output goes here.</Typography>
-      </Box>
+      <AnnotatedText outputText={annotatedText} annotations={mockAnnotations} />
     </Container>
   );
 }
