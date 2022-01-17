@@ -14,13 +14,16 @@ const HeaderContainer = styled.header`
   }
 `;
 
-const Title = styled.h1`
-  font-family: "Roboto", sans-serif;
+const Title = styled(Link)`
+  font-family: "Roboto mono", sans-serif;
   font-size: 1.5rem;
+  font-weight: bold;
   letter-spacing: 0.1rem;
   margin: 0;
   padding: 0;
   display: inline-block;
+  text-decoration: none;
+  color: black;
 `;
 
 const StyledLink = styled(Link)`
@@ -44,7 +47,7 @@ const StyledLink = styled(Link)`
 function Header() {
   return (
     <HeaderContainer>
-      <Title>NER Demo</Title>
+      <Title to="/">NER Demo</Title>
       <StyledLink to="/">Home</StyledLink>
       <StyledLink to="/about">About</StyledLink>
     </HeaderContainer>
