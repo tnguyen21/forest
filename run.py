@@ -5,7 +5,7 @@ For now, use this file for quick iteration and running
 tiny experiments to get minimum functionality working.
 """
 
-from trie import Trie, Forest
+from trie import Trie, PhoneticTrie
 from pprint import pprint
 from phonetics import metaphone
 
@@ -23,20 +23,23 @@ def mock_trie() -> Trie:
     return t
 
 
-def mock_forest() -> Forest:
-    f = Forest()
+def mock_forest() -> PhoneticTrie:
+    f = PhoneticTrie()
 
-    f.add_trie(min_entry_len=0, max_entry_len=4, max_edit_distance=1)
-    f.add_trie(min_entry_len=5, max_entry_len=99, max_edit_distance=2)
+    f.add_trie(min_entry_len=0, max_entry_len=5, max_edit_distance=1)
+    f.add_trie(min_entry_len=3, max_entry_len=99, max_edit_distance=2)
 
+    # words up to 3 char leng
     f.add_trie(
         min_entry_len=0,
         max_entry_len=4,
         max_edit_distance=1,
         phonetic_representation=metaphone,
     )
+
+    # words up to 4 char leng
     f.add_trie(
-        min_entry_len=5,
+        min_entry_len=2,
         max_entry_len=99,
         max_edit_distance=2,
         phonetic_representation=metaphone,
@@ -68,3 +71,5 @@ if __name__ == "__main__":
 
     results = forest.search(query)
     pprint(results)
+    print("=" * 5)
+    print(f"Number of Results: {len(results)}")
