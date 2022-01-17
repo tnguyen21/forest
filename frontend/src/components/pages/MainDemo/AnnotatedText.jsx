@@ -6,7 +6,6 @@ import { Box } from "@mui/material";
 const SectionTitle = styled.h3`
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
-  margin-top: 3rem;
 `;
 
 const AnnotatedTextContainer = styled.div`

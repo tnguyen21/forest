@@ -6,7 +6,7 @@ import { exampleText, mockAnnotations } from "./constants";
 import Container from "@mui/material/Container";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AnnotatedText from "./AnnotatedText";
-import { Button, Box, TextField, Typography } from "@mui/material";
+import { Button, Box, TextField, Typography, Divider } from "@mui/material";
 
 const PageTitle = styled.h2`
   font-family: "Roboto", sans-serif;
@@ -57,6 +57,9 @@ function MainDemo() {
           variant="standard"
         />
         <Button
+          sx={{
+            mb: 2,
+          }}
           variant="contained"
           startIcon={<PlayArrowIcon />}
           onClick={() => annotateText(inputText)}
@@ -64,7 +67,13 @@ function MainDemo() {
           Annotate
         </Button>
       </Box>
-      <AnnotatedText outputText={annotatedText} annotations={mockAnnotations} />
+      <Divider sx={{ mb: 4 }} />
+      {annotatedText && (
+        <AnnotatedText
+          outputText={annotatedText}
+          annotations={mockAnnotations}
+        />
+      )}
     </Container>
   );
 }
