@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 const HeaderContainer = styled.header`
   padding: 0 8rem;
+  height: 4rem;
 
   @media screen and (max-width: 600px) {
     & {

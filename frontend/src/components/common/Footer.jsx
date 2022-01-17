@@ -6,6 +6,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 
 const FooterContainer = styled.footer`
   padding: 0 8rem;
+  height: 4rem;
 
   @media screen and (max-width: 600px) {
     & {
