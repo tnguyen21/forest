@@ -7,7 +7,7 @@ Provides interface to add tries and entries to the Forest, and conduct queries
 across all Tries in the forest.
 
 """
-from typing import Union, Callable, List, Tuple
+from typing import Union, Callable, List, Tuple, Dict
 
 from phonetics import metaphone, dmetaphone, soundex, nysiis
 from Levenshtein import jaro_winkler, distance
@@ -75,7 +75,158 @@ class PhoneticTrie:
                 else:
                     t["trie"].add_entry(entry)
 
-    def search(self, word: str) -> List[Tuple[str, int, float]]:
+    def format_results(
+        self,
+        query_word: str,
+        results_list: List[str],
+        metaphone_output: bool = False,
+        dmetaphone_output: bool = False,
+        soundex_output: bool = False,
+        nysiis_output: bool = False,
+    ) -> Dict:
+        """
+        Helper function which formats a single search result such that
+        a user can specify what they want to see in the result.
+
+        Always returns calculated edit distance and jaro-winkler similarity.
+
+        By default returns only queried word & result from searching in trie.
+
+        Args:
+            results_list: word from search result
+            metaphone_output: if True, returns metaphone output
+            dmetaphone_output: if True, returns dmetaphone output
+            soundex_output: if True, returns soundex output
+            nysiis_output: if True, returns nysiis output
+        Return:
+            Dict of formatted results
+        """
+        formatted_results = []
+        for result_word in results_list:
+            formatted_result = {}
+
+            formatted_result["query"] = query_word
+            formatted_result["result"] = result_word
+            formatted_result["original_edit_distance"] = distance(
+                query_word, result_word
+            )
+            formatted_result["original_jaro_winkler_similarity"] = round(
+                jaro_winkler(query_word, result_word), 4
+            )
+
+            if metaphone_output:
+                metaphone_query = metaphone(query_word)[0]
+                metaphone_result = metaphone(result_word)[0]
+                formatted_result["metaphone_query"] = metaphone_query
+                formatted_result["metaphone_result"] = metaphone_result
+                formatted_result["metaphone_edit_distance"] = distance(
+                    metaphone_result, metaphone_query
+                )
+                formatted_result["metaphone_jaro_winkler_similarity"] = round(
+                    jaro_winkler(metaphone_result, metaphone_query), 4
+                )
+
+            if dmetaphone_output:
+                # * double metaphone returns two results -- we use the first
+                dmetaphone_query = dmetaphone(query_word)[0]
+                dmetaphone_result = dmetaphone(result_word)[0]
+                formatted_result["dmetaphone_query"] = dmetaphone_query
+                formatted_result["dmetaphone_result"] = dmetaphone_result
+                formatted_result["dmetaphone_edit_distance"] = distance(
+                    dmetaphone_result, dmetaphone_query
+                )
+                formatted_result["dmetaphone_jaro_winkler_similarity"] = round(
+                    jaro_winkler(dmetaphone_result, dmetaphone_query), 4
+                )
+
+            if soundex_output:
+                soundex_query = soundex(query_word)[0]
+                soundex_result = soundex(result_word)[0]
+                formatted_result["soundex_query"] = soundex_query
+                formatted_result["soundex_result"] = soundex_result
+                formatted_result["soundex_edit_distance"] = distance(
+                    soundex_result, soundex_query
+                )
+                formatted_result["soundex_jaro_winkler_similarity"] = round(
+                    jaro_winkler(soundex_result, soundex_query), 4
+                )
+
+            if nysiis_output:
+                nysiis_query = nysiis(query_word)[0]
+                nysiis_result = nysiis(result_word)[0]
+                formatted_result["nysiis_query"] = nysiis_query
+                formatted_result["nysiis_result"] = nysiis_result
+                formatted_result["nysiis_edit_distance"] = distance(
+                    nysiis_result, nysiis_query
+                )
+                formatted_result["nysiis_jaro_winkler_similarity"] = round(
+                    jaro_winkler(nysiis_result, nysiis_query), 4
+                )
+
+            formatted_results.append(formatted_result)
+
+        return formatted_results
+
+    def filter_results(
+        self,
+        query_word: str,
+        results_list: List[str],
+        metaphone_weight: float = 1,
+        dmetaphone_weight: float = 1,
+        soundex_weight: float = 1,
+        nysiis_weight: float = 1,
+        weight_score_threhold: float = 0.0,
+    ) -> List:
+        """
+        Helper function which filters results based on phonetic weights.
+        Args:
+            results_list: list of results from search
+            metaphone_weight: weight for jw sim score for metaphone reprensentation
+            dmetaphone_weight: weight for jw sim score for dmetaphone reprensentation
+            soundex_weight: weight for jw sim score for soundex reprensentation
+            nysiis_weight: weight for jw sim score for nysiis reprensentation
+            weight_score_threhold: threshold for weighted score
+        """
+        filtered_results = []
+
+        for result in results_list:
+            # calculate weighted score
+            metaphone_score = jaro_winkler(metaphone(query_word), metaphone(result))
+
+            # double metaphone returns two results -- we use the first one
+            dmetaphone_score = jaro_winkler(
+                dmetaphone(query_word)[0], dmetaphone(result)[0]
+            )
+
+            soundex_score = jaro_winkler(soundex(query_word), soundex(result))
+
+            nysiis_score = jaro_winkler(nysiis(query_word), nysiis(result))
+
+            weighted_score = (
+                metaphone_weight * metaphone_score
+                + dmetaphone_weight * dmetaphone_score
+                + soundex_weight * soundex_score
+                + nysiis_weight * nysiis_score
+            )
+
+            if weighted_score >= weight_score_threhold:
+                filtered_results.append(result)
+
+        return filtered_results
+
+    def search(
+        self,
+        word: str,
+        metaphone_weight: float = 1,
+        dmetaphone_weight: float = 1,
+        soundex_weight: float = 1,
+        nysiis_weight: float = 1,
+        weight_score_threhold: float = 0.0,
+        metaphone_output: bool = False,
+        dmetaphone_output: bool = False,
+        soundex_output: bool = False,
+        nysiis_output: bool = False,
+    ) -> Dict:
         """
         Conduct search with query word in parallel on all
         tries in the trie
@@ -84,9 +235,17 @@ class PhoneticTrie:
         * [min_entry_len - ED, max_entry_len + ED]
         Args:
             word: query word
+            metaphone_weight: weight for jw sim score for metaphone reprensentation
+            dmetaphone_weight: weight for jw sim score for dmetaphone reprensentation
+            soundex_weight: weight for jw sim score for soundex reprensentation
+            nysiis_weight: weight for jw sim score for nysiis reprensentation
+            weight_score_threhold: threshold for weighted score
+            metaphone_output: whether to output metaphone results
+            dmetaphone_output: whether to output dmetaphone results
+            soundex_output: whether to output soundex results
+            nysiis_output: whether to output nysiis results
         Return:
-            list of tuples that has potential matches of query with
-                edit distance and jaro-winkler similiarity
+            dict of formatted results
         """
         # all of this is used for post processing at the end
         tentative_results = []
@@ -125,94 +284,29 @@ class PhoneticTrie:
 
         # more post processing -- it's at this point we will lose the
         # association of a result to a particular trie
-        # TODO move this into its own function?
         resulting_words = set()
         for results in tentative_results:
             for word, _, _ in results:
                 if word not in resulting_words:
                     resulting_words.add(word)
 
-        formatted_results = []
+        filtered_results = self.filter_results(
+            original_word,
+            resulting_words,
+            metaphone_weight,
+            dmetaphone_weight,
+            soundex_weight,
+            nysiis_weight,
+            weight_score_threhold,
+        )
 
-        for result_word in resulting_words:
-            formatted_result = {}
-            formatted_result[
-                "original_word"
-            ] = original_word  # todo rename to be more descrpitive
-            formatted_result["result_word"] = result_word
-            formatted_result["original_edit_distance"] = distance(
-                original_word, result_word
-            )
-            formatted_result["original_jaro_winkler_similarity"] = round(
-                jaro_winkler(original_word, result_word), 4
-            )
+        formatted_results = self.format_results(
+            original_word,
+            filtered_results,
+            metaphone_output,
+            dmetaphone_output,
+            soundex_output,
+            nysiis_output,
+        )
 
-            # double metaphone representation and metrics
-            # * double metaphone returns two results -- we use the first
-            dmetaphone_query = dmetaphone(original_word)[0]
-            dmetaphone_result = dmetaphone(result_word)[0]
-            formatted_result["dmetaphone_query"] = dmetaphone_query
-            formatted_result["dmetaphone_result"] = dmetaphone_result
-            formatted_result["dmetaphone_edit_distance"] = distance(
-                dmetaphone_result, dmetaphone_query
-            )
-            formatted_result["dmetaphone_jaro_winkler_similarity"] = round(
-                jaro_winkler(dmetaphone_result, dmetaphone_query), 4
-            )
-
-            # metaphone representation and metrics
-            metaphone_query = metaphone(original_word)[0]
-            metaphone_result = metaphone(result_word)[0]
-            formatted_result["metaphone_query"] = metaphone_query
-            formatted_result["metaphone_result"] = metaphone_result
-            formatted_result["metaphone_edit_distance"] = distance(
-                metaphone_result, metaphone_query
-            )
-            formatted_result["metaphone_jaro_winkler_similarity"] = round(
-                jaro_winkler(metaphone_result, metaphone_query), 4
-            )
-
-            # soundex representation and metrics
-            soundex_query = soundex(original_word)[0]
-            soundex_result = soundex(result_word)[0]
-            formatted_result["soundex_query"] = soundex_query
-            formatted_result["soundex_result"] = soundex_result
-            formatted_result["soundex_edit_distance"] = distance(
-                soundex_result, soundex_query
-            )
-            formatted_result["soundex_jaro_winkler_similarity"] = round(
-                jaro_winkler(soundex_result, soundex_query), 4
-            )
-
-            # nysiis representation and metrics
-            nysiis_query = nysiis(original_word)[0]
-            nysiis_result = nysiis(result_word)[0]
-            formatted_result["nysiis_query"] = nysiis_query
-            formatted_result["nysiis_result"] = nysiis_result
-            formatted_result["nysiis_edit_distance"] = distance(
-                nysiis_result, nysiis_query
-            )
-            formatted_result["nysiis_jaro_winkler_similarity"] = round(
-                jaro_winkler(nysiis_result, nysiis_query), 4
-            )
-
-            formatted_results.append(formatted_result)
-
-        # ? Or do we want some notion of "best" result?
-        # ? Or do we want to return the best result for each trie?
-        # TODO want to know where entry is coming from
-        # ? figure out a way to weight similiarity scores
-        # ? calc both sim scores between phonetic repr and original words?
-        # * ultimately asking what are entries that are similar to my query
-        # TODO should come up with some way to determine what we want returned from the search method
-        # TODO i.e. don't always need to return ED, JW sim score, etc -- come up with an interface
-        # TODO to allow users to specify what they want returned
-        # * ---
-        # TODO include length of original search word for each phonetic representation
-        # TODO include original search word as well
-        # TODO include len of phonetic representations
-        # TODO include length of resulting word as well
-        #! each word should appear in result once -- will be an object with all information someone would need
-        # * ---
-        # TODO would be nice to just see all similarity score for each phonetic representations we have in each trie
         return formatted_results
