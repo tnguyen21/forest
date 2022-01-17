@@ -31,6 +31,11 @@ class PhoneticTrie:
         """
         Add Trie to PhoneticTries with additional parameters.
         Args:
+            min_entry_len: minimum length of entry to be added to Trie
+            max_entry_len: maximum length of entry to be added to Trie
+            phonetic_representation: phonetic representation of entries in Trie
+            max_edit_distance: maximum edit distance for result
+            min_jaro_winkler_sim: minimum jaro winkler similarity for search result
         """
         trie = Trie(max_edit_distance, min_jaro_winkler_sim)
         trie_data = {
@@ -83,7 +88,7 @@ class PhoneticTrie:
         dmetaphone_output: bool = False,
         soundex_output: bool = False,
         nysiis_output: bool = False,
-    ) -> Dict:
+    ) -> List[Dict]:
         """
         Helper function which formats a single search result such that
         a user can specify what they want to see in the result.
@@ -99,7 +104,7 @@ class PhoneticTrie:
             soundex_output: if True, returns soundex output
             nysiis_output: if True, returns nysiis output
         Return:
-            Dict of formatted results
+            List[Dict] of formatted results
         """
         formatted_results = []
         for result_word in results_list:
@@ -176,7 +181,7 @@ class PhoneticTrie:
         soundex_weight: float = 1,
         nysiis_weight: float = 1,
         weight_score_threhold: float = 0.0,
-    ) -> List:
+    ) -> List[str]:
         """
         Helper function which filters results based on phonetic weights.
         Args:
@@ -186,6 +191,8 @@ class PhoneticTrie:
             soundex_weight: weight for jw sim score for soundex reprensentation
             nysiis_weight: weight for jw sim score for nysiis reprensentation
             weight_score_threhold: threshold for weighted score
+        Return:
+            List of filtered results
         """
         filtered_results = []
 
