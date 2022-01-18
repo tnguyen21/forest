@@ -8,22 +8,24 @@ const AnnotatedTextContainer = styled.div`
   line-height: 1.5;
 `;
 
-function helper() {
-  /*
-   * helper function that should probably exist to take text
-   * and annotations and create some object to properly render
-   * the annotated text ¯\_(ツ)_/¯
-   */
-
-  return 0;
-}
-
 function AnnotatedText({ outputText, annotations }) {
   // TODO some logic should be in place to style annotations
 
+  const getHighlightedText = (text, highlight) => {
+    // Split text on highlight term, include term itself into parts, ignore case
+    const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+    return (
+      <AnnotatedTextContainer>
+        {parts.map((part) =>
+          part.toLowerCase() === highlight.toLowerCase() ? <b>{part}</b> : part
+        )}
+      </AnnotatedTextContainer>
+    );
+  };
+
   return (
     <Box sx={{ width: "100%", height: 150 }}>
-      <AnnotatedTextContainer>{outputText}</AnnotatedTextContainer>
+      {getHighlightedText(outputText, "Freud")}
     </Box>
   );
 }
