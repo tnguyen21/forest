@@ -53,13 +53,20 @@ function MainDemo() {
           dictionary entries to conduct a fuzzy search on input text.
         </Typography>
         <SectionTitle>How-to-Use</SectionTitle>
-        <Typography sx={{ fontSize: ".9rem", mb: 4 }}>
+        <Box
+          sx={{
+            fontFamily: "Roboto, sans-serif",
+            lineHeight: 1.5,
+            fontSize: ".9rem",
+            mb: 4,
+          }}
+        >
           <ol>
             <li>Type input text into text area</li>
             <li>Click "Annotate"</li>
             <li>Annotations will appear below the "Annotations" header</li>
           </ol>
-        </Typography>
+        </Box>
       </Box>
       <Box
         sx={{
