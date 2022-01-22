@@ -27,15 +27,31 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--data_path",
-        help="Path to .txt file containing words",
+        "--trie_pkl_path",
+        help="Path to .pkl file containing trie loaded with all words",
         default=None,
         required=True,
     )
 
+    parser.add_argument(
+        "--training_data_path",
+        help="Path to .csv file containing training data",
+        default=None,
+        required=True,
+    )
+    parser.add_argument(
+        "--save_data",
+        help="Boolean flag to log out .json file containing results",
+        default=False,
+        required=False,
+    )
+
     args = parser.parse_args()
 
-    main()
+    main(args.trie_pkl_path, args.training_data_path)
 
-    with open(f"seriailzed_trie_size_run_{datetime.now().timestamp()}.json", "w") as f:
-        json.dump(logger_object, f)
+    if args.save_data:
+        with open(
+            f"seriailzed_trie_size_run_{datetime.now().timestamp()}.json", "w"
+        ) as f:
+            json.dump(logger_object, f)
