@@ -52,9 +52,6 @@ def main(trie_pkl_path: str, train_data_path: str):
         exact_match_search_times
     )
 
-    # Print out results
-    print(json.dumps(logger_object))
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -80,7 +77,16 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    script_start_time = datetime.now()
     main(args.trie_pkl_path, args.training_data_path)
+    script_end_time = datetime.now()
+
+    logger_object["total_runtime"] = (
+        script_end_time - script_start_time
+    ).total_seconds()
+
+    # Print out results
+    print(json.dumps(logger_object))
 
     if args.save_data:
         with open(
