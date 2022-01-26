@@ -202,4 +202,4 @@ if __name__ == "__main__":
         with open(
             f"seriailzed_trie_size_run_{datetime.now().timestamp()}.json", "w"
         ) as f:
-            json.dump(logger_object, f)
+            json.dump(logger_object, f, indent=2)
