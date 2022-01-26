@@ -9,7 +9,9 @@ across all Tries in the forest.
 """
 from typing import Union, Callable, List, Tuple, Dict
 
-from phonetics import metaphone, dmetaphone, soundex, nysiis
+from phonetics import metaphone, dmetaphone
+from jellyfish import soundex
+from fuzzy import nysiis
 from Levenshtein import jaro_winkler, distance
 
 from .trie import Trie
@@ -120,8 +122,8 @@ class PhoneticTrie:
             )
 
             if metaphone_output:
-                metaphone_query = metaphone(query_word)[0]
-                metaphone_result = metaphone(result_word)[0]
+                metaphone_query = metaphone(query_word)
+                metaphone_result = metaphone(result_word)
                 formatted_result["metaphone_query"] = metaphone_query
                 formatted_result["metaphone_result"] = metaphone_result
                 formatted_result["metaphone_edit_distance"] = distance(
@@ -145,8 +147,8 @@ class PhoneticTrie:
                 )
 
             if soundex_output:
-                soundex_query = soundex(query_word)[0]
-                soundex_result = soundex(result_word)[0]
+                soundex_query = soundex(query_word)
+                soundex_result = soundex(result_word)
                 formatted_result["soundex_query"] = soundex_query
                 formatted_result["soundex_result"] = soundex_result
                 formatted_result["soundex_edit_distance"] = distance(
@@ -157,8 +159,8 @@ class PhoneticTrie:
                 )
 
             if nysiis_output:
-                nysiis_query = nysiis(query_word)[0]
-                nysiis_result = nysiis(result_word)[0]
+                nysiis_query = nysiis(query_word)
+                nysiis_result = nysiis(result_word)
                 formatted_result["nysiis_query"] = nysiis_query
                 formatted_result["nysiis_result"] = nysiis_result
                 formatted_result["nysiis_edit_distance"] = distance(
@@ -209,12 +211,9 @@ class PhoneticTrie:
 
             nysiis_score = jaro_winkler(nysiis(query_word), nysiis(result))
 
-            weighted_score = (
-                metaphone_weight * metaphone_score
-                + dmetaphone_weight * dmetaphone_score
-                + soundex_weight * soundex_score
-                + nysiis_weight * nysiis_score
-            )
+            scores = [metaphone_score, dmetaphone_score, soundex_score, nysiis_score]
+
+            weighted_score = sum(scores) / len(scores)
 
             if weighted_score >= weight_score_threhold:
                 filtered_results.append(result)
@@ -224,11 +223,16 @@ class PhoneticTrie:
     def search(
         self,
         word: str,
+        # ? pass in weights as dictionaries
+        # TODO move this to class variables, and have set_weights functions
         metaphone_weight: float = 1,
         dmetaphone_weight: float = 1,
         soundex_weight: float = 1,
         nysiis_weight: float = 1,
+        # TODO move this to class variables
         weight_score_threhold: float = 0.0,
+        # TODO move these to class variables, create set_outputs function
+        # * only want to set outputs once and not have to remember for every search
         metaphone_output: bool = False,
         dmetaphone_output: bool = False,
         soundex_output: bool = False,
