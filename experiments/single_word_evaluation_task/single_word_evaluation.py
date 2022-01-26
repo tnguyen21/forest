@@ -35,7 +35,7 @@ def generate_data_set(ptrie: PhoneticTrie, data_df: pd.DataFrame) -> pd.DataFram
     Args:
         ptrie: PhoneticTrie to use for searching
         data_df: DataFrame containing the data to be searched
-            which has columns ["word", "search", "edit_distance", "label"]
+            which has columns ["word", "search", "edit_distance"]
     """
     train_columns = [
         "dmetaphone_sim",
@@ -48,12 +48,11 @@ def generate_data_set(ptrie: PhoneticTrie, data_df: pd.DataFrame) -> pd.DataFram
         "soundex_ed",
         "og_sim",
         "og_ed",
-        "edit_distance",
         "label",
     ]
 
     train_df = pd.DataFrame(columns=train_columns)
-    for idx, word, search, ed, label in data_df.itertuples():
+    for idx, word, search, ed in data_df.itertuples():
         print(f"{idx} Searching for {search}")
         results = ptrie.search(
             search,
@@ -65,6 +64,8 @@ def generate_data_set(ptrie: PhoneticTrie, data_df: pd.DataFrame) -> pd.DataFram
 
         #! this is slow, but it works
         for result in results:
+            label = 1 if result["result"] == word else 0
+
             append_row = [
                 result["dmetaphone_jaro_winkler_similarity"],
                 result["dmetaphone_edit_distance"],
@@ -76,7 +77,6 @@ def generate_data_set(ptrie: PhoneticTrie, data_df: pd.DataFrame) -> pd.DataFram
                 result["soundex_edit_distance"],
                 result["original_jaro_winkler_similarity"],
                 result["original_edit_distance"],
-                ed,
                 label,
             ]
 
@@ -96,16 +96,9 @@ def main(
     phonetic_trie = PhoneticTrie()
     phonetic_trie.add_trie(trie)
 
-    # Set max edit distance
-    trie.max_edit_distance = 2
-
     # Load data
     train_prep_df = pd.read_csv(train_data_path)
     val_prep_df = pd.read_csv(validation_data_path)
-
-    # Add Label column, set to 1 for query should match search, 0 otherwise
-    train_prep_df["Label"] = np.where(train_prep_df["EditDistance"] == 0, 1, 0)
-    val_prep_df["Label"] = np.where(val_prep_df["EditDistance"] == 0, 1, 0)
 
     if data_dir == None:
         # Generate trian data set
@@ -151,7 +144,8 @@ def main(
 
     # Calculate metrics
     y_pred = classifier.predict(X_val)
-    print(classification_report(y_val, y_pred))
+    metrics = classification_report(y_val, y_pred, output_dict=True)
+    logger_object["metrics"] = metrics
 
 
 if __name__ == "__main__":
