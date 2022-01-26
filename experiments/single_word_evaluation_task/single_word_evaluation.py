@@ -19,12 +19,13 @@ from trie import PhoneticTrie
 from datetime import datetime
 from common import load_trie_from_pkl
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, roc_curve, auc
 import pickle
 import argparse
 import json
-import pandas as pd
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from pprint import pprint
 
 logger_object = {}
@@ -146,6 +147,33 @@ def main(
     y_pred = classifier.predict(X_val)
     metrics = classification_report(y_val, y_pred, output_dict=True)
     logger_object["metrics"] = metrics
+
+    # Compute ROC curve and ROC area for each class
+    y_val_scores = classifier.predict_proba(X_val)
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    for i in range(2):
+        fpr[i], tpr[i], _ = roc_curve(y_val, y_val_scores[:, i])
+        roc_auc[i] = auc(fpr[i], tpr[i])
+
+    plt.figure()
+    lw = 2
+    plt.plot(
+        fpr[1],
+        tpr[1],
+        color="darkorange",
+        lw=lw,
+        label="ROC curve (area = %0.2f)" % roc_auc[1],
+    )
+    plt.plot([0, 1], [0, 1], color="navy", lw=lw, linestyle="--")
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("Receiver operating characteristic example")
+    plt.legend(loc="lower right")
+    plt.show()
 
 
 if __name__ == "__main__":
