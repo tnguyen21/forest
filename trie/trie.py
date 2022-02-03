@@ -135,7 +135,7 @@ class Trie:
             # keep matching child's children (i.e. down the trie)
             # until max_edit_distance is hit or the end of the trie is reached
             if child_node.edit_distance <= self.max_edit_distance:
-                self.update_further_children(child_node, char)
+                self.update_further_children(child_node, "")
         return
 
     def search(
