@@ -28,4 +28,10 @@ As it stands, the script can only be run locally within VS Code or with some wor
 
 ### Discussion
 
-TODO
+#### Exact Match
+
+As expected, queries with exact match are _extremely_ fast, as pointers become null very quickly when words are not an exact match.
+
+The other point of interest is the 2 results that are "false positives". These are words that have been modified from another word (e.g. taking our characters, typos, adding characters), and resulted in being another word in the dictionary.
+
+This only happened for 2 queries amongst the 17.000 queries tried, so it's a fairly rare occurrence.

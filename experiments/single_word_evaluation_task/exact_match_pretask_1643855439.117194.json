@@ -1,0 +1,33 @@
+{
+  "avg_search_time_per_word": 0.00010896959249420308,
+  "false_postive_count": 2,
+  "false_positives": [
+    {
+      "entry": "ovral",
+      "query": "oral",
+      "expected_ed": 1,
+      "results": [
+        {
+          "query": "oral",
+          "result": "oral",
+          "original_edit_distance": 0,
+          "original_jaro_winkler_similarity": 1.0
+        }
+      ]
+    },
+    {
+      "entry": "pellets",
+      "query": "pellet",
+      "expected_ed": 1,
+      "results": [
+        {
+          "query": "pellet",
+          "result": "pellet",
+          "original_edit_distance": 0,
+          "original_jaro_winkler_similarity": 1.0
+        }
+      ]
+    }
+  ],
+  "total_runtime": 2.024999
+}

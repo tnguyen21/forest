@@ -19,7 +19,11 @@ import argparse
 import json
 
 # Refer to README for explanation of logged off values
-logger_object = {"avg_search_time_per_word": 0, "false_postive_count": 0}
+logger_object = {
+    "avg_search_time_per_word": 0,
+    "false_postive_count": 0,
+    "false_positives": [],
+}
 
 
 def main(trie_pkl_path: str, train_data_path: str):
@@ -31,10 +35,10 @@ def main(trie_pkl_path: str, train_data_path: str):
         train_data_path: TODO
     """
     # Load trie
-    trie = load_trie_from_pkl(trie_pkl_path)
+    ptrie = load_trie_from_pkl(trie_pkl_path)
 
     # Set max edit distance of trie to 0 for exact matches
-    trie.max_edit_distance = 0
+    ptrie.tries[0]["trie"].max_edit_distance = 0
 
     # Load data
     data_df = pd.read_csv(train_data_path)
@@ -42,9 +46,9 @@ def main(trie_pkl_path: str, train_data_path: str):
     # Keep track of amount of time it takes to search for each word
     exact_match_search_times = []
 
-    for _, query, expected_ed in data_df.itertuples(index=False):
+    for entry, query, expected_ed in data_df.itertuples(index=False):
         start_time = datetime.now()
-        results = trie.search(query)
+        results = ptrie.search(query)
         end_time = datetime.now()
         exact_match_search_times.append((end_time - start_time).total_seconds())
 
@@ -52,11 +56,13 @@ def main(trie_pkl_path: str, train_data_path: str):
         # that expected ED is > 0
         if expected_ed > 0 and len(results) > 0:
             logger_object["false_postive_count"] += 1
-            print(
-                f"Query: {query} | "
-                f"Expected ED: {expected_ed} | "
-                f"Found: {results}"
-            )
+            false_positive = {
+                "entry": entry,
+                "query": query,
+                "expected_ed": expected_ed,
+                "results": results,
+            }
+            logger_object["false_positives"].append(false_positive)
 
     # Calculate average search time
     logger_object["avg_search_time_per_word"] = sum(exact_match_search_times) / len(
@@ -100,7 +106,5 @@ if __name__ == "__main__":
     print(json.dumps(logger_object))
 
     if args.save_data:
-        with open(
-            f"seriailzed_trie_size_run_{datetime.now().timestamp()}.json", "w"
-        ) as f:
-            json.dump(logger_object, f)
+        with open(f"exact_match_pretask_{datetime.now().timestamp()}.json", "w") as f:
+            json.dump(logger_object, f, indent=4)
