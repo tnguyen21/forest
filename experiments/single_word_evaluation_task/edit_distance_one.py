@@ -32,7 +32,7 @@ def main(trie_pkl_path: str, train_data_path: str):
     # Load trie
     trie = load_trie_from_pkl(trie_pkl_path)
 
-    # Set max edit distance of trie to 0 for exact matches
+    # Set max edit distance of trie to 1
     trie.max_edit_distance = 1
 
     # Load data
