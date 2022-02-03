@@ -39,6 +39,8 @@ def generate_data_set(ptrie: PhoneticTrie, data_df: pd.DataFrame) -> pd.DataFram
             which has columns ["word", "search", "edit_distance"]
     """
     train_columns = [
+        "word",
+        "query",
         "dmetaphone_sim",
         "dmetaphone_ed",
         "metaphone_sim",
@@ -68,6 +70,8 @@ def generate_data_set(ptrie: PhoneticTrie, data_df: pd.DataFrame) -> pd.DataFram
             label = 1 if result["result"] == word else 0
 
             append_row = [
+                word,
+                search,
                 result["dmetaphone_jaro_winkler_similarity"],
                 result["dmetaphone_edit_distance"],
                 result["metaphone_jaro_winkler_similarity"],
@@ -119,18 +123,22 @@ def main(
         ).total_seconds()
 
         # Save data set
-        train_df.to_csv("./train_df.csv", index=False)
-        val_df.to_csv("./val_df.csv", index=False)
+        train_df.to_csv(
+            "./experiments/single_word_evaluation_task/train_df.csv", index=False
+        )
+        val_df.to_csv(
+            "./experiments/single_word_evaluation_task/val_df.csv", index=False
+        )
     else:
         # Load data set
         train_df = pd.read_csv(f"{data_dir}/train_df.csv")
         val_df = pd.read_csv(f"{data_dir}/val_df.csv")
 
     # Split data and labels
-    X_train = train_df.drop(columns=["label"])
+    X_train = train_df.drop(columns=["word", "query", "label"])
     y_train = train_df["label"]
+    X_val = val_df.drop(columns=["word", "query", "label"])
     y_val = val_df["label"]
-    X_val = val_df.drop(columns=["label"])
 
     # Train model
     classifier = LogisticRegression()
@@ -147,33 +155,6 @@ def main(
     y_pred = classifier.predict(X_val)
     metrics = classification_report(y_val, y_pred, output_dict=True)
     logger_object["metrics"] = metrics
-
-    # Compute ROC curve and ROC area for each class
-    y_val_scores = classifier.predict_proba(X_val)
-    fpr = dict()
-    tpr = dict()
-    roc_auc = dict()
-    for i in range(2):
-        fpr[i], tpr[i], _ = roc_curve(y_val, y_val_scores[:, i])
-        roc_auc[i] = auc(fpr[i], tpr[i])
-
-    plt.figure()
-    lw = 2
-    plt.plot(
-        fpr[1],
-        tpr[1],
-        color="darkorange",
-        lw=lw,
-        label="ROC curve (area = %0.2f)" % roc_auc[1],
-    )
-    plt.plot([0, 1], [0, 1], color="navy", lw=lw, linestyle="--")
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("Receiver operating characteristic example")
-    plt.legend(loc="lower right")
-    plt.show()
 
 
 if __name__ == "__main__":
