@@ -94,8 +94,7 @@ def generate_data_set(ptrie: PhoneticTrie, data_df: pd.DataFrame) -> pd.DataFram
 def main(
     trie_pkl_path: str, train_data_path: str, validation_data_path: str, data_dir: str
 ):
-    """
-    """
+    """ """
     # Load trie
     trie = load_trie_from_pkl(trie_pkl_path)
     phonetic_trie = PhoneticTrie()
@@ -154,7 +153,98 @@ def main(
     # Calculate metrics
     y_pred = classifier.predict(X_val)
     metrics = classification_report(y_val, y_pred, output_dict=True)
-    logger_object["metrics"] = metrics
+    logger_object["metrics_w_phonetics"] = metrics
+
+    # -- Compare models and performance for non-phonetic representations --
+    train_no_phonetics_df = train_df.drop(
+        # will only have jw sim and ed for original word and results
+        columns=[
+            "dmetaphone_sim",
+            "dmetaphone_ed",
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+
+    val_no_phonetics_df = val_df.drop(
+        columns=[
+            "dmetaphone_sim",
+            "dmetaphone_ed",
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+
+    X_no_phonetics_train = train_no_phonetics_df.drop(
+        columns=["word", "query", "label"]
+    )
+    y_no_phonetics_train = train_no_phonetics_df["label"]
+    X_no_phonetics_val = val_no_phonetics_df.drop(columns=["word", "query", "label"])
+    y_no_phonetics_val = val_no_phonetics_df["label"]
+
+    no_phonetics_classifier = LogisticRegression()
+    no_phonetics_train_start_time = datetime.now()
+    no_phonetics_classifier.fit(X_no_phonetics_train, y_no_phonetics_train)
+    no_phonetics_train_end_time = datetime.now()
+    logger_object["no_phonetics_train_time"] = (
+        no_phonetics_train_end_time - no_phonetics_train_start_time
+    ).total_seconds()
+
+    y_no_phonetics_pred = no_phonetics_classifier.predict(X_no_phonetics_val)
+    metrics_no_phonetics = classification_report(
+        y_no_phonetics_val, y_no_phonetics_pred, output_dict=True
+    )
+    logger_object["metrics_no_phonetics"] = metrics_no_phonetics
+
+    # -- Compare models and performance w only dmetaphone --
+    train_dmetaphone_df = train_df.drop(
+        columns=[
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+
+    val_dmetaphone_df = val_df.drop(
+        columns=[
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+
+    X_dmetaphone_train = train_dmetaphone_df.drop(columns=["word", "query", "label"])
+    y_dmetaphone_train = train_dmetaphone_df["label"]
+    X_dmetaphone_val = val_dmetaphone_df.drop(columns=["word", "query", "label"])
+    y_dmetaphone_val = val_dmetaphone_df["label"]
+
+    dmetaphone_classifier = LogisticRegression()
+    dmetaphone_train_start_time = datetime.now()
+    dmetaphone_classifier.fit(X_dmetaphone_train, y_dmetaphone_train)
+    dmetaphone_train_end_time = datetime.now()
+    logger_object["dmetaphone_train_time"] = (
+        dmetaphone_train_end_time - dmetaphone_train_start_time
+    ).total_seconds()
+
+    y_dmetaphone_pred = dmetaphone_classifier.predict(X_dmetaphone_val)
+    metrics_dmetaphone = classification_report(
+        y_dmetaphone_val, y_dmetaphone_pred, output_dict=True
+    )
+    logger_object["metrics_dmetaphone"] = metrics_dmetaphone
 
 
 if __name__ == "__main__":
