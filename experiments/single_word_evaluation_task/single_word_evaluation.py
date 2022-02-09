@@ -135,9 +135,9 @@ def main(
 
     # Split data and labels
     X_train = train_df.drop(columns=["word", "query", "label"])
-    y_train = train_df["label"]
+    y_train = train_df["label"].astype(int)
     X_val = val_df.drop(columns=["word", "query", "label"])
-    y_val = val_df["label"]
+    y_val = val_df["label"].astype(int)
 
     # Train model
     classifier = LogisticRegression()
@@ -186,9 +186,9 @@ def main(
     X_no_phonetics_train = train_no_phonetics_df.drop(
         columns=["word", "query", "label"]
     )
-    y_no_phonetics_train = train_no_phonetics_df["label"]
+    y_no_phonetics_train = train_no_phonetics_df["label"].astype(int)
     X_no_phonetics_val = val_no_phonetics_df.drop(columns=["word", "query", "label"])
-    y_no_phonetics_val = val_no_phonetics_df["label"]
+    y_no_phonetics_val = val_no_phonetics_df["label"].astype(int)
 
     no_phonetics_classifier = LogisticRegression()
     no_phonetics_train_start_time = datetime.now()
@@ -228,9 +228,9 @@ def main(
     )
 
     X_dmetaphone_train = train_dmetaphone_df.drop(columns=["word", "query", "label"])
-    y_dmetaphone_train = train_dmetaphone_df["label"]
+    y_dmetaphone_train = train_dmetaphone_df["label"].astype(int)
     X_dmetaphone_val = val_dmetaphone_df.drop(columns=["word", "query", "label"])
-    y_dmetaphone_val = val_dmetaphone_df["label"]
+    y_dmetaphone_val = val_dmetaphone_df["label"].astype(int)
 
     dmetaphone_classifier = LogisticRegression()
     dmetaphone_train_start_time = datetime.now()
@@ -299,6 +299,6 @@ if __name__ == "__main__":
 
     if args.save_data:
         with open(
-            f"seriailzed_trie_size_run_{datetime.now().timestamp()}.json", "w"
+            f"single_word_evaluation_run_{datetime.now().timestamp()}.json", "w"
         ) as f:
             json.dump(logger_object, f, indent=2)
