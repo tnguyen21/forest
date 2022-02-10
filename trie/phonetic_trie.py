@@ -24,6 +24,7 @@ class PhoneticTrie:
 
     def add_trie(
         self,
+        trie: Trie = None,
         min_entry_len: int = -1,
         max_entry_len: int = 999,
         phonetic_representation: Union[Callable, None] = None,
@@ -39,9 +40,12 @@ class PhoneticTrie:
             max_edit_distance: maximum edit distance for result
             min_jaro_winkler_sim: minimum jaro winkler similarity for search result
         """
-        trie = Trie(max_edit_distance, min_jaro_winkler_sim)
+        if trie:
+            t = trie
+        else:
+            t = Trie(max_edit_distance, min_jaro_winkler_sim)
         trie_data = {
-            "trie": trie,
+            "trie": t,
             "min_entry_len": min_entry_len,
             "max_entry_len": max_entry_len,
             "phonetic_representation": phonetic_representation,
