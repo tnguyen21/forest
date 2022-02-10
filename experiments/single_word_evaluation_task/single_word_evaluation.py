@@ -95,10 +95,12 @@ def main(
     trie_pkl_path: str, train_data_path: str, validation_data_path: str, data_dir: str
 ):
     """ """
-    # Load trie
-    trie = load_trie_from_pkl(trie_pkl_path)
-    phonetic_trie = PhoneticTrie()
-    phonetic_trie.add_trie(trie)
+    # Load phonetic_trie
+    phonetic_trie = load_trie_from_pkl(trie_pkl_path)
+    #! Manually setting trie edit distance here for experiments, probably don't want
+    #! to do this in the future
+    phonetic_trie.tries[0]["trie"].max_edit_distance = 3
+    logger_object["trie_edit_distance"] = 3
 
     # Load data
     train_prep_df = pd.read_csv(train_data_path)
@@ -107,7 +109,7 @@ def main(
     if data_dir == None:
         # Generate trian data set
         start_time = datetime.now()
-        train_df = generate_data_set(trie, train_prep_df)
+        train_df = generate_data_set(phonetic_trie, train_prep_df)
         end_time = datetime.now()
         logger_object["generate_train_data_set_time"] = (
             end_time - start_time
@@ -115,7 +117,7 @@ def main(
 
         # Generate validation data set
         start_time = datetime.now()
-        val_df = generate_data_set(trie, val_prep_df)
+        val_df = generate_data_set(phonetic_trie, val_prep_df)
         end_time = datetime.now()
         logger_object["generate_val_data_set_time"] = (
             end_time - start_time
@@ -123,10 +125,10 @@ def main(
 
         # Save data set
         train_df.to_csv(
-            "./experiments/single_word_evaluation_task/train_df.csv", index=False
+            "./experiments/single_word_evaluation_task/train_df_ed3.csv", index=False
         )
         val_df.to_csv(
-            "./experiments/single_word_evaluation_task/val_df.csv", index=False
+            "./experiments/single_word_evaluation_task/val_df_ed3.csv", index=False
         )
     else:
         # Load data set
@@ -299,6 +301,6 @@ if __name__ == "__main__":
 
     if args.save_data:
         with open(
-            f"single_word_evaluation_run_{datetime.now().timestamp()}.json", "w"
+            f"single_word_evaluation_run_ed3_{datetime.now().timestamp()}.json", "w"
         ) as f:
             json.dump(logger_object, f, indent=2)
