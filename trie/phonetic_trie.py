@@ -234,7 +234,7 @@ class PhoneticTrie:
         soundex_weight: float = 1,
         nysiis_weight: float = 1,
         # TODO move this to class variables
-        weight_score_threhold: float = 0.0,
+        weight_score_threshold: float = 0.0,
         # TODO move these to class variables, create set_outputs function
         # * only want to set outputs once and not have to remember for every search
         metaphone_output: bool = False,
@@ -254,7 +254,7 @@ class PhoneticTrie:
             dmetaphone_weight: weight for jw sim score for dmetaphone reprensentation
             soundex_weight: weight for jw sim score for soundex reprensentation
             nysiis_weight: weight for jw sim score for nysiis reprensentation
-            weight_score_threhold: threshold for weighted score
+            weight_score_threshold: threshold for weighted score
             metaphone_output: whether to output metaphone results
             dmetaphone_output: whether to output dmetaphone results
             soundex_output: whether to output soundex results
@@ -265,7 +265,9 @@ class PhoneticTrie:
         # all of this is used for post processing at the end
         tentative_results = []
         original_word = word
-
+        #! if we are using multiple tries w phonetic representations
+        #! cannot filter results in forest -- should return all the results
+        #! OR if we have a threshold passed in
         # search each trie for the word
         for t in self.tries:
             # convert word into phonetic representation (if any is needed)
@@ -305,6 +307,10 @@ class PhoneticTrie:
                 if word not in resulting_words:
                     resulting_words.add(word)
 
+        if len(resulting_words) == 0:
+            # if no results returned, return empty search term
+            resulting_words.add("")
+
         filtered_results = self.filter_results(
             original_word,
             resulting_words,
@@ -312,7 +318,7 @@ class PhoneticTrie:
             dmetaphone_weight,
             soundex_weight,
             nysiis_weight,
-            weight_score_threhold,
+            weight_score_threshold,
         )
 
         formatted_results = self.format_results(
