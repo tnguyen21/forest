@@ -227,6 +227,7 @@ class PhoneticTrie:
     def search(
         self,
         word: str,
+        max_edit_distance: int = 2,
         # ? pass in weights as dictionaries
         # TODO move this to class variables, and have set_weights functions
         metaphone_weight: float = 1,
@@ -278,7 +279,7 @@ class PhoneticTrie:
             query_lower_bound = t["min_entry_len"] - t["trie"].max_edit_distance
             query_upper_bound = t["max_entry_len"] + t["trie"].max_edit_distance
             if len(word) >= query_lower_bound and len(word) <= query_upper_bound:
-                results = t["trie"].search(word)
+                results = t["trie"].search(word, max_edit_distance)
 
                 # if phonetic representation exists, need to do post-processing
                 if t["phonetic_representation"] is not None:
