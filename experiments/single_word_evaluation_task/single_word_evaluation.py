@@ -93,14 +93,31 @@ def generate_data_set(
     return train_df
 
 
-def main(
+def compute_metrics(y_true, y_pred):
+    """
+    Compute the metrics for the given true and predicted labels
+    Args:
+        y_true: true labels
+        y_pred: predicted labels
+
+    Returns:
+        accuracy, precision, recall, f1
+    """
+    metrics = {}
+    metrics["accuracy"] = accuracy_score(y_true, y_pred)
+    metrics["precision"] = precision_score(y_true, y_pred)
+    metrics["recall"] = recall_score(y_true, y_pred)
+    metrics["f1"] = f1_score(y_true, y_pred)
+
+    return metrics
+
+
+def train_phonetic_model(
     trie_pkl_path: str,
     train_data_path: str,
     validation_data_path: str,
-    data_dir: str,
     edit_distance: int,  # this ED is temp
 ):
-    """ """
     # Load phonetic_trie
     phonetic_trie = load_trie_from_pkl(trie_pkl_path)
     logger_object["trie_edit_distance"] = edit_distance
@@ -112,36 +129,31 @@ def main(
     train_prep_df = pd.read_csv(train_data_path)
     val_prep_df = pd.read_csv(validation_data_path)
 
-    if data_dir == None:
-        # Generate trian data set
-        start_time = datetime.now()
-        train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
-        end_time = datetime.now()
-        logger_object["generate_train_data_set_time"] = (
-            end_time - start_time
-        ).total_seconds()
+    # Generate trian data set
+    start_time = datetime.now()
+    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_phonetic_train_data_set_time"] = (
+        end_time - start_time
+    ).total_seconds()
 
-        # Generate validation data set
-        start_time = datetime.now()
-        val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
-        end_time = datetime.now()
-        logger_object["generate_val_data_set_time"] = (
-            end_time - start_time
-        ).total_seconds()
+    # Generate validation data set
+    start_time = datetime.now()
+    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_phonetic_val_data_set_time"] = (
+        end_time - start_time
+    ).total_seconds()
 
-        # Save data set
-        train_df.to_csv(
-            f"./experiments/single_word_evaluation_task/train_df_ed{edit_distance}.csv",
-            index=False,
-        )
-        val_df.to_csv(
-            f"./experiments/single_word_evaluation_task/val_df_ed{edit_distance}.csv",
-            index=False,
-        )
-    else:
-        # Load data set
-        train_df = pd.read_csv(f"{data_dir}/train_df.csv")
-        val_df = pd.read_csv(f"{data_dir}/val_df.csv")
+    # Save phonetic data set
+    train_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
+        index=False,
+    )
+    val_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
+        index=False,
+    )
 
     # Split data and labels
     X_train = train_df.drop(columns=["word", "query", "label"])
@@ -157,100 +169,190 @@ def main(
     logger_object["train_time"] = (train_end_time - train_start_time).total_seconds()
 
     # Serialize and save model
-    with open("./model.pkl", "wb") as f:
+    with open(
+        "./experiments/single_word_evaluation_task/models/phonetic_model.pkl", "wb"
+    ) as f:
         pickle.dump(classifier, f)
 
     # Calculate metrics
     y_pred = classifier.predict(X_val)
-    f1_score_w_phonetics = f1_score(y_val, y_pred)
-    logger_object["f1_score_w_phonetics"] = f1_score_w_phonetics
+    logger_object["metrics_w_phonetics"] = compute_metrics(y_val, y_pred)
 
-    # -- Compare models and performance for non-phonetic representations --
-    train_no_phonetics_df = train_df.drop(
-        # will only have jw sim and ed for original word and results
-        columns=[
-            "dmetaphone_sim",
-            "dmetaphone_ed",
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
 
-    val_no_phonetics_df = val_df.drop(
-        columns=[
-            "dmetaphone_sim",
-            "dmetaphone_ed",
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
+def train_no_phonetic_model(
+    trie_pkl_path: str,
+    train_data_path: str,
+    validation_data_path: str,
+    edit_distance: int,  # this ED is temp
+):
+    # Load phonetic_trie
+    phonetic_trie = load_trie_from_pkl(trie_pkl_path)
 
-    X_no_phonetics_train = train_no_phonetics_df.drop(
-        columns=["word", "query", "label"]
-    )
-    y_no_phonetics_train = train_no_phonetics_df["label"].astype(int)
-    X_no_phonetics_val = val_no_phonetics_df.drop(columns=["word", "query", "label"])
-    y_no_phonetics_val = val_no_phonetics_df["label"].astype(int)
+    # Drop phonetic tries
+    # tries are held in list
+    # [no_phonetic_trie, dmetaphone_trie, metaphone_trie, nysiis_trie, soundex_trie]
+    # only take the first one
+    phonetic_trie.tries = phonetic_trie.tries[0:1]
 
-    no_phonetics_classifier = LogisticRegression()
-    no_phonetics_train_start_time = datetime.now()
-    no_phonetics_classifier.fit(X_no_phonetics_train, y_no_phonetics_train)
-    no_phonetics_train_end_time = datetime.now()
-    logger_object["no_phonetics_train_time"] = (
-        no_phonetics_train_end_time - no_phonetics_train_start_time
+    # Log ED we're searching for this run
+    logger_object["trie_edit_distance"] = edit_distance
+
+    # Load data
+    train_prep_df = pd.read_csv(train_data_path)
+    val_prep_df = pd.read_csv(validation_data_path)
+
+    # Generate trian data set
+    start_time = datetime.now()
+    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_no_phonetic_train_data_set_time"] = (
+        end_time - start_time
     ).total_seconds()
 
-    y_no_phonetics_pred = no_phonetics_classifier.predict(X_no_phonetics_val)
-    f1_score_no_phonetics = f1_score(y_no_phonetics_val, y_no_phonetics_pred)
-    logger_object["f1_score_no_phonetics"] = f1_score_no_phonetics
-
-    # -- Compare models and performance w only dmetaphone --
-    train_dmetaphone_df = train_df.drop(
-        columns=[
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
-
-    val_dmetaphone_df = val_df.drop(
-        columns=[
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
-
-    X_dmetaphone_train = train_dmetaphone_df.drop(columns=["word", "query", "label"])
-    y_dmetaphone_train = train_dmetaphone_df["label"].astype(int)
-    X_dmetaphone_val = val_dmetaphone_df.drop(columns=["word", "query", "label"])
-    y_dmetaphone_val = val_dmetaphone_df["label"].astype(int)
-
-    dmetaphone_classifier = LogisticRegression()
-    dmetaphone_train_start_time = datetime.now()
-    dmetaphone_classifier.fit(X_dmetaphone_train, y_dmetaphone_train)
-    dmetaphone_train_end_time = datetime.now()
-    logger_object["dmetaphone_train_time"] = (
-        dmetaphone_train_end_time - dmetaphone_train_start_time
+    # Generate validation data set
+    start_time = datetime.now()
+    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_no_phonetic_val_data_set_time"] = (
+        end_time - start_time
     ).total_seconds()
 
-    y_dmetaphone_pred = dmetaphone_classifier.predict(X_dmetaphone_val)
-    f1_score_dmetaphone = f1_score(y_dmetaphone_val, y_dmetaphone_pred)
-    logger_object["f1_score_dmetaphone"] = f1_score_dmetaphone
+    # Save phonetic data set
+    train_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
+        index=False,
+    )
+    val_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
+        index=False,
+    )
+
+    # Split data and labels
+    X_train = train_df.drop(columns=["word", "query", "label"])
+    y_train = train_df["label"].astype(int)
+    X_val = val_df.drop(columns=["word", "query", "label"])
+    y_val = val_df["label"].astype(int)
+
+    # Train model
+    classifier = LogisticRegression()
+    train_start_time = datetime.now()
+    classifier.fit(X_train, y_train)
+    train_end_time = datetime.now()
+    logger_object["train_time"] = (train_end_time - train_start_time).total_seconds()
+
+    # Serialize and save model
+    with open(
+        "./experiments/single_word_evaluation_task/models/no_phonetic_model.pkl", "wb"
+    ) as f:
+        pickle.dump(classifier, f)
+
+    # Calculate metrics
+    y_pred = classifier.predict(X_val)
+    logger_object["metrics_no_phonetics"] = compute_metrics(y_val, y_pred)
+
+
+def train_dmetaphone_model(
+    trie_pkl_path: str,
+    train_data_path: str,
+    validation_data_path: str,
+    edit_distance: int,  # this ED is temp
+):
+    # Load phonetic_trie
+    phonetic_trie = load_trie_from_pkl(trie_pkl_path)
+
+    # Drop phonetic tries
+    # tries are held in list
+    # [no_phonetic_trie, dmetaphone_trie, metaphone_trie, nysiis_trie, soundex_trie]
+    # only take the first one
+    phonetic_trie.tries = phonetic_trie.tries[0:2]
+
+    # Log ED we're searching for this run
+    logger_object["trie_edit_distance"] = edit_distance
+
+    # Load data
+    train_prep_df = pd.read_csv(train_data_path)
+    val_prep_df = pd.read_csv(validation_data_path)
+
+    # Generate trian data set
+    start_time = datetime.now()
+    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_dmetaphone_train_data_set_time"] = (
+        end_time - start_time
+    ).total_seconds()
+
+    # Generate validation data set
+    start_time = datetime.now()
+    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_dmetaphone_val_data_set_time"] = (
+        end_time - start_time
+    ).total_seconds()
+
+    # Save phonetic data set
+    train_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
+        index=False,
+    )
+    val_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
+        index=False,
+    )
+
+    # Split data and labels
+    X_train = train_df.drop(columns=["word", "query", "label"])
+    y_train = train_df["label"].astype(int)
+    X_val = val_df.drop(columns=["word", "query", "label"])
+    y_val = val_df["label"].astype(int)
+
+    # Train model
+    classifier = LogisticRegression()
+    train_start_time = datetime.now()
+    classifier.fit(X_train, y_train)
+    train_end_time = datetime.now()
+    logger_object["train_time"] = (train_end_time - train_start_time).total_seconds()
+
+    # Serialize and save model
+    with open(
+        "./experiments/single_word_evaluation_task/models/dmetaphone_model.pkl", "wb"
+    ) as f:
+        pickle.dump(classifier, f)
+
+    # Calculate metrics
+    y_pred = classifier.predict(X_val)
+    logger_object["metrics_dmetaphone"] = compute_metrics(y_val, y_pred)
+
+
+def main(
+    trie_pkl_path: str,
+    train_data_path: str,
+    validation_data_path: str,
+    edit_distance: int,  # this ED is temp
+):
+    """ """
+    # train phonetic model
+    train_phonetic_model(
+        trie_pkl_path=trie_pkl_path,
+        train_data_path=train_data_path,
+        validation_data_path=validation_data_path,
+        edit_distance=edit_distance,
+    )
+
+    # train dmetaphone model
+    train_dmetaphone_model(
+        trie_pkl_path=trie_pkl_path,
+        train_data_path=train_data_path,
+        validation_data_path=validation_data_path,
+        edit_distance=edit_distance,
+    )
+
+    # train no phonetic model
+    train_no_phonetic_model(
+        trie_pkl_path=trie_pkl_path,
+        train_data_path=train_data_path,
+        validation_data_path=validation_data_path,
+        edit_distance=edit_distance,
+    )
 
 
 if __name__ == "__main__":
@@ -288,24 +390,20 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    script_start_time = datetime.now()
-    main(
-        args.trie_pkl_path,
-        args.training_data_path,
-        args.validation_data_path,
-        args.data_from_dir,
-        0,
-    )
-    script_end_time = datetime.now()
+    for ed in range(0, 3):
+        script_start_time = datetime.now()
+        main(args.trie_pkl_path, args.training_data_path, args.validation_data_path, ed)
+        script_end_time = datetime.now()
 
-    logger_object["total_runtime"] = (
-        script_end_time - script_start_time
-    ).total_seconds()
+        logger_object["total_runtime"] = (
+            script_end_time - script_start_time
+        ).total_seconds()
 
-    pprint(logger_object)
+        pprint(logger_object)
 
-    if args.save_data:
-        with open(
-            f"single_word_evaluation_run_ed{0}_{datetime.now().timestamp()}.json", "w"
-        ) as f:
-            json.dump(logger_object, f, indent=2)
+        if args.save_data:
+            with open(
+                f"single_word_evaluation_run_ed{ed}_{datetime.now().timestamp()}.json",
+                "w",
+            ) as f:
+                json.dump(logger_object, f, indent=2)
