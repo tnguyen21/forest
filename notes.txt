@@ -1,0 +1,268 @@
+16 Dec 2021
+
+- Work over 2 weeks (no meetings)
+
+- ADR files on GDrive that contain data
+  - example: "feel weird" in dict
+    but "feel a bit weird" in text
+    -- want to be able to highlight these small modifers
+- Side Effect database (multi-word expressions we can ignore for the time being)
+
+  - Download these databases
+  - Will download and create zip files to use them
+
+- Term 2 Plan - single-word experimental task - goal: get a final weighted search score from multi-trie search - want to just prove that we can take typo and misspellings into account for finding matching words - redesign output for search results - start developing multi-word search approach - giving a few examples of how it looks - developing around these handful of examples - can use NLP tool to "lemmatize" words (e.g.
+  feels, feel, feeling should all match one thing)
+  lemmaization?
+  ACTION ITEMS
+- take a look at ADR files
+  - come up with experimental tasks in GDrive
+    for single word experiment
+  - can we build one big dictionary?
+  - clean up and keep only single word expressions
+  - not all are in the same file formats
+- clinical trial database
+  - find
+- benchmark 1 million short texts
+
+  - saved trie as binary object
+
+- construct tries and save them off as binary objects
+  ! nice preprocessing step to save time in overall system
+
+- start from interface
+
+  - input text
+  - upload file
+  - pretend that search is happening
+  - reference links
+    - https://cogcomp.seas.upenn.edu/page/demos/
+      [entities]
+    - https://cogcomp.seas.upenn.edu/page/demo_view/MultipackageTS
+      [multi language/tokenization demo]
+
+- Term 3 Plan
+  - multi-word evaluation task
+    - multi-word expressions
+  - snowmed-CT task
+
+---
+
+6 jan 2022
+
+- weight similarity scores from results, after getting distinct set of results
+  - provide interface to let user provide weights for the forest
+- one approach -- weight each similiarity score (for each phonetic/non-phonetic repr)
+
+  - and then avg them
+  - MVP -- just weight all by 1
+    - provide some interface to let users set weights themselves
+      - future work?
+    - "forest_similarity" as final score
+  - also a way to set forest similarity threshold when producing "final" output
+    - default to 0 -- all words from forest will be given
+      - higher, then filter out results with scores lower
+
+- design and run few experiments to evaluate single word NER
+
+  - running exact matches (ED = 0)
+    - compare execution times between exact match to similarity search
+    - how much slower is this?
+    - how much more complicated is this process?
+      - weighting might be important for filtering correct results
+    - can then show running this experiment with multiple tries, evaluate if there's a speed up (and magnitude)
+
+- multi-word search !!
+
+  - expressions will have more than one word (e.g. names of places, "New York", "Los Angeles")
+  - e.g."Customer Experience Center"
+    - generic words, but it's a proper name
+      - what if not proper name -- instead the words are descriptive of some generic idea/concept
+      - e.g. in text "Customer Center" -- do we annotate as the same place?
+        - can be annotated, but will have a "word distance" -- not an exact match to "Customer _Experience_ Center"
+          - words don't behave the same ways a letters
+          - use length of words as a way to calculate "word distance" e.g. missing a short word ("of", "the", "in")
+  - e.g. "Center for Customer Experience"
+    - search: "Customer Experience Center"
+      - missing "for" and order is incorrect
+        - for is just a preposition -- smaller impact on "closeness" of match
+          - how should we calculate word distance for this annotation?
+            - one way: count diff of characters (24/27), or diff of words (3/4)
+              - how to account for words out of order?
+  - consider using frequency of word to adjust "word distance"
+    e.g. words of high frequency that is missing, maybe we have it have less penalty
+    - high frequency, less specifity -- some notion of calculating this
+
+- which sentence tokenizer will we use?
+- which sentense splitter will we use?
+  - don't want to mix expressions in two different sentences
+  - eventually make all available, give user option to choose which one they would like to use
+  - at least one -> generally, the more tokens the better
+- for each token, add each token into the forest as a single word
+- build mapping between dictionary entries and words; will have multiple dictionaries
+
+- first task: single word matching to possible multi-word entries in dictionary
+
+  - don't want to deal with phonetic scores -- just want forest score
+  - assume that forest score has been tuned to return good reuslts
+
+- input is no longer a word; input will be plain text e.g. paragraphs, document, etc
+
+  - text should be annotated with all available dictionaries
+
+- multi-word search -- a wrapper around forest?
+
+  - ~~forest -> multitrie?~~
+  - forest -> ptrie? phonetrie? phonetrie?
+
+  - forest will be multi-word search
+
+- final, final evaluation
+  - run MTsamples through clinical annotation tool
+  - use same dictionary as tool in forest
+  - compare results
+
+---
+
+13 jan 2022
+
+- evalutation task; words are from FDA (e.g. drug names, etc)
+- test set are words removed from this list
+  - train and tuning is built from remaining words
+    e.g. can get all words in test set by taking dictionary and
+    removing words found in train and tuned
+  - train also then has search words
+    - some are exact matches
+    - most are slight modifications
+      (e.g. additional characters, removed characters, etc)
+
+- why have training?
+  - want to "learn" how to identify the correct word given that
+    there are multiple results;
+    based on scores find combination that's maximizes accuracy
+  ! need to implement forest_similarity
+  - because we know which word is our "truth" value
+    we can save results and produce "match" value
+    - binary value if the result word is the target word
+      we're searching for
+  * have to "produce" training set
+
+- what are we doing with train set?
+  * will be about ~100.000 rows
+  - remove search + result from dataset
+  - keep labels
+  - keep ED, similarity, etc as features
+  - then run logistic regression
+
+- what do we do with logistic regression model?
+  - input scores -> match prediction (confidence)
+    - "forest_similarity"
+  - what should we threshold this logistic model result at?
+    ! with the tuning set
+      - do same pre-processing as trainings set
+      - don't have to train a new model
+      - compute the ROC curve
+        - optimize F1 score
+    * don't worry about validation; seems like logistic regression
+      won't overfit
+        - increase number of interactions in case model doesn't converge
+      - save model as .pkl object
+- if we search a word that's not in the dictionary,
+  expect really low scores for similarity and what not
+  - these words will not be considered then
+  ! if all words don't meet threshold are considred not found
+
+* this will be an "imbalanced dataset"
+  - 1 true examples for every 6-8 false examples
+
+- when we have a dictinoary with no logistic regression trained
+  just take average of each similarity score
+  - when there's no logistic regression
+  - then can just manually set a threshold
+
+- three smaller tasks
+  - for all of these, record search times for comparison
+  ! pre task 1
+    - exact match finding; ED = 0
+      - create trie with all words in dictionary
+      - search training set entirely, ED = 0
+      * there's a chance by creating wrong word, it exists
+        in the dictionary
+        - record the number of times this happens
+      ? what happens when typos in a word produce other valid words
+        * seems like this doesn't ever happen (at least for this particular dictionary and query set)
+      ? how does our system handle this
+  ! pre task 2
+    - search ED = 1, no phonetics
+    - use jaro-winkler to rank results, then just take first results
+    - calculate accuracy score; top rank resulting word if word is
+      the one we're searching or not
+    - calculate MRR (mean recipriocal rank), [0, 1]
+      (sum (1 / rank of matching)) / n_searches
+      - will be 0 if never find correct words, 1 when words
+        are _always_ top ranked
+  ! pre task 3
+    - search ED = 2, no phonetics
+    - use jaro-winkler to rank results
+    - calculate accuracy score; top rank resulting word if word is
+      the one we're searching or not
+    - calculate MRR (mean recipriocal rank), [0, 1]
+      (sum (1 / rank of matching)) / n_searches
+      - will be 0 if never find correct words, 1 when words
+        are _always_ top ranked
+
+- tokenizers, lemma, etc -- multi-word search task...anything work
+  done here will save time next term on work we have to do in this
+  space
+
+---
+
+27 jan 2022
+
+? how to incorporate model into search process
+  - need to save out threshold learned from tuning set
+
+---
+
+03 feb 2022
+
+- comparing f1 score from validation set to what?
+- good opportunity to show how phonetic representations help with identifying words
+- produce training set with no phonetic representation in tries
+  - ed 2 or 3
+- produce same dataset without any phonetic scores
+  - compare f1 scores running logistic regression on this set
+- produce same set with just string + double metaphone
+- in essence, want to see how including different phonetic representations affects logistic regression model performance
+
+---
+
+10 feb 2022
+
+! for swt, should count empty results as false
+! run with only ED=0,1,2
+! as edit distance increase
+  - precision decrease
+    - may not necessarily decrease
+  - recall increase
+  - this is what's expected
+- w/o phonetics, expect lower recall, maybe higher precision
+  - with phonetics, usually output more results
+  - more candidate results means it's likely we have the
+    correct word in the group
+  - but, we'll likely lower precision
+- discussing:
+  - increaseing ED, does performance improve?
+  - runtime tradeoff?
+  - set up and design
+  - setting up logistic regression model with filtering
+- metamap -> identifies phrases in medical texts
+  uses some ML methods
+  - would like to try and get close to precision
+  - simple method with similar search is able to
+    to be competitive with ML methods (for this task)
+- use FDA dataset and train a model
+  is model able to work with other dictionaries
+  - perhaps get better performance with a LR model tuned
+    specifically for dictionary, but maybe we can still
+    get reasonable performance
