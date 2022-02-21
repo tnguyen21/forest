@@ -13,14 +13,16 @@ from phonetics import metaphone, dmetaphone
 from jellyfish import soundex
 from fuzzy import nysiis
 from Levenshtein import jaro_winkler, distance
+from sklearn.linear_model import LogisticRegression
 
 from .trie import Trie
 
 
 class PhoneticTrie:
-    def __init__(self):
+    def __init__(self, logistic_regression_model: LogisticRegression = None):
         self.tries = []
         self.phonetic_map = {}
+        self.logistic_regression_model = logistic_regression_model
 
     def add_trie(
         self,
@@ -51,6 +53,17 @@ class PhoneticTrie:
             "phonetic_representation": phonetic_representation,
         }
         self.tries.append(trie_data)
+
+    def add_logistic_regression_model(
+        self, logistic_regression_model: LogisticRegression
+    ):
+        """
+        Add logistic regression model to PhoneticTrie
+
+        Args:
+            logistic_regression_model: logistic regression model
+        """
+        self.logistic_regression_model = logistic_regression_model
 
     def add_entry(self, entry: str):
         """
@@ -203,6 +216,8 @@ class PhoneticTrie:
         filtered_results = []
 
         for result in results_list:
+
+            # use simple threshold to filter results
             # calculate weighted score
             metaphone_score = jaro_winkler(metaphone(query_word), metaphone(result))
 
