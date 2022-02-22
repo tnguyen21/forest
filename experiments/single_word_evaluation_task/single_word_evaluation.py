@@ -38,7 +38,8 @@ def generate_data_set(
             which has columns ["word", "search", "edit_distance"]
     """
     train_columns = [
-        "word",
+        "target_word",
+        "result_word",
         "query",
         "dmetaphone_sim",
         "dmetaphone_ed",
@@ -71,6 +72,7 @@ def generate_data_set(
 
             append_row = [
                 word,
+                result["result"],
                 search,
                 result["dmetaphone_jaro_winkler_similarity"],
                 result["dmetaphone_edit_distance"],
@@ -97,8 +99,6 @@ def compute_metrics(y_true, y_pred):
     """
     Compute the metrics for the given true and predicted labels
     Args:
-        y_true: true labels
-        y_pred: predicted labels
 
     Returns:
         accuracy, precision, recall, f1
@@ -156,9 +156,9 @@ def train_phonetic_model(
     )
 
     # Split data and labels
-    X_train = train_df.drop(columns=["word", "query", "label"])
+    X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
     y_train = train_df["label"].astype(int)
-    X_val = val_df.drop(columns=["word", "query", "label"])
+    X_val = val_df.drop(columns=["target_word", "result_word", "query", "label"])
     y_val = val_df["label"].astype(int)
 
     # Train model
@@ -170,13 +170,47 @@ def train_phonetic_model(
 
     # Serialize and save model
     with open(
-        "./experiments/single_word_evaluation_task/models/phonetic_model.pkl", "wb"
+        f"./experiments/single_word_evaluation_task/models/phonetic_model_ed_{edit_distance}.pkl",
+        "wb",
     ) as f:
         pickle.dump(classifier, f)
 
+    # TODO find optimal threshold for LR model using val dataset
+
     # Calculate metrics
-    y_pred = classifier.predict(X_val)
-    logger_object["metrics_w_phonetics"] = compute_metrics(y_val, y_pred)
+    tp, fp, tn, fn = 0, 0, 0, 0
+    # TODO probably move this to its own function
+    queries = set(val_df["query"].tolist())
+
+    for query in queries:
+        results = pd.DataFrame(val_df[val_df["query"] == query])
+        results["predict_proba"] = classifier.predict_proba(results[X_val.columns])[
+            :, 1
+        ]
+        results["rank"] = results["predict_proba"].rank(ascending=False)
+        for idx, row in results.iterrows():
+            if row["target_word"] == row["result_word"] and row["label"] == 1:
+                # true positive
+                tp += 1 / row["rank"]
+            elif row["target_word"] != row["result_word"]:  # and (row["label"] == 1):
+                # false positive
+                fp += 1 / row["rank"]
+            elif row["result_word"] == "":
+                # false negative
+                # FN occurs when the result is empty
+                fn += 1 / row["rank"]
+
+    metrics = {}
+    metrics["precision"] = tp / (tp + fp)
+    metrics["recall"] = tp / (tp + fn)
+    metrics["f1"] = (
+        2
+        * metrics["precision"]
+        * metrics["recall"]
+        / (metrics["precision"] + metrics["recall"])
+    )
+
+    logger_object["metrics_w_phonetic"] = metrics
 
 
 def train_no_phonetic_model(
@@ -228,9 +262,9 @@ def train_no_phonetic_model(
     )
 
     # Split data and labels
-    X_train = train_df.drop(columns=["word", "query", "label"])
+    X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
     y_train = train_df["label"].astype(int)
-    X_val = val_df.drop(columns=["word", "query", "label"])
+    X_val = val_df.drop(columns=["target_word", "result_word", "query", "label"])
     y_val = val_df["label"].astype(int)
 
     # Train model
@@ -242,13 +276,49 @@ def train_no_phonetic_model(
 
     # Serialize and save model
     with open(
-        "./experiments/single_word_evaluation_task/models/no_phonetic_model.pkl", "wb"
+        f"./experiments/single_word_evaluation_task/models/no_phonetic_model_ed_{edit_distance}.pkl",
+        "wb",
     ) as f:
         pickle.dump(classifier, f)
 
+    # # Calculate metrics
+    # y_pred = classifier.predict(X_val)
+    # logger_object["metrics_no_phonetics"] = compute_metrics(y_val, y_pred)
+
     # Calculate metrics
-    y_pred = classifier.predict(X_val)
-    logger_object["metrics_no_phonetics"] = compute_metrics(y_val, y_pred)
+    tp, fp, tn, fn = 0, 0, 0, 0
+    # TODO probably move this to its own function
+    queries = set(val_df["query"].tolist())
+
+    for query in queries:
+        results = pd.DataFrame(val_df[val_df["query"] == query])
+        results["predict_proba"] = classifier.predict_proba(results[X_val.columns])[
+            :, 1
+        ]
+        results["rank"] = results["predict_proba"].rank(ascending=False)
+        for idx, row in results.iterrows():
+            if row["target_word"] == row["result_word"] and row["label"] == 1:
+                # true positive
+                tp += 1 / row["rank"]
+            elif row["target_word"] != row["result_word"]:  # and (row["label"] == 1):
+                # false positive
+                fp += 1 / row["rank"]
+            elif row["result_word"] == "":
+                # false negative
+                # FN occurs when the result is empty
+                fn += 1 / row["rank"]
+
+    metrics = {}
+    metrics["precision"] = tp / (tp + fp)
+    metrics["recall"] = tp / (tp + fn)
+    metrics["f1"] = (
+        2
+        * metrics["precision"]
+        * metrics["recall"]
+        / (metrics["precision"] + metrics["recall"])
+    )
+
+    logger_object["metrics_no_phonetic"] = metrics
 
 
 def train_dmetaphone_model(
@@ -300,9 +370,9 @@ def train_dmetaphone_model(
     )
 
     # Split data and labels
-    X_train = train_df.drop(columns=["word", "query", "label"])
+    X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
     y_train = train_df["label"].astype(int)
-    X_val = val_df.drop(columns=["word", "query", "label"])
+    X_val = val_df.drop(columns=["target_word", "result_word", "query", "label"])
     y_val = val_df["label"].astype(int)
 
     # Train model
@@ -314,13 +384,49 @@ def train_dmetaphone_model(
 
     # Serialize and save model
     with open(
-        "./experiments/single_word_evaluation_task/models/dmetaphone_model.pkl", "wb"
+        f"./experiments/single_word_evaluation_task/models/dmetaphone_model_ed_{edit_distance}.pkl",
+        "wb",
     ) as f:
         pickle.dump(classifier, f)
 
+    # # Calculate metrics
+    # y_pred = classifier.predict(X_val)
+    # logger_object["metrics_dmetaphone"] = compute_metrics(y_val, y_pred)
+
     # Calculate metrics
-    y_pred = classifier.predict(X_val)
-    logger_object["metrics_dmetaphone"] = compute_metrics(y_val, y_pred)
+    tp, fp, tn, fn = 0, 0, 0, 0
+    # TODO probably move this to its own function
+    queries = set(val_df["query"].tolist())
+
+    for query in queries:
+        results = pd.DataFrame(val_df[val_df["query"] == query])
+        results["predict_proba"] = classifier.predict_proba(results[X_val.columns])[
+            :, 1
+        ]
+        results["rank"] = results["predict_proba"].rank(ascending=False)
+        for idx, row in results.iterrows():
+            if row["target_word"] == row["result_word"] and row["label"] == 1:
+                # true positive
+                tp += 1 / row["rank"]
+            elif row["target_word"] != row["result_word"]:  # and (row["label"] == 1):
+                # false positive
+                fp += 1 / row["rank"]
+            elif row["result_word"] == "":
+                # false negative
+                # FN occurs when the result is empty
+                fn += 1 / row["rank"]
+
+    metrics = {}
+    metrics["precision"] = tp / (tp + fp)
+    metrics["recall"] = tp / (tp + fn)
+    metrics["f1"] = (
+        2
+        * metrics["precision"]
+        * metrics["recall"]
+        / (metrics["precision"] + metrics["recall"])
+    )
+
+    logger_object["metrics_dmetaphone_only"] = metrics
 
 
 def main(
@@ -390,7 +496,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for ed in range(0, 3):
+    for ed in range(0, 1):
         script_start_time = datetime.now()
         main(args.trie_pkl_path, args.training_data_path, args.validation_data_path, ed)
         script_end_time = datetime.now()
