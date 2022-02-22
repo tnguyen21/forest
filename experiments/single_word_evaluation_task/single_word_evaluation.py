@@ -189,16 +189,16 @@ def train_phonetic_model(
         ]
         results["rank"] = results["predict_proba"].rank(ascending=False)
         for idx, row in results.iterrows():
-            if row["target_word"] == row["result_word"] and row["label"] == 1:
-                # true positive
-                tp += 1 / row["rank"]
-            elif row["target_word"] != row["result_word"]:  # and (row["label"] == 1):
-                # false positive
-                fp += 1 / row["rank"]
-            elif row["result_word"] == "":
+            if row["result_word"] == "":
                 # false negative
                 # FN occurs when the result is empty
-                fn += 1 / row["rank"]
+                fn += 1
+            elif row["target_word"] == row["result_word"]:
+                # true positive
+                tp += 1 / row["rank"]
+            elif row["target_word"] != row["result_word"]:
+                # false positive
+                fp += 1 / row["rank"]
 
     metrics = {}
     metrics["precision"] = tp / (tp + fp)
@@ -251,6 +251,32 @@ def train_no_phonetic_model(
         end_time - start_time
     ).total_seconds()
 
+    # Drop columns that contain phonetic information
+    train_df = train_df.drop(
+        columns=[
+            "dmetaphone_sim",
+            "dmetaphone_ed",
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+    val_df = val_df.drop(
+        columns=[
+            "dmetaphone_sim",
+            "dmetaphone_ed",
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+
     # Save phonetic data set
     train_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
@@ -297,16 +323,16 @@ def train_no_phonetic_model(
         ]
         results["rank"] = results["predict_proba"].rank(ascending=False)
         for idx, row in results.iterrows():
-            if row["target_word"] == row["result_word"] and row["label"] == 1:
-                # true positive
-                tp += 1 / row["rank"]
-            elif row["target_word"] != row["result_word"]:  # and (row["label"] == 1):
-                # false positive
-                fp += 1 / row["rank"]
-            elif row["result_word"] == "":
+            if row["result_word"] == "":
                 # false negative
                 # FN occurs when the result is empty
-                fn += 1 / row["rank"]
+                fn += 1
+            elif row["target_word"] == row["result_word"]:
+                # true positive
+                tp += 1 / row["rank"]
+            elif row["target_word"] != row["result_word"]:
+                # false positive
+                fp += 1 / row["rank"]
 
     metrics = {}
     metrics["precision"] = tp / (tp + fp)
@@ -359,6 +385,28 @@ def train_dmetaphone_model(
         end_time - start_time
     ).total_seconds()
 
+    # Drop columns that contain phonetic information, except dmetaphone
+    train_df = train_df.drop(
+        columns=[
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+    val_df = val_df.drop(
+        columns=[
+            "metaphone_sim",
+            "metaphone_ed",
+            "nysiis_sim",
+            "nysiis_ed",
+            "soundex_sim",
+            "soundex_ed",
+        ]
+    )
+
     # Save phonetic data set
     train_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
@@ -405,16 +453,16 @@ def train_dmetaphone_model(
         ]
         results["rank"] = results["predict_proba"].rank(ascending=False)
         for idx, row in results.iterrows():
-            if row["target_word"] == row["result_word"] and row["label"] == 1:
-                # true positive
-                tp += 1 / row["rank"]
-            elif row["target_word"] != row["result_word"]:  # and (row["label"] == 1):
-                # false positive
-                fp += 1 / row["rank"]
-            elif row["result_word"] == "":
+            if row["result_word"] == "":
                 # false negative
                 # FN occurs when the result is empty
-                fn += 1 / row["rank"]
+                fn += 1
+            elif row["target_word"] == row["result_word"]:
+                # true positive
+                tp += 1 / row["rank"]
+            elif row["target_word"] != row["result_word"]:
+                # false positive
+                fp += 1 / row["rank"]
 
     metrics = {}
     metrics["precision"] = tp / (tp + fp)
@@ -496,7 +544,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for ed in range(0, 1):
+    for ed in range(0, 3):
         script_start_time = datetime.now()
         main(args.trie_pkl_path, args.training_data_path, args.validation_data_path, ed)
         script_end_time = datetime.now()
