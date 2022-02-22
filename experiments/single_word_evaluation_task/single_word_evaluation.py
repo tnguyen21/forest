@@ -11,6 +11,7 @@ sys.path.insert(
 )  # noqa: E501
 
 
+from typing import List
 from trie import PhoneticTrie
 from datetime import datetime
 from common import load_trie_from_pkl
@@ -95,19 +96,50 @@ def generate_data_set(
     return train_df
 
 
-def compute_metrics(y_true, y_pred):
+def compute_metrics(
+    data_df: pd.DataFrame, infer_columns: List[str], classifier: LogisticRegression
+) -> dict:
     """
     Compute the metrics for the given true and predicted labels
     Args:
-
+        data_df: DataFrame containing the true and predicted labels
+        infer_columns: list of columns to use for computing metrics
+        classifier: sklearn classifier to use for computing metrics
     Returns:
         accuracy, precision, recall, f1
     """
+    # Calculate metrics
+    tp, fp, fn = 0, 0, 0
+    queries = set(data_df["query"].tolist())
+
+    for query in queries:
+        results = pd.DataFrame(data_df[data_df["query"] == query])
+        # use [:, 1] to only get probabilities for positive label
+        results["predict_proba"] = classifier.predict_proba(results[infer_columns])[
+            :, 1
+        ]
+        results["rank"] = results["predict_proba"].rank(ascending=False)
+        for idx, row in results.iterrows():
+            if row["result_word"] == "":
+                # false negative
+                # FN occurs when the result is empty
+                fn += 1
+            elif row["target_word"] == row["result_word"]:
+                # true positive
+                tp += 1 / row["rank"]
+            elif row["target_word"] != row["result_word"]:
+                # false positive
+                fp += 1 / row["rank"]
+
     metrics = {}
-    metrics["accuracy"] = accuracy_score(y_true, y_pred)
-    metrics["precision"] = precision_score(y_true, y_pred)
-    metrics["recall"] = recall_score(y_true, y_pred)
-    metrics["f1"] = f1_score(y_true, y_pred)
+    metrics["precision"] = tp / (tp + fp)
+    metrics["recall"] = tp / (tp + fn)
+    metrics["f1"] = (
+        2
+        * metrics["precision"]
+        * metrics["recall"]
+        / (metrics["precision"] + metrics["recall"])
+    )
 
     return metrics
 
@@ -177,38 +209,8 @@ def train_phonetic_model(
 
     # TODO find optimal threshold for LR model using val dataset
 
-    # Calculate metrics
-    tp, fp, tn, fn = 0, 0, 0, 0
-    # TODO probably move this to its own function
-    queries = set(val_df["query"].tolist())
-
-    for query in queries:
-        results = pd.DataFrame(val_df[val_df["query"] == query])
-        results["predict_proba"] = classifier.predict_proba(results[X_val.columns])[
-            :, 1
-        ]
-        results["rank"] = results["predict_proba"].rank(ascending=False)
-        for idx, row in results.iterrows():
-            if row["result_word"] == "":
-                # false negative
-                # FN occurs when the result is empty
-                fn += 1
-            elif row["target_word"] == row["result_word"]:
-                # true positive
-                tp += 1 / row["rank"]
-            elif row["target_word"] != row["result_word"]:
-                # false positive
-                fp += 1 / row["rank"]
-
-    metrics = {}
-    metrics["precision"] = tp / (tp + fp)
-    metrics["recall"] = tp / (tp + fn)
-    metrics["f1"] = (
-        2
-        * metrics["precision"]
-        * metrics["recall"]
-        / (metrics["precision"] + metrics["recall"])
-    )
+    # # Calculate metrics
+    metrics = compute_metrics(val_df, X_val.columns, classifier)
 
     logger_object["metrics_w_phonetic"] = metrics
 
@@ -307,42 +309,8 @@ def train_no_phonetic_model(
     ) as f:
         pickle.dump(classifier, f)
 
-    # # Calculate metrics
-    # y_pred = classifier.predict(X_val)
-    # logger_object["metrics_no_phonetics"] = compute_metrics(y_val, y_pred)
-
     # Calculate metrics
-    tp, fp, tn, fn = 0, 0, 0, 0
-    # TODO probably move this to its own function
-    queries = set(val_df["query"].tolist())
-
-    for query in queries:
-        results = pd.DataFrame(val_df[val_df["query"] == query])
-        results["predict_proba"] = classifier.predict_proba(results[X_val.columns])[
-            :, 1
-        ]
-        results["rank"] = results["predict_proba"].rank(ascending=False)
-        for idx, row in results.iterrows():
-            if row["result_word"] == "":
-                # false negative
-                # FN occurs when the result is empty
-                fn += 1
-            elif row["target_word"] == row["result_word"]:
-                # true positive
-                tp += 1 / row["rank"]
-            elif row["target_word"] != row["result_word"]:
-                # false positive
-                fp += 1 / row["rank"]
-
-    metrics = {}
-    metrics["precision"] = tp / (tp + fp)
-    metrics["recall"] = tp / (tp + fn)
-    metrics["f1"] = (
-        2
-        * metrics["precision"]
-        * metrics["recall"]
-        / (metrics["precision"] + metrics["recall"])
-    )
+    metrics = compute_metrics(val_df, X_val.columns, classifier)
 
     logger_object["metrics_no_phonetic"] = metrics
 
@@ -437,42 +405,8 @@ def train_dmetaphone_model(
     ) as f:
         pickle.dump(classifier, f)
 
-    # # Calculate metrics
-    # y_pred = classifier.predict(X_val)
-    # logger_object["metrics_dmetaphone"] = compute_metrics(y_val, y_pred)
-
     # Calculate metrics
-    tp, fp, tn, fn = 0, 0, 0, 0
-    # TODO probably move this to its own function
-    queries = set(val_df["query"].tolist())
-
-    for query in queries:
-        results = pd.DataFrame(val_df[val_df["query"] == query])
-        results["predict_proba"] = classifier.predict_proba(results[X_val.columns])[
-            :, 1
-        ]
-        results["rank"] = results["predict_proba"].rank(ascending=False)
-        for idx, row in results.iterrows():
-            if row["result_word"] == "":
-                # false negative
-                # FN occurs when the result is empty
-                fn += 1
-            elif row["target_word"] == row["result_word"]:
-                # true positive
-                tp += 1 / row["rank"]
-            elif row["target_word"] != row["result_word"]:
-                # false positive
-                fp += 1 / row["rank"]
-
-    metrics = {}
-    metrics["precision"] = tp / (tp + fp)
-    metrics["recall"] = tp / (tp + fn)
-    metrics["f1"] = (
-        2
-        * metrics["precision"]
-        * metrics["recall"]
-        / (metrics["precision"] + metrics["recall"])
-    )
+    metrics = compute_metrics(val_df, X_val.columns, classifier)
 
     logger_object["metrics_dmetaphone_only"] = metrics
 
@@ -544,7 +478,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for ed in range(0, 3):
+    for ed in range(0, 1):
         script_start_time = datetime.now()
         main(args.trie_pkl_path, args.training_data_path, args.validation_data_path, ed)
         script_end_time = datetime.now()
