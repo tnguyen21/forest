@@ -11,7 +11,7 @@ sys.path.insert(
 )  # noqa: E501
 
 
-from typing import List
+from typing import List, Union
 from trie import PhoneticTrie
 from datetime import datetime
 from common import load_trie_from_pkl
@@ -97,7 +97,10 @@ def generate_data_set(
 
 
 def compute_metrics(
-    data_df: pd.DataFrame, infer_columns: List[str], classifier: LogisticRegression
+    data_df: pd.DataFrame,
+    infer_columns: List[str],
+    classifier: LogisticRegression,
+    threshold: Union[float, None] = None,
 ) -> dict:
     """
     Compute the metrics for the given true and predicted labels
@@ -118,7 +121,15 @@ def compute_metrics(
         results["predict_proba"] = classifier.predict_proba(results[infer_columns])[
             :, 1
         ]
+
+        # thresholding
+        # TODO move this to be a part of the phonetic trie if a LR model is given
+        if threshold is not None:
+            results = results[results["predict_proba"] >= threshold]
+
+        # rank results based on probability scores
         results["rank"] = results["predict_proba"].rank(ascending=False)
+
         for idx, row in results.iterrows():
             if row["result_word"] == "":
                 # false negative
@@ -207,12 +218,29 @@ def train_phonetic_model(
     ) as f:
         pickle.dump(classifier, f)
 
-    # TODO find optimal threshold for LR model using val dataset
+    # find optimal threshold for LR model using val dataset
+    print("Finding best threshold for LR model...")
+    thresholds = np.arange(0.0, 1.0, 0.01)
+    f1_scores = []
+    for threshold in thresholds:
+        metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
+        f1_scores.append(metrics["f1"])
 
-    # # Calculate metrics
-    metrics = compute_metrics(val_df, X_val.columns, classifier)
+    idx = np.argmax(f1_scores)
+    best_threshold = thresholds[idx]
 
-    logger_object["metrics_w_phonetic"] = metrics
+    print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
+
+    # Calculate metrics
+    print("Computing performance metrics...")
+    metrics_no_tuning = compute_metrics(val_df, X_val.columns, classifier)
+    metrics_w_tuning = compute_metrics(
+        val_df, X_val.columns, classifier, best_threshold
+    )
+    metrics_w_tuning["best_threshold"] = best_threshold
+
+    logger_object["metrics_w_phonetic_and_tuning"] = metrics_w_tuning
+    logger_object["metrics_w_phonetic_no_tuning"] = metrics_no_tuning
 
 
 def train_no_phonetic_model(
@@ -309,10 +337,29 @@ def train_no_phonetic_model(
     ) as f:
         pickle.dump(classifier, f)
 
-    # Calculate metrics
-    metrics = compute_metrics(val_df, X_val.columns, classifier)
+    # find optimal threshold for LR model using val dataset
+    print("Finding best threshold for LR model...")
+    thresholds = np.arange(0.0, 1.0, 0.01)
+    f1_scores = []
+    for threshold in thresholds:
+        metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
+        f1_scores.append(metrics["f1"])
 
-    logger_object["metrics_no_phonetic"] = metrics
+    idx = np.argmax(f1_scores)
+    best_threshold = thresholds[idx]
+
+    print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
+
+    # Calculate metrics
+    print("Computing performance metrics...")
+    metrics_no_tuning = compute_metrics(val_df, X_val.columns, classifier)
+    metrics_w_tuning = compute_metrics(
+        val_df, X_val.columns, classifier, best_threshold
+    )
+    metrics_w_tuning["best_threshold"] = best_threshold
+
+    logger_object["metrics_w_phonetic_and_tuning"] = metrics_w_tuning
+    logger_object["metrics_w_phonetic_no_tuning"] = metrics_no_tuning
 
 
 def train_dmetaphone_model(
@@ -405,10 +452,29 @@ def train_dmetaphone_model(
     ) as f:
         pickle.dump(classifier, f)
 
-    # Calculate metrics
-    metrics = compute_metrics(val_df, X_val.columns, classifier)
+    # find optimal threshold for LR model using val dataset
+    print("Finding best threshold for LR model...")
+    thresholds = np.arange(0.0, 1.0, 0.01)
+    f1_scores = []
+    for threshold in thresholds:
+        metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
+        f1_scores.append(metrics["f1"])
 
-    logger_object["metrics_dmetaphone_only"] = metrics
+    idx = np.argmax(f1_scores)
+    best_threshold = thresholds[idx]
+
+    print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
+
+    # Calculate metrics
+    print("Computing performance metrics...")
+    metrics_no_tuning = compute_metrics(val_df, X_val.columns, classifier)
+    metrics_w_tuning = compute_metrics(
+        val_df, X_val.columns, classifier, best_threshold
+    )
+    metrics_w_tuning["best_threshold"] = best_threshold
+
+    logger_object["metrics_w_phonetic_and_tuning"] = metrics_w_tuning
+    logger_object["metrics_w_phonetic_no_tuning"] = metrics_no_tuning
 
 
 def main(
@@ -426,21 +492,21 @@ def main(
         edit_distance=edit_distance,
     )
 
-    # train dmetaphone model
-    train_dmetaphone_model(
-        trie_pkl_path=trie_pkl_path,
-        train_data_path=train_data_path,
-        validation_data_path=validation_data_path,
-        edit_distance=edit_distance,
-    )
+    # # train dmetaphone model
+    # train_dmetaphone_model(
+    #     trie_pkl_path=trie_pkl_path,
+    #     train_data_path=train_data_path,
+    #     validation_data_path=validation_data_path,
+    #     edit_distance=edit_distance,
+    # )
 
-    # train no phonetic model
-    train_no_phonetic_model(
-        trie_pkl_path=trie_pkl_path,
-        train_data_path=train_data_path,
-        validation_data_path=validation_data_path,
-        edit_distance=edit_distance,
-    )
+    # # train no phonetic model
+    # train_no_phonetic_model(
+    #     trie_pkl_path=trie_pkl_path,
+    #     train_data_path=train_data_path,
+    #     validation_data_path=validation_data_path,
+    #     edit_distance=edit_distance,
+    # )
 
 
 if __name__ == "__main__":
