@@ -16,7 +16,7 @@ from trie import PhoneticTrie
 from datetime import datetime
 from common import load_trie_from_pkl
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import precision_recall_curve
 import dill as pickle
 from phonetics import dmetaphone  # needed to load in trie
 import argparse
@@ -234,12 +234,12 @@ def train_phonetic_model(
 
     # find optimal threshold for LR model using val dataset
     print("Finding best threshold for LR model...")
-    thresholds = np.arange(0.0, 1.0, 0.01)
-    f1_scores = []
-    for threshold in thresholds:
-        # ! use validation here for tuning threshold
-        metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
-        f1_scores.append(metrics["f1"])
+
+    # only use prediction probability for positive label
+    y_pred = classifier.predict_proba(X_val)[:, 1]
+    # precision, recall, thresholds are np.arrays
+    precision, recall, thresholds = precision_recall_curve(y_val, y_pred)
+    f1_scores = (2 * precision * recall) / (precision + recall)
 
     idx = np.argmax(f1_scores)
     best_threshold = thresholds[idx]
@@ -369,12 +369,12 @@ def train_no_phonetic_model(
 
     # find optimal threshold for LR model using val dataset
     print("Finding best threshold for LR model...")
-    thresholds = np.arange(0.0, 1.0, 0.01)
-    f1_scores = []
-    for threshold in thresholds:
-        # ! use validation here for tuning threshold
-        metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
-        f1_scores.append(metrics["f1"])
+
+    # only use prediction probability for positive label
+    y_pred = classifier.predict_proba(X_val)[:, 1]
+    # precision, recall, thresholds are np.arrays
+    precision, recall, thresholds = precision_recall_curve(y_val, y_pred)
+    f1_scores = (2 * precision * recall) / (precision + recall)
 
     idx = np.argmax(f1_scores)
     best_threshold = thresholds[idx]
@@ -497,12 +497,12 @@ def train_dmetaphone_model(
 
     # find optimal threshold for LR model using val dataset
     print("Finding best threshold for LR model...")
-    thresholds = np.arange(0.0, 1.0, 0.01)
-    f1_scores = []
-    for threshold in thresholds:
-        # ! use validation here for tuning threshold
-        metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
-        f1_scores.append(metrics["f1"])
+
+    # only use prediction probability for positive label
+    y_pred = classifier.predict_proba(X_val)[:, 1]
+    # precision, recall, thresholds are np.arrays
+    precision, recall, thresholds = precision_recall_curve(y_val, y_pred)
+    f1_scores = (2 * precision * recall) / (precision + recall)
 
     idx = np.argmax(f1_scores)
     best_threshold = thresholds[idx]
