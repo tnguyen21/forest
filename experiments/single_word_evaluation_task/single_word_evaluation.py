@@ -159,6 +159,7 @@ def train_phonetic_model(
     trie_pkl_path: str,
     train_data_path: str,
     validation_data_path: str,
+    test_data_path: str,
     edit_distance: int,  # this ED is temp
 ):
     # Load phonetic_trie
@@ -171,6 +172,7 @@ def train_phonetic_model(
     # Load data
     train_prep_df = pd.read_csv(train_data_path)
     val_prep_df = pd.read_csv(validation_data_path)
+    test_prep_df = pd.read_csv(test_data_path)
 
     # Generate trian data set
     start_time = datetime.now()
@@ -188,6 +190,14 @@ def train_phonetic_model(
         end_time - start_time
     ).total_seconds()
 
+    # Generate test data set
+    start_time = datetime.now()
+    test_df = generate_data_set(phonetic_trie, test_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_phonetic_val_data_set_time"] = (
+        end_time - start_time
+    ).total_seconds()
+
     # Save phonetic data set
     train_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
@@ -195,6 +205,10 @@ def train_phonetic_model(
     )
     val_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
+        index=False,
+    )
+    test_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/test_df_ed{edit_distance}_phonetic.csv",
         index=False,
     )
 
@@ -223,6 +237,7 @@ def train_phonetic_model(
     thresholds = np.arange(0.0, 1.0, 0.01)
     f1_scores = []
     for threshold in thresholds:
+        # ! use validation here for tuning threshold
         metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
         f1_scores.append(metrics["f1"])
 
@@ -232,10 +247,11 @@ def train_phonetic_model(
     print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
 
     # Calculate metrics
-    print("Computing performance metrics...")
-    metrics_no_tuning = compute_metrics(val_df, X_val.columns, classifier)
+    print("Computing performance metrics on test set...")
+    # ! this classifier is trained on _training_ data
+    metrics_no_tuning = compute_metrics(test_df, X_val.columns, classifier)
     metrics_w_tuning = compute_metrics(
-        val_df, X_val.columns, classifier, best_threshold
+        test_df, X_val.columns, classifier, best_threshold
     )
     metrics_w_tuning["best_threshold"] = best_threshold
 
@@ -247,6 +263,7 @@ def train_no_phonetic_model(
     trie_pkl_path: str,
     train_data_path: str,
     validation_data_path: str,
+    test_data_path: str,
     edit_distance: int,  # this ED is temp
 ):
     # Load phonetic_trie
@@ -264,6 +281,7 @@ def train_no_phonetic_model(
     # Load data
     train_prep_df = pd.read_csv(train_data_path)
     val_prep_df = pd.read_csv(validation_data_path)
+    test_prep_df = pd.read_csv(test_data_path)
 
     # Generate trian data set
     start_time = datetime.now()
@@ -278,6 +296,14 @@ def train_no_phonetic_model(
     val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
     end_time = datetime.now()
     logger_object["generate_no_phonetic_val_data_set_time"] = (
+        end_time - start_time
+    ).total_seconds()
+
+    # Generate validation data set
+    start_time = datetime.now()
+    test_df = generate_data_set(phonetic_trie, test_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_phonetic_val_data_set_time"] = (
         end_time - start_time
     ).total_seconds()
 
@@ -316,6 +342,10 @@ def train_no_phonetic_model(
         f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
         index=False,
     )
+    test_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/test_df_ed{edit_distance}_no_phonetic.csv",
+        index=False,
+    )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -342,30 +372,31 @@ def train_no_phonetic_model(
     thresholds = np.arange(0.0, 1.0, 0.01)
     f1_scores = []
     for threshold in thresholds:
+        # ! use validation here for tuning threshold
         metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
         f1_scores.append(metrics["f1"])
 
     idx = np.argmax(f1_scores)
     best_threshold = thresholds[idx]
 
-    print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
-
     # Calculate metrics
-    print("Computing performance metrics...")
-    metrics_no_tuning = compute_metrics(val_df, X_val.columns, classifier)
+    print("Computing performance metrics on test set...")
+    # ! this classifier is trained on _training_ data
+    metrics_no_tuning = compute_metrics(test_df, X_val.columns, classifier)
     metrics_w_tuning = compute_metrics(
-        val_df, X_val.columns, classifier, best_threshold
+        test_df, X_val.columns, classifier, best_threshold
     )
     metrics_w_tuning["best_threshold"] = best_threshold
 
-    logger_object["metrics_w_phonetic_and_tuning"] = metrics_w_tuning
-    logger_object["metrics_w_phonetic_no_tuning"] = metrics_no_tuning
+    logger_object["metrics_w_no_phonetic_and_tuning"] = metrics_w_tuning
+    logger_object["metrics_w_no_phonetic_no_tuning"] = metrics_no_tuning
 
 
 def train_dmetaphone_model(
     trie_pkl_path: str,
     train_data_path: str,
     validation_data_path: str,
+    test_data_path: str,
     edit_distance: int,  # this ED is temp
 ):
     # Load phonetic_trie
@@ -383,6 +414,7 @@ def train_dmetaphone_model(
     # Load data
     train_prep_df = pd.read_csv(train_data_path)
     val_prep_df = pd.read_csv(validation_data_path)
+    test_prep_df = pd.read_csv(test_data_path)
 
     # Generate trian data set
     start_time = datetime.now()
@@ -397,6 +429,13 @@ def train_dmetaphone_model(
     val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
     end_time = datetime.now()
     logger_object["generate_dmetaphone_val_data_set_time"] = (
+        end_time - start_time
+    ).total_seconds()
+
+    start_time = datetime.now()
+    test_df = generate_data_set(phonetic_trie, test_prep_df, edit_distance)
+    end_time = datetime.now()
+    logger_object["generate_phonetic_val_data_set_time"] = (
         end_time - start_time
     ).total_seconds()
 
@@ -431,6 +470,10 @@ def train_dmetaphone_model(
         f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
         index=False,
     )
+    test_df.to_csv(
+        f"./experiments/single_word_evaluation_task/datasets/test_df_ed{edit_distance}_dmetaphone.csv",
+        index=False,
+    )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -457,6 +500,7 @@ def train_dmetaphone_model(
     thresholds = np.arange(0.0, 1.0, 0.01)
     f1_scores = []
     for threshold in thresholds:
+        # ! use validation here for tuning threshold
         metrics = compute_metrics(val_df, X_val.columns, classifier, threshold)
         f1_scores.append(metrics["f1"])
 
@@ -466,21 +510,23 @@ def train_dmetaphone_model(
     print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
 
     # Calculate metrics
-    print("Computing performance metrics...")
-    metrics_no_tuning = compute_metrics(val_df, X_val.columns, classifier)
+    print("Computing performance metrics on test set...")
+    # ! this classifier is trained on _training_ data
+    metrics_no_tuning = compute_metrics(test_df, X_val.columns, classifier)
     metrics_w_tuning = compute_metrics(
-        val_df, X_val.columns, classifier, best_threshold
+        test_df, X_val.columns, classifier, best_threshold
     )
     metrics_w_tuning["best_threshold"] = best_threshold
 
-    logger_object["metrics_w_phonetic_and_tuning"] = metrics_w_tuning
-    logger_object["metrics_w_phonetic_no_tuning"] = metrics_no_tuning
+    logger_object["metrics_dmetaphone_and_tuning"] = metrics_w_tuning
+    logger_object["metrics_dmetaphone_no_tuning"] = metrics_no_tuning
 
 
 def main(
     trie_pkl_path: str,
     train_data_path: str,
     validation_data_path: str,
+    test_data_path: str,
     edit_distance: int,  # this ED is temp
 ):
     """ """
@@ -489,24 +535,27 @@ def main(
         trie_pkl_path=trie_pkl_path,
         train_data_path=train_data_path,
         validation_data_path=validation_data_path,
+        test_data_path=test_data_path,
         edit_distance=edit_distance,
     )
 
-    # # train dmetaphone model
-    # train_dmetaphone_model(
-    #     trie_pkl_path=trie_pkl_path,
-    #     train_data_path=train_data_path,
-    #     validation_data_path=validation_data_path,
-    #     edit_distance=edit_distance,
-    # )
+    # train dmetaphone model
+    train_dmetaphone_model(
+        trie_pkl_path=trie_pkl_path,
+        train_data_path=train_data_path,
+        validation_data_path=validation_data_path,
+        test_data_path=test_data_path,
+        edit_distance=edit_distance,
+    )
 
-    # # train no phonetic model
-    # train_no_phonetic_model(
-    #     trie_pkl_path=trie_pkl_path,
-    #     train_data_path=train_data_path,
-    #     validation_data_path=validation_data_path,
-    #     edit_distance=edit_distance,
-    # )
+    # train no phonetic model
+    train_no_phonetic_model(
+        trie_pkl_path=trie_pkl_path,
+        train_data_path=train_data_path,
+        validation_data_path=validation_data_path,
+        test_data_path=test_data_path,
+        edit_distance=edit_distance,
+    )
 
 
 if __name__ == "__main__":
@@ -530,6 +579,12 @@ if __name__ == "__main__":
         required=True,
     )
     parser.add_argument(
+        "--test_data_path",
+        help="Path to .csv file containing test data",
+        default=None,
+        required=True,
+    )
+    parser.add_argument(
         "--save_data",
         help="Boolean flag to log out .json file containing results",
         default=False,
@@ -544,9 +599,15 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for ed in range(0, 1):
+    for ed in range(0, 3):
         script_start_time = datetime.now()
-        main(args.trie_pkl_path, args.training_data_path, args.validation_data_path, ed)
+        main(
+            args.trie_pkl_path,
+            args.training_data_path,
+            args.validation_data_path,
+            args.test_data_path,
+            ed,
+        )
         script_end_time = datetime.now()
 
         logger_object["total_runtime"] = (
