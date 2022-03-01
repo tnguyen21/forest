@@ -117,28 +117,25 @@ def compute_metrics(
     tp, fp, fn = 0, 0, 0
     queries = set(data_df["query"].tolist())
 
-    for query in queries:
+    for query in tqdm(queries):
         results = pd.DataFrame(data_df[data_df["query"] == query])
         # use [:, 1] to only get probabilities for positive label
         results["predict_proba"] = classifier.predict_proba(results[infer_columns])[
             :, 1
         ]
 
-        # thresholding
-        # TODO move this to be a part of the phonetic trie if a LR model is given
-        if threshold is not None:
-            results = results[results["predict_proba"] >= threshold]
-
         # rank results based on probability scores
         results["rank"] = results["predict_proba"].rank(ascending=False)
+
+        # false negative
+        # FN occurs when the result is empty
+        # FN also happens when target word is not returned in the results
+        result_words = results["result_word"].tolist()
+        if query not in result_words:
+            fn += 1
+
         for idx, row in results.iterrows():
-            if row["result_word"] == "":
-                # false negative
-                # FN occurs when the result is empty
-                # ! FN also happens when target word is not returned in the results
-                # TODO move this out of the for loop
-                fn += 1
-            elif row["target_word"] == row["result_word"]:
+            if row["target_word"] == row["result_word"]:
                 # true positive
                 tp += 1 / row["rank"]
             elif row["target_word"] != row["result_word"]:
