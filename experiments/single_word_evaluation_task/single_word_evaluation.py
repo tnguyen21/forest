@@ -16,7 +16,8 @@ from trie import PhoneticTrie
 from datetime import datetime
 from common import load_trie_from_pkl
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import precision_recall_curve, f1_score
+from tqdm import tqdm
 import dill as pickle
 from phonetics import dmetaphone  # needed to load in trie
 import argparse
@@ -56,8 +57,9 @@ def generate_data_set(
     ]
 
     to_df_list = []
-    for idx, word, search, ed in data_df.itertuples():
-        print(f"{idx} Searching for {search} with edit distance {edit_distance}")
+    for idx, word, search, ed in tqdm(
+        data_df.itertuples(), ascii=True, desc="Generating data set"
+    ):
         results = ptrie.search(
             search,
             max_edit_distance=edit_distance,
@@ -129,11 +131,12 @@ def compute_metrics(
 
         # rank results based on probability scores
         results["rank"] = results["predict_proba"].rank(ascending=False)
-
         for idx, row in results.iterrows():
             if row["result_word"] == "":
                 # false negative
                 # FN occurs when the result is empty
+                # ! FN also happens when target word is not returned in the results
+                # TODO move this out of the for loop
                 fn += 1
             elif row["target_word"] == row["result_word"]:
                 # true positive
@@ -245,6 +248,14 @@ def train_phonetic_model(
     best_threshold = thresholds[idx]
 
     print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
+
+    # Calculate model f1 score
+    y_pred = classifier.predict_proba(X_val)[:, 1]
+    y_pred[y_pred >= best_threshold] = 1
+    y_pred[y_pred < best_threshold] = 0
+    model_f1_score = f1_score(y_val, y_pred)
+    print(f"Model f1 score: {model_f1_score}")
+    logger_object["phonetic_model_f1_score"] = model_f1_score
 
     # Calculate metrics
     print("Computing performance metrics on test set...")
@@ -379,6 +390,21 @@ def train_no_phonetic_model(
     idx = np.argmax(f1_scores)
     best_threshold = thresholds[idx]
 
+    # same predict_probability on test dataset
+    # then calculate f1 score directly
+    # normalize output prediction from LR to 0 or 1 after getting probabilities
+    # calculates the performance of the LR that filters out search results
+    # then can use f1 score from sklearn to evaluate the performance of the LR model
+    # only have f1 score regarding LR model
+
+    # Calculate model f1 score
+    y_pred = classifier.predict_proba(X_val)[:, 1]
+    y_pred[y_pred >= best_threshold] = 1
+    y_pred[y_pred < best_threshold] = 0
+    model_f1_score = f1_score(y_val, y_pred)
+    print(f"Model f1 score: {model_f1_score}")
+    logger_object["no_phonetic_model_f1_score"] = model_f1_score
+
     # Calculate metrics
     print("Computing performance metrics on test set...")
     # ! this classifier is trained on _training_ data
@@ -509,6 +535,14 @@ def train_dmetaphone_model(
 
     print(f"Best threshold: {best_threshold}, best f1 score: {f1_scores[idx]}")
 
+    # Calculate model f1 score
+    y_pred = classifier.predict_proba(X_val)[:, 1]
+    y_pred[y_pred >= best_threshold] = 1
+    y_pred[y_pred < best_threshold] = 0
+    model_f1_score = f1_score(y_val, y_pred)
+    print(f"Model f1 score: {model_f1_score}")
+    logger_object["dmetaphone_only_model_f1_score"] = model_f1_score
+
     # Calculate metrics
     print("Computing performance metrics on test set...")
     # ! this classifier is trained on _training_ data
@@ -599,7 +633,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for ed in range(0, 3):
+    for ed in range(0, 1):
         script_start_time = datetime.now()
         main(
             args.trie_pkl_path,
