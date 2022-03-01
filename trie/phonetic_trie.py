@@ -14,14 +14,31 @@ from jellyfish import soundex
 from fuzzy import nysiis
 from Levenshtein import jaro_winkler, distance
 from sklearn.linear_model import LogisticRegression
+import pandas as pd
 
 from .trie import Trie
 
 
 class PhoneticTrie:
-    def __init__(self, logistic_regression_model: LogisticRegression = None):
+    def __init__(
+        self,
+        logistic_regression_model: LogisticRegression = None,
+        logistic_regression_threshold: float = 0.5,
+    ):
         self.tries = []
         self.phonetic_map = {}
+        self.logistic_regression_model = logistic_regression_model
+        self.logistic_regression_model_threshold = logistic_regression_threshold
+
+    def set_logistic_regression_model(
+        self, logistic_regression_model: LogisticRegression
+    ):
+        """
+        Add logistic regression model to PhoneticTrie
+
+        Args:
+            logistic_regression_model: logistic regression model
+        """
         self.logistic_regression_model = logistic_regression_model
 
     def add_trie(
@@ -53,17 +70,6 @@ class PhoneticTrie:
             "phonetic_representation": phonetic_representation,
         }
         self.tries.append(trie_data)
-
-    def add_logistic_regression_model(
-        self, logistic_regression_model: LogisticRegression
-    ):
-        """
-        Add logistic regression model to PhoneticTrie
-
-        Args:
-            logistic_regression_model: logistic regression model
-        """
-        self.logistic_regression_model = logistic_regression_model
 
     def add_entry(self, entry: str):
         """
@@ -217,25 +223,107 @@ class PhoneticTrie:
 
         for result in results_list:
 
-            # use simple threshold to filter results
-            # calculate weighted score
-            metaphone_score = jaro_winkler(metaphone(query_word), metaphone(result))
+            if self.logistic_regression_model is not None:
+                # if LR model is loaded, use it to predict probability
+                # of result being a match for query and filter accordingly
 
-            # double metaphone returns two results -- we use the first one
-            dmetaphone_score = jaro_winkler(
-                dmetaphone(query_word)[0], dmetaphone(result)[0]
-            )
+                # LR model takes in vector of EDs and JW sims, calculate them all here
+                # TODO this comptuation is repeated in format_results -- refactor
+                original_edit_distance = distance(query_word, result)
+                original_jaro_winkler_similarity = round(
+                    jaro_winkler(query_word, result), 4
+                )
 
-            soundex_score = jaro_winkler(soundex(query_word), soundex(result))
+                # * double metaphone returns two results -- we use the first
+                dmetaphone_query = dmetaphone(query_word)[0]
+                dmetaphone_result = dmetaphone(result)[0]
+                dmetaphone_edit_distance = distance(dmetaphone_result, dmetaphone_query)
+                dmetaphone_jaro_winkler_similarity = round(
+                    jaro_winkler(dmetaphone_result, dmetaphone_query), 4
+                )
 
-            nysiis_score = jaro_winkler(nysiis(query_word), nysiis(result))
+                metaphone_query = metaphone(query_word)
+                metaphone_result = metaphone(result)
+                metaphone_edit_distance = distance(metaphone_result, metaphone_query)
+                metaphone_jaro_winkler_similarity = round(
+                    jaro_winkler(metaphone_result, metaphone_query), 4
+                )
 
-            scores = [metaphone_score, dmetaphone_score, soundex_score, nysiis_score]
+                soundex_query = soundex(query_word)
+                soundex_result = soundex(result)
+                soundex_edit_distance = distance(soundex_result, soundex_query)
+                soundex_jaro_winkler_similarity = round(
+                    jaro_winkler(soundex_result, soundex_query), 4
+                )
 
-            weighted_score = sum(scores) / len(scores)
+                nysiis_query = nysiis(query_word)
+                nysiis_result = nysiis(result)
+                nysiis_edit_distance = distance(nysiis_result, nysiis_query)
+                nysiis_jaro_winkler_similarity = round(
+                    jaro_winkler(nysiis_result, nysiis_query), 4
+                )
 
-            if weighted_score >= weight_score_threhold:
-                filtered_results.append(result)
+                # lots of overhead in creating this array to do an inference
+                X = pd.DataFrame(
+                    [
+                        [
+                            dmetaphone_edit_distance,
+                            dmetaphone_jaro_winkler_similarity,
+                            metaphone_edit_distance,
+                            metaphone_jaro_winkler_similarity,
+                            soundex_edit_distance,
+                            soundex_jaro_winkler_similarity,
+                            nysiis_edit_distance,
+                            nysiis_jaro_winkler_similarity,
+                            original_edit_distance,
+                            original_jaro_winkler_similarity,
+                        ]
+                    ],
+                    columns=[
+                        "dmetaphone_sim",
+                        "dmetaphone_ed",
+                        "metaphone_sim",
+                        "metaphone_ed",
+                        "nysiis_sim",
+                        "nysiis_ed",
+                        "soundex_sim",
+                        "soundex_ed",
+                        "og_sim",
+                        "og_ed",
+                    ],
+                )
+
+                # predict probability of result being a match for query
+                # and filter accordingly
+                proba = self.logistic_regression_model.predict_proba(X)
+                if proba[0][1] > self.logistic_regression_model_threshold:
+                    filtered_results.append(result)
+
+            else:
+                # use simple threshold to filter results
+                # calculate weighted score
+                metaphone_score = jaro_winkler(metaphone(query_word), metaphone(result))
+
+                # double metaphone returns two results -- we use the first one
+                dmetaphone_score = jaro_winkler(
+                    dmetaphone(query_word)[0], dmetaphone(result)[0]
+                )
+
+                soundex_score = jaro_winkler(soundex(query_word), soundex(result))
+
+                nysiis_score = jaro_winkler(nysiis(query_word), nysiis(result))
+
+                scores = [
+                    metaphone_score,
+                    dmetaphone_score,
+                    soundex_score,
+                    nysiis_score,
+                ]
+
+                weighted_score = sum(scores) / len(scores)
+
+                if weighted_score >= weight_score_threhold:
+                    filtered_results.append(result)
 
         return filtered_results
 
