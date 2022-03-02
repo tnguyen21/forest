@@ -67,6 +67,7 @@ def generate_data_set(
             dmetaphone_output=True,
             soundex_output=True,
             nysiis_output=True,
+            use_lr_model=False,
         )
         for result in results:
             #! if result is empty, should still add a row when creating a dataset
@@ -100,7 +101,8 @@ def generate_data_set(
 
 def compute_metrics(
     data_df: pd.DataFrame,
-    infer_columns: List[str],
+    search_edit_distance: int,
+    phonetic_trie: PhoneticTrie,
     classifier: LogisticRegression,
     threshold: Union[float, None] = None,
 ) -> dict:
@@ -115,32 +117,30 @@ def compute_metrics(
     """
     # Calculate metrics
     tp, fp, fn = 0, 0, 0
-    queries = set(data_df["query"].tolist())
 
-    for query in tqdm(queries):
-        results = pd.DataFrame(data_df[data_df["query"] == query])
-        # use [:, 1] to only get probabilities for positive label
-        results["predict_proba"] = classifier.predict_proba(results[infer_columns])[
-            :, 1
-        ]
+    # set up ptrie
+    phonetic_trie.set_logistic_regression_model(classifier)
+    phonetic_trie.logistic_regression_model_threshold = threshold
 
-        # rank results based on probability scores
-        results["rank"] = results["predict_proba"].rank(ascending=False)
-
-        # false negative
-        # FN occurs when the result is empty
-        # FN also happens when target word is not returned in the results
-        result_words = results["result_word"].tolist()
-        if query not in result_words:
+    # query trie and compute scores
+    for _, target_word, search, _ in tqdm(data_df.itertuples()):
+        results = phonetic_trie.search(
+            search, max_edit_distance=search_edit_distance, use_lr_model=True
+        )
+        # print("target_word", target_word)
+        # print("results", results)
+        if search not in results:
             fn += 1
+        for idx, result in enumerate(results):
+            rank = idx + 1
+            if result["result"] == target_word:
+                tp += 1 / rank
+            elif result != target_word:
+                fp += 1 / rank
 
-        for idx, row in results.iterrows():
-            if row["target_word"] == row["result_word"]:
-                # true positive
-                tp += 1 / row["rank"]
-            elif row["target_word"] != row["result_word"]:
-                # false positive
-                fp += 1 / row["rank"]
+    print("tp", tp)
+    print("fp", fp)
+    print("fn", fn)
 
     metrics = {}
     metrics["precision"] = tp / (tp + fp)
@@ -257,9 +257,15 @@ def train_phonetic_model(
     # Calculate metrics
     print("Computing performance metrics on test set...")
     # ! this classifier is trained on _training_ data
-    metrics_no_tuning = compute_metrics(test_df, X_val.columns, classifier)
+    metrics_no_tuning = compute_metrics(
+        test_prep_df, edit_distance, phonetic_trie=phonetic_trie, classifier=classifier
+    )
     metrics_w_tuning = compute_metrics(
-        test_df, X_val.columns, classifier, best_threshold
+        test_prep_df,
+        edit_distance,
+        classifier=classifier,
+        phonetic_trie=phonetic_trie,
+        threshold=best_threshold,
     )
     metrics_w_tuning["best_threshold"] = best_threshold
 
@@ -405,9 +411,15 @@ def train_no_phonetic_model(
     # Calculate metrics
     print("Computing performance metrics on test set...")
     # ! this classifier is trained on _training_ data
-    metrics_no_tuning = compute_metrics(test_df, X_val.columns, classifier)
+    metrics_no_tuning = compute_metrics(
+        test_prep_df, edit_distance, phonetic_trie=phonetic_trie, classifier=classifier
+    )
     metrics_w_tuning = compute_metrics(
-        test_df, X_val.columns, classifier, best_threshold
+        test_prep_df,
+        edit_distance,
+        phonetic_trie=phonetic_trie,
+        classifier=classifier,
+        threshold=best_threshold,
     )
     metrics_w_tuning["best_threshold"] = best_threshold
 
@@ -543,9 +555,15 @@ def train_dmetaphone_model(
     # Calculate metrics
     print("Computing performance metrics on test set...")
     # ! this classifier is trained on _training_ data
-    metrics_no_tuning = compute_metrics(test_df, X_val.columns, classifier)
+    metrics_no_tuning = compute_metrics(
+        test_prep_df, edit_distance, phonetic_trie=phonetic_trie, classifier=classifier
+    )
     metrics_w_tuning = compute_metrics(
-        test_df, X_val.columns, classifier, best_threshold
+        test_prep_df,
+        edit_distance,
+        phonetic_trie=phonetic_trie,
+        classifier=classifier,
+        threshold=best_threshold,
     )
     metrics_w_tuning["best_threshold"] = best_threshold
 
