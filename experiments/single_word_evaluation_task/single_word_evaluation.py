@@ -190,14 +190,6 @@ def train_phonetic_model(
         end_time - start_time
     ).total_seconds()
 
-    # Generate test data set
-    start_time = datetime.now()
-    test_df = generate_data_set(phonetic_trie, test_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_phonetic_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
     # Save phonetic data set
     train_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
@@ -205,10 +197,6 @@ def train_phonetic_model(
     )
     val_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
-        index=False,
-    )
-    test_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/test_df_ed{edit_distance}_phonetic.csv",
         index=False,
     )
 
@@ -313,14 +301,6 @@ def train_no_phonetic_model(
         end_time - start_time
     ).total_seconds()
 
-    # Generate validation data set
-    start_time = datetime.now()
-    test_df = generate_data_set(phonetic_trie, test_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_phonetic_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
     # Drop columns that contain phonetic information
     train_df = train_df.drop(
         columns=[
@@ -354,10 +334,6 @@ def train_no_phonetic_model(
     )
     val_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
-        index=False,
-    )
-    test_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/test_df_ed{edit_distance}_no_phonetic.csv",
         index=False,
     )
 
@@ -467,13 +443,6 @@ def train_dmetaphone_model(
         end_time - start_time
     ).total_seconds()
 
-    start_time = datetime.now()
-    test_df = generate_data_set(phonetic_trie, test_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_phonetic_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
     # Drop columns that contain phonetic information, except dmetaphone
     train_df = train_df.drop(
         columns=[
@@ -503,10 +472,6 @@ def train_dmetaphone_model(
     )
     val_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
-        index=False,
-    )
-    test_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/test_df_ed{edit_distance}_dmetaphone.csv",
         index=False,
     )
 
