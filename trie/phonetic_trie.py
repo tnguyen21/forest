@@ -205,7 +205,7 @@ class PhoneticTrie:
         dmetaphone_weight: float = 1,
         soundex_weight: float = 1,
         nysiis_weight: float = 1,
-        weight_score_threhold: float = 0.0,
+        weight_score_threshold: float = 0.0,
     ) -> List[str]:
         """
         Helper function which filters results based on phonetic weights.
@@ -215,7 +215,7 @@ class PhoneticTrie:
             dmetaphone_weight: weight for jw sim score for dmetaphone reprensentation
             soundex_weight: weight for jw sim score for soundex reprensentation
             nysiis_weight: weight for jw sim score for nysiis reprensentation
-            weight_score_threhold: threshold for weighted score
+            weight_score_threshold: threshold for weighted score
         Return:
             List of filtered results
         """
@@ -322,7 +322,7 @@ class PhoneticTrie:
 
                 weighted_score = sum(scores) / len(scores)
 
-                if weighted_score >= weight_score_threhold:
+                if weighted_score >= weight_score_threshold:
                     filtered_results.append(result)
 
         return filtered_results
