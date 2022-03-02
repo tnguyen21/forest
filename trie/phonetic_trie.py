@@ -319,10 +319,10 @@ class PhoneticTrie:
                 nysiis_score = jaro_winkler(nysiis(query_word), nysiis(result))
 
                 scores = [
-                    metaphone_score,
-                    dmetaphone_score,
-                    soundex_score,
-                    nysiis_score,
+                    metaphone_score * metaphone_weight,
+                    dmetaphone_score * dmetaphone_weight,
+                    soundex_score * soundex_weight,
+                    nysiis_score * nysiis_weight,
                 ]
 
                 weighted_score = sum(scores) / len(scores)
