@@ -46,7 +46,10 @@ def create_phonetic_trie(data_path):
     ptrie.add_trie()
 
     with open(data_path, "r") as f:
-        for word in f:
+        # skip first line because header
+        lines = f.readlines()
+        lines = lines[1:]
+        for word in lines:
             word = word.strip()
             ptrie.add_entry(word)
     return ptrie
@@ -77,7 +80,11 @@ def create_phonetic_trie_all_phonetics(data_path):
     ptrie.add_trie(phonetic_representation=soundex)
 
     with open(data_path, "r") as f:
-        for word in f:
+        # skip first line because header
+        lines = f.readlines()
+        lines = lines[1:]
+
+        for word in lines:
             word = word.strip()
             ptrie.add_entry(word)
     return ptrie
