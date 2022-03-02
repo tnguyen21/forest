@@ -206,6 +206,7 @@ class PhoneticTrie:
         soundex_weight: float = 1,
         nysiis_weight: float = 1,
         weight_score_threshold: float = 0.0,
+        use_lr_model: bool = False,
     ) -> List[str]:
         """
         Helper function which filters results based on phonetic weights.
@@ -223,9 +224,13 @@ class PhoneticTrie:
 
         for result in results_list:
 
-            if self.logistic_regression_model is not None:
+            if use_lr_model:
                 # if LR model is loaded, use it to predict probability
                 # of result being a match for query and filter accordingly
+                if self.logistic_regression_model is None:
+                    raise Exception(
+                        "No logistic regression model added to this PhoneticTrie"
+                    )
 
                 # LR model takes in vector of EDs and JW sims, calculate them all here
                 # TODO this comptuation is repeated in format_results -- refactor
@@ -331,6 +336,7 @@ class PhoneticTrie:
         self,
         word: str,
         max_edit_distance: int = 2,
+        use_lr_model: bool = False,
         # ? pass in weights as dictionaries
         # TODO move this to class variables, and have set_weights functions
         metaphone_weight: float = 1,
@@ -424,6 +430,13 @@ class PhoneticTrie:
             nysiis_weight,
             weight_score_threshold,
         )
+
+        if use_lr_model:
+            filtered_results = self.filter_results(
+                original_word,
+                filtered_results,
+                weight_score_threshold=weight_score_threshold,
+            )
 
         formatted_results = self.format_results(
             original_word,
