@@ -15,6 +15,7 @@ from fuzzy import nysiis
 from Levenshtein import jaro_winkler, distance
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
+import numpy as np
 
 from .trie import Trie
 
@@ -269,7 +270,36 @@ class PhoneticTrie:
                 )
 
                 # lots of overhead in creating this array to do an inference
-                X = pd.DataFrame(
+                # X = pd.DataFrame(
+                #     [
+                #         [
+                #             dmetaphone_edit_distance,
+                #             dmetaphone_jaro_winkler_similarity,
+                #             metaphone_edit_distance,
+                #             metaphone_jaro_winkler_similarity,
+                #             soundex_edit_distance,
+                #             soundex_jaro_winkler_similarity,
+                #             nysiis_edit_distance,
+                #             nysiis_jaro_winkler_similarity,
+                #             original_edit_distance,
+                #             original_jaro_winkler_similarity,
+                #         ]
+                #     ],
+                #     columns=[
+                #         "dmetaphone_sim",
+                #         "dmetaphone_ed",
+                #         "metaphone_sim",
+                #         "metaphone_ed",
+                #         "nysiis_sim",
+                #         "nysiis_ed",
+                #         "soundex_sim",
+                #         "soundex_ed",
+                #         "og_sim",
+                #         "og_ed",
+                #     ],
+                # )
+
+                X = np.array(
                     [
                         [
                             dmetaphone_edit_distance,
@@ -283,20 +313,8 @@ class PhoneticTrie:
                             original_edit_distance,
                             original_jaro_winkler_similarity,
                         ]
-                    ],
-                    columns=[
-                        "dmetaphone_sim",
-                        "dmetaphone_ed",
-                        "metaphone_sim",
-                        "metaphone_ed",
-                        "nysiis_sim",
-                        "nysiis_ed",
-                        "soundex_sim",
-                        "soundex_ed",
-                        "og_sim",
-                        "og_ed",
-                    ],
-                )
+                    ]
+                ).reshape(-1, 1)
 
                 # predict probability of result being a match for query
                 # and filter accordingly
