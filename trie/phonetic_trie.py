@@ -222,6 +222,7 @@ class PhoneticTrie:
             List of filtered results
         """
         filtered_results = []
+        results_and_scores = []
 
         for result in results_list:
 
@@ -320,7 +321,7 @@ class PhoneticTrie:
                 # and filter accordingly
                 proba = self.logistic_regression_model.predict_proba(X)
                 if proba[0][1] > self.logistic_regression_model_threshold:
-                    filtered_results.append(result)
+                    results_and_scores.append((result, proba[0][1]))
 
             else:
                 # use simple threshold to filter results
@@ -346,7 +347,13 @@ class PhoneticTrie:
                 weighted_score = sum(scores) / len(scores)
 
                 if weighted_score >= weight_score_threshold:
-                    filtered_results.append(result)
+                    results_and_scores.append((result, weighted_score))
+
+        # sort results by score
+        results_and_scores.sort(key=lambda x: x[1])
+
+        # pull out first elements of tuples for sorted results
+        filtered_results = [result for result, _ in results_and_scores]
 
         return filtered_results
 
