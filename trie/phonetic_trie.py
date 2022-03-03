@@ -274,16 +274,16 @@ class PhoneticTrie:
                 # X = pd.DataFrame(
                 #     [
                 #         [
-                #             dmetaphone_edit_distance,
                 #             dmetaphone_jaro_winkler_similarity,
-                #             metaphone_edit_distance,
+                #             dmetaphone_edit_distance,
                 #             metaphone_jaro_winkler_similarity,
-                #             soundex_edit_distance,
+                #             metaphone_edit_distance,
                 #             soundex_jaro_winkler_similarity,
-                #             nysiis_edit_distance,
+                #             soundex_edit_distance,
                 #             nysiis_jaro_winkler_similarity,
-                #             original_edit_distance,
+                #             nysiis_edit_distance,
                 #             original_jaro_winkler_similarity,
+                #             original_edit_distance,
                 #         ]
                 #     ],
                 #     columns=[
@@ -300,26 +300,30 @@ class PhoneticTrie:
                 #     ],
                 # )
 
+                # ! order of these values must match order of cols
+                # ! that LR model was trained on
                 X = np.array(
                     [
                         [
-                            dmetaphone_edit_distance,
                             dmetaphone_jaro_winkler_similarity,
-                            metaphone_edit_distance,
+                            dmetaphone_edit_distance,
                             metaphone_jaro_winkler_similarity,
-                            soundex_edit_distance,
-                            soundex_jaro_winkler_similarity,
-                            nysiis_edit_distance,
+                            metaphone_edit_distance,
                             nysiis_jaro_winkler_similarity,
-                            original_edit_distance,
+                            nysiis_edit_distance,
+                            soundex_jaro_winkler_similarity,
+                            soundex_edit_distance,
                             original_jaro_winkler_similarity,
+                            original_edit_distance,
                         ]
                     ]
-                ).reshape(-1, 1)
+                ).reshape(1, -1)
 
                 # predict probability of result being a match for query
                 # and filter accordingly
                 proba = self.logistic_regression_model.predict_proba(X)
+                # print(X)
+                # print(query_word, result, proba)
                 if proba[0][1] > self.logistic_regression_model_threshold:
                     results_and_scores.append((result, proba[0][1]))
 
@@ -461,6 +465,7 @@ class PhoneticTrie:
                 original_word,
                 filtered_results,
                 weight_score_threshold=weight_score_threshold,
+                use_lr_model=use_lr_model,
             )
 
         formatted_results = self.format_results(
