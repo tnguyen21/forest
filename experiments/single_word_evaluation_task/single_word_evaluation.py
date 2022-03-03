@@ -127,13 +127,15 @@ def compute_metrics(
         use_model = False
 
     # query trie and compute scores
-    for _, target_word, search, _ in tqdm(data_df.itertuples()):
+    for _, target_word, search, _ in tqdm(
+        data_df.itertuples(), ascii=True, desc="Computing metrics"
+    ):
         results = phonetic_trie.search(
             search, max_edit_distance=search_edit_distance, use_lr_model=use_model
         )
 
         result_words_list = [result["result"] for result in results]
-        if search not in result_words_list:
+        if target_word not in result_words_list:
             fn += 1
         for idx, result in enumerate(results):
             rank = idx + 1
@@ -179,35 +181,42 @@ def train_phonetic_model(
     #! it's false
 
     # Load data
+    print("Reading in data...")
     train_prep_df = pd.read_csv(train_data_path)
     val_prep_df = pd.read_csv(validation_data_path)
     test_prep_df = pd.read_csv(test_data_path)
 
-    # Generate trian data set
-    start_time = datetime.now()
-    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_phonetic_train_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
-    # Generate validation data set
-    start_time = datetime.now()
-    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_phonetic_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
-    # Save phonetic data set
-    train_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
-        index=False,
+    train_df = pd.read_csv(
+        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv"
     )
-    val_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
-        index=False,
+    val_df = pd.read_csv(
+        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv"
     )
+    # # Generate trian data set
+    # start_time = datetime.now()
+    # train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+    # end_time = datetime.now()
+    # logger_object["generate_phonetic_train_data_set_time"] = (
+    #     end_time - start_time
+    # ).total_seconds()
+
+    # # Generate validation data set
+    # start_time = datetime.now()
+    # val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+    # end_time = datetime.now()
+    # logger_object["generate_phonetic_val_data_set_time"] = (
+    #     end_time - start_time
+    # ).total_seconds()
+
+    # # Save phonetic data set
+    # train_df.to_csv(
+    #     f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
+    #     index=False,
+    # )
+    # val_df.to_csv(
+    #     f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
+    #     index=False,
+    # )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -290,35 +299,42 @@ def train_no_phonetic_model(
     logger_object["trie_edit_distance"] = edit_distance
 
     # Load data
+    print("Reading in data...")
     train_prep_df = pd.read_csv(train_data_path)
     val_prep_df = pd.read_csv(validation_data_path)
     test_prep_df = pd.read_csv(test_data_path)
 
-    # Generate trian data set
-    start_time = datetime.now()
-    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_no_phonetic_train_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
-    # Generate validation data set
-    start_time = datetime.now()
-    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_no_phonetic_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
-    # Save phonetic data set
-    train_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
-        index=False,
+    train_df = pd.read_csv(
+        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv"
     )
-    val_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
-        index=False,
+    val_df = pd.read_csv(
+        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv"
     )
+    # # Generate trian data set
+    # start_time = datetime.now()
+    # train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+    # end_time = datetime.now()
+    # logger_object["generate_no_phonetic_train_data_set_time"] = (
+    #     end_time - start_time
+    # ).total_seconds()
+
+    # # Generate validation data set
+    # start_time = datetime.now()
+    # val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+    # end_time = datetime.now()
+    # logger_object["generate_no_phonetic_val_data_set_time"] = (
+    #     end_time - start_time
+    # ).total_seconds()
+
+    # # Save phonetic data set
+    # train_df.to_csv(
+    #     f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
+    #     index=False,
+    # )
+    # val_df.to_csv(
+    #     f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
+    #     index=False,
+    # )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -410,31 +426,37 @@ def train_dmetaphone_model(
     val_prep_df = pd.read_csv(validation_data_path)
     test_prep_df = pd.read_csv(test_data_path)
 
-    # Generate trian data set
-    start_time = datetime.now()
-    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_dmetaphone_train_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
-    # Generate validation data set
-    start_time = datetime.now()
-    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_dmetaphone_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
-
-    # Save phonetic data set
-    train_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
-        index=False,
+    train_df = pd.read_csv(
+        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv"
     )
-    val_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
-        index=False,
+    val_df = pd.read_csv(
+        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv"
     )
+    # # Generate trian data set
+    # start_time = datetime.now()
+    # train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+    # end_time = datetime.now()
+    # logger_object["generate_dmetaphone_train_data_set_time"] = (
+    #     end_time - start_time
+    # ).total_seconds()
+
+    # # Generate validation data set
+    # start_time = datetime.now()
+    # val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+    # end_time = datetime.now()
+    # logger_object["generate_dmetaphone_val_data_set_time"] = (
+    #     end_time - start_time
+    # ).total_seconds()
+
+    # # Save phonetic data set
+    # train_df.to_csv(
+    #     f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
+    #     index=False,
+    # )
+    # val_df.to_csv(
+    #     f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
+    #     index=False,
+    # )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -573,6 +595,15 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
+    # ignore noisy warnings from sklearn
+    # ! not safe (probably)
+    def warn(*args, **kwargs):
+        pass
+
+    import warnings
+
+    warnings.warn = warn
 
     for ed in range(0, 3):
         script_start_time = datetime.now()
