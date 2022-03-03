@@ -300,3 +300,39 @@
 - save best threshold as part of it
 - set threshold to 0.5, 0.75 and see how F1 score is affected
   * report this out
+
+---
+
+3 mar 2022
+
+- using similarity and edit distance scores to build train and tuning sets
+  - we can look at LR model to collect weights for each feature in the model
+  - can figure out which phonetic representations has the most signal
+  - what should we do with higher weighted phonetic representations
+    - create forest with only tries that have high weights
+      i.e. string representation + dmetaphone representation
+    - just for tests
+  - compare performance of forest with less tries and compare performance
+  - in nasa dataset, expect a drop in f1 score
+    - much messier data
+  - lemmaization so that root of words are similar
+    - SpaCy does this, so it can tokenize sentences
+    - can use results without lemmaization to motivate using
+      a lemmatizer during multi-word search
+  - term 3 gameplan
+    - run multiword search, expecting poor results i.e f1 score of .1-.2
+    - then include lemmaization, which should really improve results
+  - multiword task design
+    - construct sentences such that we know what to expect what should
+      be highlighted
+    - how to calculate similarity scores with multi-word expressions
+
+  - run edit distance 3 (only after optimizations)
+  - add logging
+    - log time it takes to construct trie
+    - log time to search trie
+    - log time to train LR model
+      - include time it takes to tune
+  - only using logistic regression for a subset of the NER task
+    - domain specific tasks where data isn't available
+      (e.g. annotated text to use as input)
