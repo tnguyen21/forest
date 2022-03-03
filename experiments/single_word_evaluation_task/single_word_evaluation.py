@@ -121,15 +121,19 @@ def compute_metrics(
     # set up ptrie
     phonetic_trie.set_logistic_regression_model(classifier)
     phonetic_trie.logistic_regression_model_threshold = threshold
+    if threshold:
+        use_model = True
+    else:
+        use_model = False
 
     # query trie and compute scores
     for _, target_word, search, _ in tqdm(data_df.itertuples()):
         results = phonetic_trie.search(
-            search, max_edit_distance=search_edit_distance, use_lr_model=True
+            search, max_edit_distance=search_edit_distance, use_lr_model=use_model
         )
-        # print("target_word", target_word)
-        # print("results", results)
-        if search not in results:
+
+        result_words_list = [result["result"] for result in results]
+        if search not in result_words_list:
             fn += 1
         for idx, result in enumerate(results):
             rank = idx + 1
@@ -143,15 +147,20 @@ def compute_metrics(
     print("fn", fn)
 
     metrics = {}
-    metrics["precision"] = tp / (tp + fp)
-    metrics["recall"] = tp / (tp + fn)
-    metrics["f1"] = (
-        2
-        * metrics["precision"]
-        * metrics["recall"]
-        / (metrics["precision"] + metrics["recall"])
-    )
-
+    try:
+        metrics["precision"] = tp / (tp + fp)
+        metrics["recall"] = tp / (tp + fn)
+        metrics["f1"] = (
+            2
+            * metrics["precision"]
+            * metrics["recall"]
+            / (metrics["precision"] + metrics["recall"])
+        )
+    except ZeroDivisionError:
+        print("Divide by zero error")
+        metrics["tp"] = tp
+        metrics["fp"] = fp
+        metrics["fn"] = fn
     return metrics
 
 
@@ -301,32 +310,6 @@ def train_no_phonetic_model(
         end_time - start_time
     ).total_seconds()
 
-    # Drop columns that contain phonetic information
-    train_df = train_df.drop(
-        columns=[
-            "dmetaphone_sim",
-            "dmetaphone_ed",
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
-    val_df = val_df.drop(
-        columns=[
-            "dmetaphone_sim",
-            "dmetaphone_ed",
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
-
     # Save phonetic data set
     train_df.to_csv(
         f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
@@ -442,28 +425,6 @@ def train_dmetaphone_model(
     logger_object["generate_dmetaphone_val_data_set_time"] = (
         end_time - start_time
     ).total_seconds()
-
-    # Drop columns that contain phonetic information, except dmetaphone
-    train_df = train_df.drop(
-        columns=[
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
-    val_df = val_df.drop(
-        columns=[
-            "metaphone_sim",
-            "metaphone_ed",
-            "nysiis_sim",
-            "nysiis_ed",
-            "soundex_sim",
-            "soundex_ed",
-        ]
-    )
 
     # Save phonetic data set
     train_df.to_csv(
@@ -613,7 +574,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for ed in range(0, 1):
+    for ed in range(0, 3):
         script_start_time = datetime.now()
         main(
             args.trie_pkl_path,
