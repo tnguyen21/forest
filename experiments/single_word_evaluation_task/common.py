@@ -13,6 +13,7 @@ from trie import Trie, PhoneticTrie
 from phonetics import metaphone, dmetaphone
 from jellyfish import soundex
 from fuzzy import nysiis
+from tqdm import tqdm
 import dill as pickle
 import pandas as pd
 
@@ -57,8 +58,10 @@ def create_phonetic_trie(data_path):
 
 def create_phonetic_trie_all_phonetics(data_path):
     """
-    Loads FDA data from the given path into multiple tries
+    Loads data from the given path into multiple tries
     Each trie uses a different phonetic algorithm
+
+    Assumes data is a dictionary with words separated by newlines
     """
     ptrie = PhoneticTrie()
 
@@ -88,6 +91,75 @@ def create_phonetic_trie_all_phonetics(data_path):
             word = word.strip()
             ptrie.add_entry(word)
     return ptrie
+
+
+def generate_data_set(
+    ptrie: PhoneticTrie, data_df: pd.DataFrame, edit_distance: int = 2
+) -> pd.DataFrame:
+    """
+    Args:
+        ptrie: PhoneticTrie to use for searching
+        data_df: DataFrame containing the data to be searched
+            which has columns ["word", "search", "edit_distance"]
+    """
+    train_columns = [
+        "target_word",
+        "result_word",
+        "query",
+        "dmetaphone_sim",
+        "dmetaphone_ed",
+        "metaphone_sim",
+        "metaphone_ed",
+        "nysiis_sim",
+        "nysiis_ed",
+        "soundex_sim",
+        "soundex_ed",
+        "og_sim",
+        "og_ed",
+        "label",
+    ]
+
+    to_df_list = []
+    for idx, word, search, ed in tqdm(
+        data_df.itertuples(), ascii=True, desc="Generating data set"
+    ):
+        results = ptrie.search(
+            search,
+            max_edit_distance=edit_distance,
+            metaphone_output=True,
+            dmetaphone_output=True,
+            soundex_output=True,
+            nysiis_output=True,
+            use_lr_model=False,
+        )
+        for result in results:
+            #! if result is empty, should still add a row when creating a dataset
+            #! failed searched
+            label = 1 if result["result"] == word else 0
+
+            append_row = [
+                word,
+                result["result"],
+                search,
+                result["dmetaphone_jaro_winkler_similarity"],
+                result["dmetaphone_edit_distance"],
+                result["metaphone_jaro_winkler_similarity"],
+                result["metaphone_edit_distance"],
+                result["nysiis_jaro_winkler_similarity"],
+                result["nysiis_edit_distance"],
+                result["soundex_jaro_winkler_similarity"],
+                result["soundex_edit_distance"],
+                result["original_jaro_winkler_similarity"],
+                result["original_edit_distance"],
+                label,
+            ]
+
+            # append row to df
+            to_df_list.append(append_row)
+
+    train_df = pd.DataFrame(to_df_list, columns=train_columns)
+
+    return train_df
 
 
 def pickle_trie(trie, pickle_path):

@@ -11,9 +11,8 @@ sys.path.insert(
 )  # noqa: E501
 
 
-from trie import PhoneticTrie
 from datetime import datetime
-from common import load_trie_from_pkl
+from common import load_trie_from_pkl, generate_data_set
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import precision_recall_curve, f1_score
 from tqdm import tqdm
@@ -24,78 +23,10 @@ import json
 import numpy as np
 import pandas as pd
 from pprint import pprint
-from .evaluate import compute_metrics
+from evaluate import compute_metrics
+
 
 logger_object = {}
-
-
-def generate_data_set(
-    ptrie: PhoneticTrie, data_df: pd.DataFrame, edit_distance: int = 2
-) -> pd.DataFrame:
-    """
-    Args:
-        ptrie: PhoneticTrie to use for searching
-        data_df: DataFrame containing the data to be searched
-            which has columns ["word", "search", "edit_distance"]
-    """
-    train_columns = [
-        "target_word",
-        "result_word",
-        "query",
-        "dmetaphone_sim",
-        "dmetaphone_ed",
-        "metaphone_sim",
-        "metaphone_ed",
-        "nysiis_sim",
-        "nysiis_ed",
-        "soundex_sim",
-        "soundex_ed",
-        "og_sim",
-        "og_ed",
-        "label",
-    ]
-
-    to_df_list = []
-    for idx, word, search, ed in tqdm(
-        data_df.itertuples(), ascii=True, desc="Generating data set"
-    ):
-        results = ptrie.search(
-            search,
-            max_edit_distance=edit_distance,
-            metaphone_output=True,
-            dmetaphone_output=True,
-            soundex_output=True,
-            nysiis_output=True,
-            use_lr_model=False,
-        )
-        for result in results:
-            #! if result is empty, should still add a row when creating a dataset
-            #! failed searched
-            label = 1 if result["result"] == word else 0
-
-            append_row = [
-                word,
-                result["result"],
-                search,
-                result["dmetaphone_jaro_winkler_similarity"],
-                result["dmetaphone_edit_distance"],
-                result["metaphone_jaro_winkler_similarity"],
-                result["metaphone_edit_distance"],
-                result["nysiis_jaro_winkler_similarity"],
-                result["nysiis_edit_distance"],
-                result["soundex_jaro_winkler_similarity"],
-                result["soundex_edit_distance"],
-                result["original_jaro_winkler_similarity"],
-                result["original_edit_distance"],
-                label,
-            ]
-
-            # append row to df
-            to_df_list.append(append_row)
-
-    train_df = pd.DataFrame(to_df_list, columns=train_columns)
-
-    return train_df
 
 
 def train_phonetic_model(
