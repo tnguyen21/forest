@@ -11,7 +11,7 @@ sys.path.insert(
 )  # noqa: E501
 
 
-from typing import List, Union
+from typing import Union
 from trie import PhoneticTrie
 from datetime import datetime
 from common import load_trie_from_pkl
@@ -24,7 +24,6 @@ import argparse
 import json
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from pprint import pprint
 
 logger_object = {}
@@ -367,13 +366,6 @@ def train_no_phonetic_model(
 
     idx = np.argmax(f1_scores)
     best_threshold = thresholds[idx]
-
-    # same predict_probability on test dataset
-    # then calculate f1 score directly
-    # normalize output prediction from LR to 0 or 1 after getting probabilities
-    # calculates the performance of the LR that filters out search results
-    # then can use f1 score from sklearn to evaluate the performance of the LR model
-    # only have f1 score regarding LR model
 
     # Calculate model f1 score
     y_pred = classifier.predict_proba(X_val)[:, 1]
