@@ -11,7 +11,6 @@ sys.path.insert(
 )  # noqa: E501
 
 
-from typing import Union
 from trie import PhoneticTrie
 from datetime import datetime
 from common import load_trie_from_pkl
@@ -25,6 +24,7 @@ import json
 import numpy as np
 import pandas as pd
 from pprint import pprint
+from .evaluate import compute_metrics
 
 logger_object = {}
 
@@ -96,73 +96,6 @@ def generate_data_set(
     train_df = pd.DataFrame(to_df_list, columns=train_columns)
 
     return train_df
-
-
-def compute_metrics(
-    data_df: pd.DataFrame,
-    search_edit_distance: int,
-    phonetic_trie: PhoneticTrie,
-    classifier: LogisticRegression,
-    threshold: Union[float, None] = None,
-) -> dict:
-    """
-    Compute the metrics for the given true and predicted labels
-    Args:
-        data_df: DataFrame containing the true and predicted labels
-        infer_columns: list of columns to use for computing metrics
-        classifier: sklearn classifier to use for computing metrics
-    Returns:
-        accuracy, precision, recall, f1
-    """
-    # Calculate metrics
-    tp, fp, fn = 0, 0, 0
-
-    # set up ptrie
-    phonetic_trie.set_logistic_regression_model(classifier)
-    phonetic_trie.logistic_regression_model_threshold = threshold
-    if threshold:
-        use_model = True
-    else:
-        use_model = False
-
-    # query trie and compute scores
-    for _, target_word, search, _ in tqdm(
-        data_df.itertuples(), ascii=True, desc="Computing metrics"
-    ):
-        results = phonetic_trie.search(
-            search, max_edit_distance=search_edit_distance, use_lr_model=use_model
-        )
-
-        result_words_list = [result["result"] for result in results]
-        if target_word not in result_words_list:
-            fn += 1
-        for idx, result in enumerate(results):
-            rank = idx + 1
-            if result["result"] == target_word:
-                tp += 1 / rank
-            elif result != target_word:
-                fp += 1 / rank
-
-    print("tp", tp)
-    print("fp", fp)
-    print("fn", fn)
-
-    metrics = {}
-    try:
-        metrics["precision"] = tp / (tp + fp)
-        metrics["recall"] = tp / (tp + fn)
-        metrics["f1"] = (
-            2
-            * metrics["precision"]
-            * metrics["recall"]
-            / (metrics["precision"] + metrics["recall"])
-        )
-    except ZeroDivisionError:
-        print("Divide by zero error")
-        metrics["tp"] = tp
-        metrics["fp"] = fp
-        metrics["fn"] = fn
-    return metrics
 
 
 def train_phonetic_model(
