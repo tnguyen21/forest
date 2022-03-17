@@ -93,6 +93,23 @@ def create_phonetic_trie_all_phonetics(data_path):
     return ptrie
 
 
+def pickle_trie(trie, pickle_path):
+    """
+    Pickles the given trie to the given path
+    """
+    with open(pickle_path, "wb") as f:
+        pickle.dump(trie, f)
+
+
+def load_trie_from_pkl(pickle_path):
+    """
+    Loads a pickled trie from the given path
+    """
+    with open(pickle_path, "rb") as f:
+        trie = pickle.load(f)
+    return trie
+
+
 def generate_data_set(
     ptrie: PhoneticTrie, data_df: pd.DataFrame, edit_distance: int = 2
 ) -> pd.DataFrame:
@@ -160,23 +177,6 @@ def generate_data_set(
     train_df = pd.DataFrame(to_df_list, columns=train_columns)
 
     return train_df
-
-
-def pickle_trie(trie, pickle_path):
-    """
-    Pickles the given trie to the given path
-    """
-    with open(pickle_path, "wb") as f:
-        pickle.dump(trie, f)
-
-
-def load_trie_from_pkl(pickle_path):
-    """
-    Loads a pickled trie from the given path
-    """
-    with open(pickle_path, "rb") as f:
-        trie = pickle.load(f)
-    return trie
 
 
 if __name__ == "__main__":
