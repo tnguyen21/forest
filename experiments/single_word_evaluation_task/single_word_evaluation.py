@@ -34,6 +34,7 @@ def train_phonetic_model(
     train_data_path: str,
     validation_data_path: str,
     test_data_path: str,
+    dataset_dir: str,
     edit_distance: int,  # this ED is temp
 ):
     # Load phonetic_trie
@@ -49,31 +50,40 @@ def train_phonetic_model(
     val_prep_df = pd.read_csv(validation_data_path)
     test_prep_df = pd.read_csv(test_data_path)
 
-    # Generate trian data set
-    start_time = datetime.now()
-    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_phonetic_train_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
+    # If datasets already generated, then load them in
+    if dataset_dir:
+        train_df = pd.read_csv(
+            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv"
+        )
+        val_df = pd.read_csv(
+            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv"
+        )
+    # Generate data sets and save them
+    else:
+        start_time = datetime.now()
+        train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+        end_time = datetime.now()
+        logger_object["generate_phonetic_train_data_set_time"] = (
+            end_time - start_time
+        ).total_seconds()
 
-    # Generate validation data set
-    start_time = datetime.now()
-    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_phonetic_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
+        # Generate validation data set
+        start_time = datetime.now()
+        val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+        end_time = datetime.now()
+        logger_object["generate_phonetic_val_data_set_time"] = (
+            end_time - start_time
+        ).total_seconds()
 
-    # Save phonetic data set
-    train_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
-        index=False,
-    )
-    val_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
-        index=False,
-    )
+        # Save phonetic data set
+        train_df = pd.to_csv(
+            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
+            index=False,
+        )
+        val_df = pd.to_csv(
+            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
+            index=False,
+        )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -141,6 +151,7 @@ def train_no_phonetic_model(
     train_data_path: str,
     validation_data_path: str,
     test_data_path: str,
+    dataset_dir: str,
     edit_distance: int,  # this ED is temp
 ):
     # Load phonetic_trie
@@ -161,31 +172,40 @@ def train_no_phonetic_model(
     val_prep_df = pd.read_csv(validation_data_path)
     test_prep_df = pd.read_csv(test_data_path)
 
+    # If datasets already generated, then load them in
+    if dataset_dir:
+        train_df = pd.read_csv(
+            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv"
+        )
+        val_df = pd.read_csv(
+            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv"
+        )
     # Generate train data set
-    start_time = datetime.now()
-    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_no_phonetic_train_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
+    else:
+        start_time = datetime.now()
+        train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+        end_time = datetime.now()
+        logger_object["generate_no_phonetic_train_data_set_time"] = (
+            end_time - start_time
+        ).total_seconds()
 
-    # Generate validation data set
-    start_time = datetime.now()
-    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_no_phonetic_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
+        # Generate validation data set
+        start_time = datetime.now()
+        val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+        end_time = datetime.now()
+        logger_object["generate_no_phonetic_val_data_set_time"] = (
+            end_time - start_time
+        ).total_seconds()
 
-    # Save phonetic data set
-    train_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
-        index=False,
-    )
-    val_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
-        index=False,
-    )
+        # Save phonetic data set
+        train_df = pd.to_csv(
+            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
+            index=False,
+        )
+        val_df = pd.to_csv(
+            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
+            index=False,
+        )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -251,6 +271,7 @@ def train_dmetaphone_model(
     train_data_path: str,
     validation_data_path: str,
     test_data_path: str,
+    dataset_dir: str,
     edit_distance: int,  # this ED is temp
 ):
     # Load phonetic_trie
@@ -270,31 +291,40 @@ def train_dmetaphone_model(
     val_prep_df = pd.read_csv(validation_data_path)
     test_prep_df = pd.read_csv(test_data_path)
 
+    # If datasets already generated, then load them in
+    if dataset_dir:
+        train_df = pd.read_csv(
+            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv"
+        )
+        val_df = pd.read_csv(
+            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv"
+        )
     # Generate train data set
-    start_time = datetime.now()
-    train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_dmetaphone_train_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
+    else:
+        start_time = datetime.now()
+        train_df = generate_data_set(phonetic_trie, train_prep_df, edit_distance)
+        end_time = datetime.now()
+        logger_object["generate_dmetaphone_train_data_set_time"] = (
+            end_time - start_time
+        ).total_seconds()
 
-    # Generate validation data set
-    start_time = datetime.now()
-    val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
-    end_time = datetime.now()
-    logger_object["generate_dmetaphone_val_data_set_time"] = (
-        end_time - start_time
-    ).total_seconds()
+        # Generate validation data set
+        start_time = datetime.now()
+        val_df = generate_data_set(phonetic_trie, val_prep_df, edit_distance)
+        end_time = datetime.now()
+        logger_object["generate_dmetaphone_val_data_set_time"] = (
+            end_time - start_time
+        ).total_seconds()
 
-    # Save phonetic data set
-    train_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
-        index=False,
-    )
-    val_df.to_csv(
-        f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
-        index=False,
-    )
+        # Save phonetic data set
+        train_df = pd.to_csv(
+            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
+            index=False,
+        )
+        val_df = pd.to_csv(
+            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
+            index=False,
+        )
 
     # Split data and labels
     X_train = train_df.drop(columns=["target_word", "result_word", "query", "label"])
@@ -362,35 +392,45 @@ def main(
     train_data_path: str,
     validation_data_path: str,
     test_data_path: str,
-    edit_distance: int,  # this ED is temp
+    datasets_dir: str,
+    train_phonetic_model_flag: bool,
+    train_dmetaphone_model_flag: bool,
+    train_no_phonetic_model_flag: bool,
+    edit_distance: int,
 ):
     """ """
     # train phonetic model
-    train_phonetic_model(
-        trie_pkl_path=trie_pkl_path,
-        train_data_path=train_data_path,
-        validation_data_path=validation_data_path,
-        test_data_path=test_data_path,
-        edit_distance=edit_distance,
-    )
+    if train_phonetic_model_flag:
+        train_phonetic_model(
+            trie_pkl_path=trie_pkl_path,
+            train_data_path=train_data_path,
+            validation_data_path=validation_data_path,
+            test_data_path=test_data_path,
+            dataset_dir=datasets_dir,
+            edit_distance=edit_distance,
+        )
 
     # train dmetaphone model
-    train_dmetaphone_model(
-        trie_pkl_path=trie_pkl_path,
-        train_data_path=train_data_path,
-        validation_data_path=validation_data_path,
-        test_data_path=test_data_path,
-        edit_distance=edit_distance,
-    )
+    if train_dmetaphone_model_flag:
+        train_dmetaphone_model(
+            trie_pkl_path=trie_pkl_path,
+            train_data_path=train_data_path,
+            validation_data_path=validation_data_path,
+            test_data_path=test_data_path,
+            dataset_dir=datasets_dir,
+            edit_distance=edit_distance,
+        )
 
     # train no phonetic model
-    train_no_phonetic_model(
-        trie_pkl_path=trie_pkl_path,
-        train_data_path=train_data_path,
-        validation_data_path=validation_data_path,
-        test_data_path=test_data_path,
-        edit_distance=edit_distance,
-    )
+    if train_no_phonetic_model_flag:
+        train_no_phonetic_model(
+            trie_pkl_path=trie_pkl_path,
+            train_data_path=train_data_path,
+            validation_data_path=validation_data_path,
+            test_data_path=test_data_path,
+            dataset_dir=datasets_dir,
+            edit_distance=edit_distance,
+        )
 
 
 if __name__ == "__main__":
@@ -426,9 +466,39 @@ if __name__ == "__main__":
         required=False,
     )
     parser.add_argument(
-        "--data_from_dir",
-        help="Path to dir containing generated data files if they exist",
+        "--datasets_dir",
+        help="Path to dir containing generated data files (if they exist)",
         default=None,
+        required=False,
+    )
+    parser.add_argument(
+        "--min_edit_distance",
+        help="Min edit distance to use for model",
+        default=0,
+        required=False,
+    )
+    parser.add_argument(
+        "--max_edit_distance",
+        help="Max edit distance to use for model",
+        default=2,
+        required=False,
+    )
+    parser.add_argument(
+        "--train_phonetic_model",
+        help="Flag to train phonetic model",
+        default=True,
+        required=False,
+    )
+    parser.add_argument(
+        "--train_dmetaphone_model",
+        help="Flag to train dmetaphone model",
+        default=True,
+        required=False,
+    )
+    parser.add_argument(
+        "--train_no_phonetic_model",
+        help="Flag to train no phonetic model",
+        default=True,
         required=False,
     )
 
@@ -443,13 +513,17 @@ if __name__ == "__main__":
 
     warnings.warn = warn
 
-    for ed in range(0, 1):
+    for ed in range(args.min_edit_distance, args.max_edit_distance + 1):
         script_start_time = datetime.now()
         main(
             args.trie_pkl_path,
             args.training_data_path,
             args.validation_data_path,
             args.test_data_path,
+            args.datasets_dir,
+            args.train_phonetic_model,
+            args.train_dmetaphone_model,
+            args.train_no_phonetic_model,
             ed,
         )
         script_end_time = datetime.now()
