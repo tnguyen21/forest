@@ -11,20 +11,51 @@ Given a dictionary of various FDA terms and queries which introduce typos, mispe
 ```
 ├── README.md
 ├── common.py                           <- common functions across methodlogies (e.g. data set loading)
-├── edit_distance_one.py                <- TODO
-├── edit_distance_two.py                <- TODO
-├── exact_match.py                      <- TODO
-└── single_word_evaluation.py           <- TODO
+├── evaluate.py                         <- functions used for evaluating model
+├── edit_distance_one.py                <- tests avg search time for ED=1
+├── edit_distance_two.py                <- tests avg search time for ED=2
+├── exact_match.py                      <- tests if searchs find false-positives for ED=0
+└── single_word_evaluation.py           <- script that trains models and evaluates them
 
 ```
 
 ### Running Locally
 
-TODO
+#### Single Word Evaluation Task
 
-There's the question of adding the correct paths to the `PYTHONPATH` variable and how to do that on different environments.
+1. Create a `PhoneticTrie` using the script in `common.py`. Assumes there is a text file (.txt, .csv) with dictionary entry separated by newlines
 
-As it stands, the script can only be run locally within VS Code or with some work arounds with adding the root directory to one's `PYTHONPATH`
+```
+$ python common.py \
+    --data_path="./datasets/dictionary.csv" \
+    --pkl_output_path="./phonetic_trie.pkl"
+```
+
+Will output `.pkl` file at `pkl_output_path` which contains serialized `PhoneticTrie` loaded with words from `data_path`
+
+2. Train model and add to `PhoneticTrie` and evaluate performance using `single_word_evaluation.py`. Assumes there are three \*.csvs for train, validation, and testing that have 3 colums: WORD, SEARCH, EDIT_DISTANCE.
+
+```
+$ python single_word_evaluation.py \
+    --trie_pkl_path="path/to/phonetic_trie.pkl" \
+    --training_data_path="path/to/train.csv" \
+    --validation_data_path="path/to/val.csv" \
+    --test_data_path="path/to/test.csv" \
+    --save_data
+```
+
+Outputs `*.csv` datasets that's used to train `LogisticRegression` models at `/experiments/single_word_evaluation_task/datasets`, the `LogisticRegression` models themselves serialized into `.pkl` files, and a `*.json` file containing metrics from the model at root.
+
+**`single_word_evaluation.py` Usage**
+
+There are additional CLI args for convenience.
+
+`--datasets_dir`: Path to dir containing generated data files (if they exist)
+`--min_edit_distance`: Min edit distance to use for model
+`--max_edit_distance`: Max edit distance to use for model
+`--train_phonetic_model`: Flag to train phonetic model
+`--train_dmetaphone_model`: Flag to train dmetaphone model
+`--train_no_phonetic_model`: Flag to train no phonetic model
 
 ### Discussion
 
