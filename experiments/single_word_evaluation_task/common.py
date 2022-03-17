@@ -16,6 +16,7 @@ from fuzzy import nysiis
 from tqdm import tqdm
 import dill as pickle
 import pandas as pd
+import argparse
 
 
 def create_trie(data_path):
@@ -180,19 +181,34 @@ def generate_data_set(
 
 
 if __name__ == "__main__":
-    all_words_ptrie = create_phonetic_trie_all_phonetics(
-        "./datasets/single_word_task/dictionary.csv"
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--data_path",
+        help="Path to .csv file containing dictionary, each word separated by newline",
+        type=str,
+        default=None,
+        required=True,
     )
+    parser.add_argument(
+        "--pkl_output_path",
+        help="Path to outpout .pkl file containing PhoneticTrie with dictionary loaded",
+        type=str,
+        default=None,
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    print("Creating PhoneticTrie...")
+    all_words_ptrie = create_phonetic_trie_all_phonetics(args.data_path)
 
     # * The below should only need to be done once with the dataset,
     # * and then the pickled trie can be used for most pre-tasks
-    pickle_trie(
-        all_words_ptrie, "./datasets/single_word_task/all_words_all_phonetics_ptrie.pkl"
-    )
+    print("Serializing PhoneticTrie...")
+    pickle_trie(all_words_ptrie, args.pkl_output_path)
 
-    test_ptrie = load_trie_from_pkl(
-        "./datasets/single_word_task/all_words_all_phonetics_ptrie.pkl"
-    )
+    print("Re-loading PhoneticTrie and confirming serialization...")
+    test_ptrie = load_trie_from_pkl(args.pkl_output_path)
     print(
         f"Words in trie same?: {all_words_ptrie.tries[0]['trie'].entry_list == test_ptrie.tries[0]['trie'].entry_list}"
     )
