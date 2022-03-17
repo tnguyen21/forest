@@ -51,10 +51,15 @@ Outputs `*.csv` datasets that's used to train `LogisticRegression` models at `/e
 There are additional CLI args for convenience.
 
 `--datasets_dir`: Path to dir containing generated data files (if they exist)
+
 `--min_edit_distance`: Min edit distance to use for model
+
 `--max_edit_distance`: Max edit distance to use for model
+
 `--train_phonetic_model`: Flag to train phonetic model
+
 `--train_dmetaphone_model`: Flag to train dmetaphone model
+
 `--train_no_phonetic_model`: Flag to train no phonetic model
 
 ### Discussion
