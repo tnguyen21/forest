@@ -76,11 +76,11 @@ def train_phonetic_model(
         ).total_seconds()
 
         # Save phonetic data set
-        train_df = pd.to_csv(
+        train_df.to_csv(
             f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
             index=False,
         )
-        val_df = pd.to_csv(
+        val_df.to_csv(
             f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
             index=False,
         )
@@ -198,11 +198,11 @@ def train_no_phonetic_model(
         ).total_seconds()
 
         # Save phonetic data set
-        train_df = pd.to_csv(
+        train_df.to_csv(
             f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
             index=False,
         )
-        val_df = pd.to_csv(
+        val_df.to_csv(
             f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
             index=False,
         )
@@ -317,11 +317,11 @@ def train_dmetaphone_model(
         ).total_seconds()
 
         # Save phonetic data set
-        train_df = pd.to_csv(
+        train_df.to_csv(
             f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
             index=False,
         )
-        val_df = pd.to_csv(
+        val_df.to_csv(
             f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
             index=False,
         )
