@@ -336,3 +336,48 @@
   - only using logistic regression for a subset of the NER task
     - domain specific tasks where data isn't available
       (e.g. annotated text to use as input)
+
+11 apr 2022
+- dataset generation and evaluation task, expect around thursday april 14
+- for single word evaluation
+  - created perturbations (e.g. missing character, added characters)
+  - how to do this for multi-word expressions?
+  - does this make sense for multi-word expressions?
+    - will it "overlearn" on errors we introduce manually
+  - will try this as a starting point
+- same expression may have multiple CUIDs
+  - we won't restrict this
+  - final annotation -- should it give multiple CUIDs?
+  - need to come up with two mappings
+    - expression splitting to their words
+    - expression to their CUIDs
+
+- other task, splitting text into words
+  - then search on each of the words
+  - candidate words returned are similar words
+  - need to find comparison of expression and CUIDs
+  - at some point we need to "decide" which CUID to annotate an expression
+  - going to have lots of potential combinations of scores and CUIDs
+  - how do we determine which annotations go to which words
+  - which words are connected to other words?
+- capture what you need in each word
+  - keep track of cuid, similarities, etc
+  - make decision on "sliding window" on text
+  - make this decision a function that we can call repeatedly for larger texts
+- can test performance for larger piece of texts by concating a bunch of sample text
+- expression edit distance?
+  - maybe takes into account like similarity between words
+  - different words?
+  - etc
+- can't process very large blocks of text at once
+  - too many possible connections
+  - too much memory
+  - maybe we consider a limit on tokens
+  - maybe we start "eliminating" potential phrases after we identify an expression
+  - this may be problematic when we have expressions w/in expressions
+- maybe consider differentiability of word
+  - look at number of expressions and unique CUIDs
+  - set of CUIDs will probably matter more
+- implementation consideration
+  - memoization; save queries already done so that we don't re-do searches
+  - could save quite a bit since searches are very expensive operations
