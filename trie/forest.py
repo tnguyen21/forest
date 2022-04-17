@@ -40,11 +40,20 @@ class Forest:
             token_entry = token_entry.append(phrase)
 
 
-    def add_trie(self, trie: PhoneticTrie):
+    def create_tries(self):
         """
         TODO
         """
-        return 0
+        # ? api to set phonetic representation and other parameters to tries for the forest
+        # ? do we just repeat params from phonetic_trie.py? not very DRY
+        # create trie with no phonetic representation
+        new_phonetic_trie = PhoneticTrie()
+        new_phonetic_trie.add_trie()
+        
+        for word in self.word_expression_gazetteer.keys():
+            new_phonetic_trie.add_entry(word)
+        
+        self.trie_list.append(new_phonetic_trie)
 
     def search(self, text: str) -> List[Dict]:
         """
