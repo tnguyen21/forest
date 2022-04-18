@@ -29,7 +29,9 @@ class Forest:
         TODO
         """
         # ? should we lowercase the phrase before adding it to the gazetteer
-        self.concept_id_expression_gazetteer[concept_id] = phrase
+        # ? can we have multiple phrases for the same concept id
+        concept_id_entry = self.concept_id_expression_gazetteer.setdefault(concept_id, [])
+        concept_id_entry = concept_id_entry.append(phrase)
 
         document = self.tokenizer(phrase)
         for token in document:
