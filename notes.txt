@@ -381,3 +381,86 @@
 - implementation consideration
   - memoization; save queries already done so that we don't re-do searches
   - could save quite a bit since searches are very expensive operations
+
+18 apr 2022
+
+- switching between training and test sets?
+- running single word match
+  - training process with the logistic regression
+  - input scores from the matching process
+  - ran once for the drug names
+- nasa data set; run training process on that dataset
+  - from that training process, what are the weights from logistic regression
+  - compare weights to FDA to NASA dataset
+  * ? are those weights similar to each other
+    ? can we use the same logistic regression model across multiple domains
+
+- data set notes
+  - removed entries with only 1 or 2 words
+  - removed entries that aren't related to medical concepts, e.g. WAS, "I" as 1 instead of pronoun
+  - MTSample data files
+  - sentence may occur multiple times, but each sentence has different concepts
+  - didn't want to have same sentence/same concepts split
+  - didn't want concepts split between test/train
+  - didn't want sentences to be split between test/train
+  - very small number of non-overlapping material
+    - but we can train on this small numnber (similar to "lower resource" domains)
+    - 233 sentences, 263 concepts
+  - give sentence and annotation
+    - what is the format of this file
+
+? what happens when we split train/test
+  * also do this for NASA dataset
+  - if they're all similar, why not average them?
+  - or perhaps just use one that seems close to the average
+  ? why do this
+    - if we are working in low resource domains
+      then we could argue that re-using past trained models
+      is more resource efficient
+    - as backup, create full dictionary of words to train new LR
+      to compare results
+
+- why not use the UML dataset to train?
+  - we are considering "low resource" domains
+
+- when reporting results will also want to give analysis on full
+  and partial matches when reporting results
+  - this is for sentence containing disease & syndrome
+  - might have time to consider full dataset
+  - 10 different semantic types (10 different data sets)
+    * from here we can look at which types of phrases and domains
+      the system performs better/worse on
+
+- return from annotation
+  - match words
+  - candidate preferred (annotation)
+  - candidate matched (annotation)
+  - annotations will be denoted by character positions
+
+- semantic_type (dictionary source)
+  - can be used to split datasets for specific tasks
+
+- will get one big file, each line is a JSON object
+- will also get gazetteers for concept ids/phrases
+
+! first CUID should be preferred annotation in case there are multiple
+  expressions with the same CUID
+
+  - f1 score for text matching
+    - strict f1
+      - match exactly start and end of an expression
+    - "flexible" f1
+      - whenever there's an overlapping, count as a match
+      - may miss or add a word, but as long one character
+        in the annotation, it's considered a matching
+    - strict f1 will be lower
+
+! start thinking about how to get start and end character positions
+  for annotations
+* aim for associated CUIs for each word output
+  - develop some basic heuristics
+  - since we don't have enough time to come up with some scheme
+    for training some sort of regression
+
+- for diagrams use powerpoint?
+  - for figures, must not lose resolution (requirement by most publishers)
