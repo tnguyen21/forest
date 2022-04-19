@@ -404,6 +404,12 @@ class PhoneticTrie:
         # all of this is used for post processing at the end
         tentative_results = []
         original_word = word
+        
+        #! bad bug -- sometimes word is NaN because of phonetic algo; i think it's nysiis
+        #! for the time being, just make floats into empty string FIX THIS
+        if type(word) != str:
+            word = ""
+        
         #! if we are using multiple tries w phonetic representations
         #! cannot filter results in forest -- should return all the results
         #! OR if we have a threshold passed in
