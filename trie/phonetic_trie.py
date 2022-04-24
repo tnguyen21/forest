@@ -403,13 +403,13 @@ class PhoneticTrie:
         """
         # all of this is used for post processing at the end
         tentative_results = []
-        original_word = word
-        
         #! bad bug -- sometimes word is NaN because of phonetic algo; i think it's nysiis
         #! for the time being, just make floats into empty string FIX THIS
         if type(word) != str:
+            print("error: ", word)
             word = ""
-        
+        original_word = word
+
         #! if we are using multiple tries w phonetic representations
         #! cannot filter results in forest -- should return all the results
         #! OR if we have a threshold passed in
@@ -449,7 +449,13 @@ class PhoneticTrie:
         resulting_words = set()
         for results in tentative_results:
             for word, _, _ in results:
-                if word not in resulting_words:
+                #! bad bug -- sometimes word is NaN because of phonetic algo; i think it's nysiis
+                #! for the time being, just make floats into empty string FIX THIS
+                if type(word) != str:
+                    print("error: ", word)
+                    word = ""
+                
+                if word not in resulting_words:    
                     resulting_words.add(word)
 
         if len(resulting_words) == 0:
