@@ -1,0 +1,47 @@
+{
+  "trie_edit_distance": 0,
+  "generate_phonetic_train_data_set_time": 2503.037124,
+  "generate_phonetic_val_data_set_time": 366.107705,
+  "train_time": 0.696955,
+  "phonetic_model_f1_score": 0.7668473677870137,
+  "metrics_w_phonetic_and_tuning": {
+    "precision": 0.7473210148493903,
+    "recall": 0.4957666955244804,
+    "f1": 0.5960912764819352,
+    "best_threshold": 0.35341808013510345
+  },
+  "metrics_w_phonetic_no_tuning": {
+    "precision": 0.010055276201274858,
+    "recall": 0.10255198631577236,
+    "f1": 0.01831477871577497
+  },
+  "generate_dmetaphone_train_data_set_time": 856.674747,
+  "generate_dmetaphone_val_data_set_time": 119.937228,
+  "dmetaphone_only_model_f1_score": 0.8109731352974596,
+  "metrics_dmetaphone_and_tuning": {
+    "precision": 0.7909174449337255,
+    "recall": 0.4733984907653962,
+    "f1": 0.5922872822837728,
+    "best_threshold": 0.38764188127611676
+  },
+  "metrics_dmetaphone_no_tuning": {
+    "precision": 0.09056756637346122,
+    "recall": 0.3456634659424717,
+    "f1": 0.14352898613573503
+  },
+  "generate_no_phonetic_train_data_set_time": 107.117152,
+  "generate_no_phonetic_val_data_set_time": 15.301767,
+  "no_phonetic_model_f1_score": 0.9098608590441621,
+  "metrics_w_no_phonetic_and_tuning": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 60052,
+    "best_threshold": 0.8384902189660303
+  },
+  "metrics_w_no_phonetic_no_tuning": {
+    "precision": 0.19558049690268434,
+    "recall": 0.19558049690268434,
+    "f1": 0.19558049690268434
+  },
+  "total_runtime": 6388.39494
+}
