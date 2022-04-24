@@ -1,4 +1,5 @@
 {
+  "notes": "asrs dataset",
   "trie_edit_distance": 0,
   "generate_phonetic_train_data_set_time": 2503.037124,
   "generate_phonetic_val_data_set_time": 366.107705,
