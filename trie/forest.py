@@ -6,6 +6,7 @@ import spacy
 
 from typing import List, Dict
 from .phonetic_trie import PhoneticTrie
+from pprint import pprint
 
 class Forest:
     def __init__(self):
@@ -61,4 +62,37 @@ class Forest:
         """
         TODO
         """
+
+        # split text on tokens
+        document = self.tokenizer(text)
+
+        token_concept_dictionary = {}
+
+        for token in document:
+            # search in tries
+            concept_ids = []
+            for trie in self.trie_list:
+                results = trie.search(token.text)
+                # find corresponding concept(s) for each result
+                for result in results:
+                    result_word = result["result"]
+                    related_concepts = []
+                    related_expressions = self.word_expression_gazetteer.get(result_word, None)
+                    # print("result_word:", result_word, "-- related expressions:", related_expressions)
+                    # ! this is really slow and bad, but just to get this working
+                    # ! this to inefficient looping
+                    for expression in related_expressions:
+                        for concept_id, expressions in self.concept_id_expression_gazetteer.items():
+                            if expression in expressions:
+                                related_concepts.append(concept_id)
+
+                    if related_concepts is not None:
+                        concept_ids = concept_ids + related_concepts
+
+            # map token back to concept ids
+            # ? this is the token text -- could have multiple of the same text
+            # ? in different positions...are tokens hashable?
+            token_concept_dictionary[token.text] = concept_ids 
+            
+        pprint(token_concept_dictionary)
         return []

@@ -21,5 +21,8 @@ if __name__ == "__main__":
     for _, id, title in tqdm(imbd_df.itertuples(), desc="Processing IMDB titles..."):
         forest.add_phrase(id, title)
     
-    pprint(forest.concept_id_expression_gazetteer)
-    pprint(forest.word_expression_gazetteer)
+    forest.create_tries()
+    
+    # pprint(forest.concept_id_expression_gazetteer)
+    # pprint(forest.word_expression_gazetteer)
+    forest.search("Bad Man with Gun")
