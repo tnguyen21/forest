@@ -464,3 +464,58 @@
 
 - for diagrams use powerpoint?
   - for figures, must not lose resolution (requirement by most publishers)
+
+25 apr 2022
+
+- dont want to deal with too many options per word
+  - "heuristically" find a threshold for JW similarity
+  - aim to deal with less than 5 possibilities
+  - fix the number and run end to end
+    - then start to experiment with adding LR and other things to the system
+- in uml, one concept id shouldn't have two CUID for a given expression
+- make simple decisions first
+- work towards making a simple annotation first
+  - one potential solution
+    - is first token beginning of anything?
+    - what is the end for each potential beginng of expression?
+    - give a number to each candidate "beginning"
+    - for every single beginning of expression, we need to find its end
+? claiming dont have data to train model
+  - produce synthetic data based on input dictinoary
+
+* for each expression also store the tokens it splits into
+* for each word also need to know
+  - token information
+    - expression determinstic score = how many expressions it appears in
+      score = 1, only 1 expression
+      score = 0, appears in all expression
+    - cuid deterministic score = how many cuids it appears in
+      1 = only in 1 cuid
+      0 = appears in all CUIDs
+  - also find position of word in found expression
+- numbers for deciding if phrase begin/ends
+  - come from expression, not CUIDs
+- dont want to map CUID to token right away
+  - want pair of expression cuid -- want to know what phrase which CUID comes from
+
+- only think about beginning of expressions
+  - and try to get this as accurate as possible
+  - have to compare probability of being beginning of expression
+  - compare possibilities of phrase to prior tokens
+    - cant see same expression within same expression
+  
+- set task for now is to figure out beginning 
+! propose how to make a decision based on those numbers to set a beginning of a expression
+  - without machine learning
+- how many tokens we will consider
+  - use 2 for "word distance"
+- how many of those 7 have those CUIDs
+- valid tokens -- how many tokens associated with the same expression (in the tokens were looking at)
+
+- if this is all we do, then we can find valuable of beginning of expression f1 score
+
+- come up with notion of word distance
+  - compare expression of 6 tokens vs 7 tokens
+  - at least 1 token token, so at least WD=1
+  - if tokens are unrelated, add 1
+  - tokens that dont follow order, add 1
