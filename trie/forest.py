@@ -44,7 +44,6 @@ class Forest:
             token_entry = self.word_expression_gazetteer.setdefault(token.text, [])
             token_entry = token_entry.append(phrase)
 
-
     def create_tries(self):
         """
         TODO
@@ -60,6 +59,16 @@ class Forest:
         
         self.phonetic_trie_list.append(new_phonetic_trie)
 
+    def calculate_determinining_scores(self) -> None:
+        """
+        TODO
+        """
+        for word, expression_list in self.word_expression_gazetteer.items():
+            self.word_to_word_determining_score[word] = 1 / len(expression_list)
+        
+        # ? CUID determining score -- how to calculate
+        # ? do multiple expressions have the same CUID in dsyn
+
     def search(self, text: str) -> List[Dict]:
         """
         TODO
@@ -68,13 +77,13 @@ class Forest:
         # split text on tokens
         document = self.tokenizer(text)
 
-        # Dict[String: Tuple[Expr, CUID, Expr Len, Token Len, Valid Tokens, 
+        # Dict[String: Tuple[Expr, CUID, Expr Len, Token Len, Token Position, 
         #                    Expr Det Score, CUID Det Score, Word Distance]]
         token_concept_dictionary = {}
 
         for token in document:
             # search in tries
-            concept_ids = []
+            related_concepts = []
             for trie in self.phonetic_trie_list:
                 results = trie.search(
                     word=token.text,
@@ -83,7 +92,6 @@ class Forest:
                 # find corresponding concept(s) for each result
                 for result in results:
                     result_word = result["result"]
-                    related_concepts = []
                     related_expressions = self.word_expression_gazetteer.get(result_word, None)
                     # print("result_word:", result_word, "-- related expressions:", related_expressions)
                     # ! this is really slow and bad, but just to get this working
@@ -91,15 +99,20 @@ class Forest:
                     for expression in related_expressions:
                         for concept_id, expressions in self.concept_id_expression_gazetteer.items():
                             if expression in expressions:
-                                related_concepts.append(concept_id)
-                    
-                    if related_concepts is not None:
-                        concept_ids = concept_ids + related_concepts
-
+                                related_concepts.append(
+                                    (
+                                        expression,
+                                        concept_id,
+                                        len(expression.split(" ")),
+                                        len(result_word),
+                                        # expression.split(" ").index(result_word), # token position in expression
+                                        self.word_to_word_determining_score.get(result_word, 0)
+                                    )
+                                )
             # map token back to concept ids
             # ? this is the token text -- could have multiple of the same text
             # ? in different positions...are tokens hashable?
-            token_concept_dictionary[token.text] = concept_ids 
+            token_concept_dictionary[token.text] = related_concepts 
             
         pprint(token_concept_dictionary)
         return []
