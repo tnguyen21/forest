@@ -76,7 +76,10 @@ class Forest:
             # search in tries
             concept_ids = []
             for trie in self.phonetic_trie_list:
-                results = trie.search(token.text)
+                results = trie.search(
+                    word=token.text,
+                    weight_score_threshold=0.9 # arbitrary threshold, just set high enough to reduce amount of results
+                )
                 # find corresponding concept(s) for each result
                 for result in results:
                     result_word = result["result"]
