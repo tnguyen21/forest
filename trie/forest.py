@@ -15,13 +15,15 @@ class Forest:
             TODO info on each argument
         
         additional notes:
-            expression_gazetteer: Dict[str, list[str]]
-            expression_gazetteer: Dict[str, list[str]]
+            concept_id_expression_gazetteer: Dict[str, list[str]]
+            word_expression_gazetteer: Dict[str, list[str]]
+            word_to_word_determining_score = Dict[str, float]
         """
-        self.trie_list = []
+        self.phonetic_trie_list = []
         self.concept_id_expression_gazetteer = {}
         self.word_expression_gazetteer = {} # generated from phrases? 
-        
+        self.word_to_word_determining_score = {}
+
         # https://spacy.io/usage/spacy-101#annotations-token
         self.tokenizer = spacy.load("en_core_web_sm")
 
@@ -56,7 +58,7 @@ class Forest:
         for word in self.word_expression_gazetteer.keys():
             new_phonetic_trie.add_entry(word)
         
-        self.trie_list.append(new_phonetic_trie)
+        self.phonetic_trie_list.append(new_phonetic_trie)
 
     def search(self, text: str) -> List[Dict]:
         """
@@ -66,12 +68,14 @@ class Forest:
         # split text on tokens
         document = self.tokenizer(text)
 
+        # Dict[String: Tuple[Expr, CUID, Expr Len, Token Len, Valid Tokens, 
+        #                    Expr Det Score, CUID Det Score, Word Distance]]
         token_concept_dictionary = {}
 
         for token in document:
             # search in tries
             concept_ids = []
-            for trie in self.trie_list:
+            for trie in self.phonetic_trie_list:
                 results = trie.search(token.text)
                 # find corresponding concept(s) for each result
                 for result in results:
@@ -85,7 +89,7 @@ class Forest:
                         for concept_id, expressions in self.concept_id_expression_gazetteer.items():
                             if expression in expressions:
                                 related_concepts.append(concept_id)
-
+                    
                     if related_concepts is not None:
                         concept_ids = concept_ids + related_concepts
 
