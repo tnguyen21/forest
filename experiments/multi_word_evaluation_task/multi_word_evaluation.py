@@ -22,7 +22,8 @@ if __name__ == "__main__":
         forest.add_phrase(id, title)
     
     forest.create_tries()
+    forest.calculate_determinining_scores()
     
     # pprint(forest.concept_id_expression_gazetteer)
     # pprint(forest.word_expression_gazetteer)
-    forest.search("Bad Man with Gun")
+    forest.search("Bad Man with Gun Tommy Nguyen Bad Man with Gun")
