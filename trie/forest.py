@@ -21,7 +21,8 @@ class Forest:
         """
         self.phonetic_trie_list = []
         self.concept_id_expression_gazetteer = {}
-        self.word_expression_gazetteer = {} # generated from phrases? 
+        self.word_expression_gazetteer = {} # generated from phrases?
+        self.expression_count = 0 
         self.word_to_word_determining_score = {}
 
         # https://spacy.io/usage/spacy-101#annotations-token
@@ -35,6 +36,9 @@ class Forest:
         # ? can we have multiple phrases for the same concept id
         concept_id_entry = self.concept_id_expression_gazetteer.setdefault(concept_id, [])
         concept_id_entry = concept_id_entry.append(phrase)
+
+        # increment expression count
+        self.expression_count += 1
 
         document = self.tokenizer(phrase)
         for token in document:
@@ -64,7 +68,9 @@ class Forest:
         TODO
         """
         for word, expression_list in self.word_expression_gazetteer.items():
-            self.word_to_word_determining_score[word] = 1 / len(expression_list)
+            self.word_to_word_determining_score[word] = (self.expression_count - len(expression_list)) / self.expression_count
+            # could also calculate determining_score like this -- if only one expression word occurs in then score = 1
+            # 1 / len(expression_list)
         
         # ? CUID determining score -- how to calculate
         # ? do multiple expressions have the same CUID in dsyn
