@@ -101,11 +101,12 @@ class Forest:
                             if expression in expressions:
                                 related_concepts.append(
                                     (
+                                        result_word, # can be word that is similar to token in text as well 
                                         expression,
                                         concept_id,
                                         len(expression.split(" ")),
                                         len(result_word),
-                                        # expression.split(" ").index(result_word), # token position in expression
+                                        expression.find(result_word), # token position in expression
                                         self.word_to_word_determining_score.get(result_word, 0)
                                     )
                                 )
