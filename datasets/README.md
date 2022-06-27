@@ -7,6 +7,9 @@ a Trie structure.
 
 `gazetteer_entries_subset.txt` contains a list of words that have been selected as a subset of words to query for while performing experiments. The list is constructed of words that vary from length 4-9, eight words each.
 
+`1000_gazetteer_entries.txt` contains a list of 1000 randomly selected entries to be used as stop words for the multi-word task using the following shell command:
+`shuf -n 1000 gazetteer_entries.txt > 1000_gazetteer_entries.txt`
+
 `misspell_words_text.txt` contains the misspelled variants
 of words based on the [Commonly Misspelled English words page](https://en.wikipedia.org/wiki/Commonly_misspelled_English_words).
 
