@@ -66,23 +66,35 @@ def generate_datasets(
         # randomly choose [1, 5] expressions in sentence
         number_of_additional_expressions = random.randint(1, 5)
         
+        # save each label for annoations as a tuple of (int, int, str)
+        # where it is (start token idx, end token idx, expression)
+        annotations = []
         # TODO save off labels for when expressions start and end
         # ? token or character position -- token position
         # ? separating cuids -- don't mix expressions with same CUID
         for _ in range(number_of_sentences_that_start_with_entry):
             # begin sentence with entry
-            sentence = [entry]
+            sentence = entry.split(" ")
+            annotations.append(
+                (0, len(sentence) - 1, entry)
+            )
             
             # add additional expressions to sentence
             for _ in range(number_of_additional_expressions):
                 add_stop_words(dictionary_terms_set, sentence=sentence)
 
                 # add another expression to the sentence, 2nd element in tuple
-                sentence += [random.choice(dictionary)[1]]
-        print(" ".join(sentence))
-
-
+                new_expression = random.choice(dictionary)[1] 
+                start_token_idx = len(sentence) - 1
+                sentence += new_expression.split(" ")
+                end_token_idx = len(sentence) - 1
+                annotations.append(
+                    (start_token_idx, end_token_idx, new_expression)
+                )
+    
+        # print(" ".join(sentence))
+        print(sentence)
+        pprint(annotations)
 if __name__ == "__main__":
     test_file = "datasets\imdb_movie_titles\-of.csv"
     generate_datasets(test_file, "")
-    # add_stop_words({})
