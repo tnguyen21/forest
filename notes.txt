@@ -586,3 +586,29 @@
     - expressions more than CUID
     - 1 - (x / len(expressions[]))
   - plot histogram of det score for each token
+
+22 june 2022
+  - what words to use as filler words
+    ! use combination of all three of these together
+    - stop words
+      - a, and, the, without, from, to since, until -- don't have specific meaning
+    - words from other expressions (expose existing dictionary)
+    - select randomly 1000 words from wordnet
+  - for labels, use tokens to label
+    - tokenizer used will affect this, make sure to document this and is consistent throughout the system
+  - make sure all the same expressions that correspond with one CUID is in either train or test
+    - don't mix expressions with same CUID in train/test datasets
+    - 70:15:15 or 60:20:20 - training, tuning, test
+  - include other CUIDs when searching from forest -- include these as false,
+    similar to training set construction for single-word task
+  - when building training set, add words not related to the expression into the expression
+    - introduce noise into existing expressions
+    - get one of words from expression
+      - pad with stop words, random words, etc
+    - full true-negative example
+      - we want these examples otherwise the system will learn that all sentences must always have an expression
+    - random words we get from wordnet should not correspond to an expression
+    - internal notation agreement
+      - metamap "silver standard"
+      - don't have ground truth notations
+      - this is to replace the use of an f1 score for measuring performance of our system
