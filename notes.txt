@@ -612,3 +612,27 @@
       - metamap "silver standard"
       - don't have ground truth notations
       - this is to replace the use of an f1 score for measuring performance of our system
+
+27 june 2022
+  - NASA shared task
+    - annotations which will be validated by shared task
+    - making solution works for beginning and internal tokens
+    - even with poor results, we can analyze why the model performs poorly
+      - also difference between FOREST and top performing models
+    - use annotations in training set to build up dictionary and to generate
+      annotations and figure out "type" of expression
+    - won't be able to reach disambiguation of the same term
+      in multiple contexts
+    ! dont use Beginning/Internal on dataset when constructing dictionary
+  - with clinical context, don't have annotations
+  - instead of learning the end token, can learn internal tokens (+ end)
+    - try and do both end and internal tokens together
+      - have to figure out other tokens in the same sentence
+      - either figuring out the end notation
+      - or learning which tokens are still a part of the expression
+      - all 3 are separate tasks
+    - it may be easier to learn internal tokens
+      - if we learn internal token first, can then use this to learn
+        beginning and end tokens for expression
+      - may be the case that just beginning and end token should be enough
+      
