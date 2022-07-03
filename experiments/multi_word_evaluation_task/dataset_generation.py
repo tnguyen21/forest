@@ -4,13 +4,12 @@ Code which generates evaluation dataset for multi-word matching task.
 
 """
 
-from pprint import pprint
 from typing import Set, List
 import random
 import csv
 
 
-def add_stop_words(dictionary_words: List[str], sentence: List[str]) -> str:
+def add_stop_words(dictionary_words: List[str], sentence: List[str]) -> List[str]:
     """
     add [0, 5] filler words between expressions in sentence
     where filler words is a random choice from: prepositions/stop words,
@@ -50,6 +49,10 @@ def generate_datasets(dictionary_path: str, dataset_output_path: str) -> None:
         reader = csv.reader(f)
         dictionary = [tuple(row) for row in list(reader)]
 
+	# set up file writer for csv file
+    output_data_file = open(dataset_output_path, "w")
+    output_csv_writer = csv.writer(output_data_file, delimiter=",")
+
     # create set of unique words from dictionary
     dictionary_terms_set = set()
     for (_, entry) in dictionary:
@@ -63,36 +66,41 @@ def generate_datasets(dictionary_path: str, dataset_output_path: str) -> None:
     for (cuid, entry) in dictionary:
         # randomly choose how many sentences will start with entry
         number_of_sentences_that_start_with_entry = random.randint(1, 3)
-        # randomly choose [1, 5] expressions in sentence
-        number_of_additional_expressions = random.randint(1, 5)
-
-        # save each label for annoations as a tuple of (int, int, str)
-        # where it is (start token idx, end token idx, expression)
-        annotations = []
-        # TODO save off labels for when expressions start and end
         # ? token or character position -- token position
         # ? separating cuids -- don't mix expressions with same CUID
         for _ in range(number_of_sentences_that_start_with_entry):
+            # randomly choose [1, 5] expressions in sentence
+            number_of_additional_expressions = random.randint(0, 5)
+
             # begin sentence with entry
             sentence = entry.split(" ")
-            annotations.append((0, len(sentence) - 1, entry))
+            
+            # save each label for annoations as a tuple of (int, int, str)
+            # where it is (start token idx, end token idx, expression)
+            annotations = []
+                   
+            annotations.append([0, len(sentence) - 1, entry])
 
             # add additional expressions to sentence
             for _ in range(number_of_additional_expressions):
-                add_stop_words(dictionary_terms, sentence=sentence)
+                sentence = add_stop_words(dictionary_terms, sentence=sentence)
 
                 # add another expression to the sentence, 2nd element in tuple
                 new_expression = random.choice(dictionary)[1]
                 start_token_idx = len(sentence) - 1
                 sentence += new_expression.split(" ")
                 end_token_idx = len(sentence) - 1
-                annotations.append((start_token_idx, end_token_idx, new_expression))
+                annotations.append([start_token_idx, end_token_idx, new_expression])
+            
+            # write out sentence and annotations to dataset
+            joined_sentence = " ".join(sentence)
+            for annotation in annotations:
+                output_csv_writer.writerow([joined_sentence] + annotation)
 
-        # print(" ".join(sentence))
-        print(sentence)
-        pprint(annotations)
-
+	# remember to close file after done writing!
+    output_data_file.close()
 
 if __name__ == "__main__":
     test_file = "datasets/imdb_movie_titles/-of.csv"
-    generate_datasets(test_file, "")
+    dataset_output_path = "experiments/multi_word_evaluation_task/test.csv"
+    generate_datasets(test_file, dataset_output_path)
