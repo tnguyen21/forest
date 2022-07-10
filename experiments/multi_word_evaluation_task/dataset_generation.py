@@ -4,10 +4,44 @@ Code which generates evaluation dataset for multi-word matching task.
 
 """
 
+# TODO hacky way of adding packages to path; find better way of doing this
+
+import sys
+import os
+
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+)  # noqa: E501
+
+from trie import Forest
 from typing import Set, List
+from tqdm import tqdm
 import random
 import csv
+import dill as pickle
 
+def create_forest(dictionary_path: str, output_forest_path: str):
+    """
+    Loads input dictionary of expressions into Forest then pickles
+    Forest to `output_forest_path`
+    
+    args:
+        dictionary_path: path to csv containing dictionary with concept IDs and expressions
+        output_forest_path: path to output serialized Forest
+    """
+    forest = Forest()
+    
+    dict_df = pd.read_csv(dictionary_path)
+
+    for _, id, expression in tqdm(dict_df.itertuples(), desc="Load dictionary into Forest..."):
+        forest.add_phrase(id, expression)
+
+    forest.create_tries()
+    forest.calculate_determining_scores()
+
+    with open(output_forest_path, "wb") as f:
+        pickle.dump(forest, f)
+    
 
 def add_stop_words(dictionary_words: List[str], sentence: List[str]) -> List[str]:
     """
@@ -37,7 +71,7 @@ def add_stop_words(dictionary_words: List[str], sentence: List[str]) -> List[str
     return sentence
 
 
-def generate_datasets(dictionary_path: str, dataset_output_path: str) -> None:
+def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) -> None:
     """
     given path to dictionary with cuid and term,
     generate a dataset to use for the multi-word matching task.
@@ -100,7 +134,14 @@ def generate_datasets(dictionary_path: str, dataset_output_path: str) -> None:
 	# remember to close file after done writing!
     output_data_file.close()
 
+def generate_dataset(sample_sentence_dataset_path: str, output_dataset_path: str):
+    """
+    Generate dataset to use as input for training logistic regression
+    model for recognizing the beginning of multi-word expressions
+    """
+    
+
 if __name__ == "__main__":
     test_file = "datasets/imdb_movie_titles/-of.csv"
     dataset_output_path = "experiments/multi_word_evaluation_task/test.csv"
-    generate_datasets(test_file, dataset_output_path)
+    generate_sample_sentences(test_file, dataset_output_path)
