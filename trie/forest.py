@@ -28,9 +28,12 @@ class Forest:
         """
         self.phonetic_trie_list = []
         self.concept_id_expression_gazetteer = {}
-        self.word_expression_gazetteer = {}  # generated from phrases
+        self.word_expression_gazetteer = {}  # generated from expression
+        self.word_concept_id_gazetteer = {}  # generated from expression
         self.expression_count = 0
+        self.concept_id_count = 0
         self.word_to_word_determining_score = {}
+        self.word_to_cuid_determining_score = {}
         self.logistic_regression_model = logistic_regression_model
         self.logistic_regression_model_threshold = logistic_regression_threshold
 
@@ -71,9 +74,16 @@ class Forest:
         for token in document:
             # ? lowercase words before adding to word list
             # if token exists in dict, return the list corresponding to the entry
-            # otherwise, initialize to empty list and return
-            token_entry = self.word_expression_gazetteer.setdefault(token.text, [])
-            token_entry = token_entry.append(phrase)
+            # otherwise, initialize to empty list
+            word_expression_token_entry = self.word_expression_gazetteer.setdefault(
+                token.text, []
+            )
+            word_expression_token_entry = word_expression_token_entry.append(phrase)
+
+            word_cuid_token_entry = self.word_concept_id_gazetteer.setdefault(
+                token.text, []
+            )
+            word_cuid_token_entry = word_cuid_token_entry.append(concept_id)
 
     def create_tries(self):
         """
@@ -101,13 +111,20 @@ class Forest:
             should be called after all expressions have been added to the Forest.
             for every phrase added after
         """
+        self.concept_id_count = len(self.concept_id_expression_gazetteer.keys())
+
         for word, expression_list in self.word_expression_gazetteer.items():
             # if only one expression word occurs in then score = 1
             self.word_to_word_determining_score[word] = (
                 self.expression_count + 1 - len(expression_list)
             ) / self.expression_count
 
-        # ? CUID determining score -- how to calculate
+        for word, cuid_list in self.word_concept_id_gazetteer.items():
+            # if word only has one associated CUID, then score = 1
+            self.word_to_cuid_determining_score[word] = (
+                self.concept_id_count + 1 - len(cuid_list)
+            ) / self.concept_id_count
+
         # ? do multiple expressions have the same CUID in dsyn
 
     def search(self, text: str) -> List[Dict]:
@@ -157,6 +174,9 @@ class Forest:
                                             result_word
                                         ),  # token position in expression
                                         self.word_to_word_determining_score.get(
+                                            result_word, 0
+                                        ),
+                                        self.word_to_cuid_determining_score.get(
                                             result_word, 0
                                         ),
                                     )
