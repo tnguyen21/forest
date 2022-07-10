@@ -1,0 +1,1765 @@
+﻿Abbott, David C.
+Abelian Higgs model
+aberration of stellar light
+Abney’s law of additivity
+Abelian string
+A-boundary
+absolute humidity
+absorptance
+absorption coefficient
+absolute magnitude
+absorption cross-section
+absolute space and time 
+absorption efficiency factor
+absorption fading
+absolute viscosity
+absorption line
+absolute zero
+abstract index notation
+Absorbance
+abyssal circulation
+abyssal plain
+acceleration due to gravity (g)
+accreted terrain
+Accretion
+accretionary prism (accretionary wedge)
+accretion disk
+accretion, hypercritical
+accretion, Super-Eddington
+Achilles
+Achondrite
+accretion, Eddington
+achromatic objective
+achronal set
+acoustic tomography
+activation entropy ( Sa ) 
+Actinides
+Action
+activation volume ( V )
+active continental margin
+active fault
+activation energy (Ha ) 
+active front
+active region
+active galactic nuclei (AGN) 
+Adiabat
+adiabatic atmosphere
+active margins
+adiabatic condensation point
+adiabatic cooling
+adiabatic invariant 
+adiabatic deceleration
+adiabatic lapse rate
+ADM form of the Einstein–Hilbert action
+adiabatic dislocation
+adiabatic equilibrium
+adiabatic index
+ADV (Acoustic Doppler Velocimeter)
+ADM mass
+advance of the perihelion
+Advection
+Adrastea
+advection dominated accretion disks
+affine connection
+advective heat transfer (or advective heat transport)
+Aeolian
+Aerosol
+African wave
+Aesthenosphere
+airfoil probe
+afternoon cloud (Mars)
+Airglow
+air gun
+aftershocks 
+ageostrophic flow
+Airy compensation
+agonic line
+Airy isostasy
+Air
+Airy wave theory
+Aitken, John
+Aitken nucleus coun
+Alba Patera
+Airy phase
+Albedo
+albedo of a surface
+albedo of single scattering
+Alcyone
+Aldebaran
+Alfvénic fluctuation
+Alfvénicity
+albedo neutrons
+Alfvén layer
+Alfvén shock
+Alfvén’s theorem 
+Alfvén wave
+Algol system
+Allan Hills meteorite
+allowed orbits
+all sky camera
+Alluvial
+alluvial fan
+alongshore sediment transport
+Alpha Centauri
+alpha particle
+Altair
+alternate depths
+Altitude
+α effect
+Alpha effect
+Amalthea
+Amazonian
+Amor asteroid
+Ampere
+Ambartsumian, Viktor Amazaspovich
+Ampere’s law
+amphidrome (amphidromic point)
+Am star
+ambipolar field
+anabatic wind
+Analemma
+Anemometer
+Ananke
+angle of repose
+angle-redshift test
+Andromeda galaxy
+anelastic deformation 
+Ångström (Å) 
+anisotropic turbulence
+angular diameter distance
+anisotropic universe
+Anisotropy
+angular momentum L = r × p
+angular velocity (ω)
+Anisotropic
+annual flood
+annular eclipse
+anisotropic scattering
+anomalistic month
+anomalistic year
+anomalous resistivity
+Anomaly
+anomaly, South Atlantic
+Anoxia
+Antarctic circle
+antarctic circumpolar current
+Antarctic ozone depletion
+Anorthosite
+Antarctic ozone hole
+Antarctic Zone
+Antares
+anthropic principle
+Anticyclone
+Anticyclonic
+Antidune
+Antinode
+aperture synthesis
+Aphelion
+Antiparticle
+aphotic zone
+Apastron
+Ap index
+aperture correction
+Apoapsis
+Apollo asteroid
+Ap star
+apparent horizon
+Aquifer
+apparent magnitude
+apparent optical property (AOP)
+AOP
+Aquitard
+apparent solar time
+Arago point
+Apse
+Arcade
+Archaeoastronomy
+Archaeomagnetism
+arc minute
+Archean
+Archimedes’ principle
+Archimedian spiral
+arc second
+Arctic circle
+arctic oscillation (AO)
+Argon
+Arcturus
+argument of periapse
+Ariel
+Arnowitt–Deser–Misner (ADM) decomposition of the metric
+array seismic observation
+arrow of time
+Asperity
+Association
+A star
+Asterism
+Asteroid
+ascending node
+aseismic front 
+aseismic region
+asteroid classification
+Astrochemistry
+asteroid orbital classification
+astrometric binary
+Astrometry
+astronomical latitude
+Asterope
+Asthenosphere
+astronomical refraction
+astronomical scintillation
+astronomy, infrared: interstellar grains, comets, satellites, and asteroids
+astronomy, ultraviolet: interstellar
+astronomical tide
+astronomical twilight
+astronomy, infrared
+astronomy, ultraviolet: interstellar
+asymmetry factor
+asymmetry parameter
+Asymptotic
+asymptotically simple space-time
+asymptotic diffuse attenuation coefficient
+asymptotic flatness
+asymptotic regime
+Aten asteroid
+Atlas
+Atmosphere
+asymptotic giant branch (AGB) star
+atmospheric electric field
+atmosphere effect
+atmospheric angular momentum
+atmospheric noise
+atmospheric pressure
+Atmospherics
+atmospheric conductivity
+atomic time
+atmospheric tide
+attenuation coefficient
+atomic mass
+atomic number
+attenuation efficiency factor
+atomic structure calculations — one-electron models
+Aulacogen
+Aurora
+auroral oval
+aurora australis
+aurora borealis
+auroral cavity
+auroral electrojet
+auroral zone
+autumnal equinox
+available potential energy
+Avalanche
+average cosine
+average matter-density
+Avogadro’s number
+away polarity
+AXAF
+Averaging
+axial dipole principle
+axionic string
+Azimuth
+
+
+
+
+Baade–Wesselink method
+back scattering
+backscattering coefficient
+backscattering fraction
+Backshore
+Babinet point
+Backus effect
+baby universe
+backarc spreading
+Baily’s beads
+Ballerina model
+Balmer series
+Barnard’s star
+banner cloud
+baroclinic atmosphere or ocean
+Bar
+bar detectors
+baroclinic instability
+barium release
+baroclinic wave
+barotropic atmosphere or ocean
+Barotropy
+barotropic instability
+barred galaxies
+Barycentric Dynamical Time (TDB)
+barrier island
+Baryogenesis
+Barriers
+Barycentric CoordinateTime (TCB)
+Basalt
+basaltic lava
+Batchelor scale
+Basement
+basic MUF
+Batchelor spectrum
+beach cusps
+Beachface
+beach mining
+beach morphology
+beach nourishment
+Batchelor wavenumber
+beach profile
+beach ridge
+beam attenuation coefficient
+Batholith
+Bathymetry
+B-boundary
+beams, ion
+Benard cell
+beam spread function
+beam transmissometer
+Beaufort wind scale
+Benioff zone
+Benthic
+bed load 
+Benthos
+Beer’s law
+Bergen school
+Belinda
+Bergeron, Tor
+Besselian year
+Berm
+Bernoulli equation
+beta decay
+Beta-effect
+BetaLyrae systems
+Bianchi classification
+beta-plane approximation
+biased vacuum states (domain wall)
+Bianca
+biasing parameter
+bidirectional reflection distribution function (BRDF)
+bias frame, bias overscan
+Big Bang
+Big Bang flatness problem
+Big Bang cosmology
+Big Bang horizon problem
+binary black holes
+Big Bang nucleosynthesis
+big blue bump
+binary fraction
+binary pulsar
+binaries, X-ray X
+binary star
+binary star system
+Bioluminescence
+Biomass
+biosphere 
+Biot–Savartlaw
+BIPM
+bipolar flow
+Birkeland current
+Birkhoff theorem (1923)
+biogenic stratification
+black-body radiation
+Bjerknes
+Bjerknes feedback
+blackbody temperature
+black aurora
+black frost
+black hole
+black hole binary
+black hole horizon
+Blazar
+Blizzard
+BL Lacertae
+black ice
+blast wave shock
+BL Lacertae object
+blue ice
+Blocking
+blue jet
+blue straggler
+blocking patterns
+blue clearing (Mars)
+body waves
+Bogomol’nyi bound
+bolometric magnitude/luminosity
+Bohr’s theory of atomic structure
+Bondi mass
+Bonnor symmetry
+bolide 
+bolometric correction (B.C.)
+Bore
+borrow site
+Boson
+boson star
+Bouguer–Lambert law (Bouguer’s law)
+bounce motion
+boundary conditions
+Bouguer correction
+boundary layer pumping
+Boussinesq approximation
+Boussinesq assumption
+Bouguer gravity anomaly
+Bragg Crystal Spectrometer (BCS)
+Boussinesq equation
+Bowen’s ratio
+Boyle’s law
+braided river
+Brans–Dicke theory
+Boyle’s law 
+Brackett series
+Bragg angle
+Brazil current
+breaker zone
+Breakwater
+Breccias
+Brightness
+brightness temperature
+Bremsstrahlung
+bremstrahlung [thermal]
+Brewster point
+bright point
+brittle behavior (brittle fracture)
+broad line region
+brittle-ductile transition
+brittle-plastic transition
+broad line radio galaxies
+brown dwarf
+buoyancy flux
+Brunt frequency
+Brunt–Väisälä frequency 
+Bstar
+Bulkhead
+bulk modulus
+bulk parameters
+buoyancy frequency
+Buoyancy
+buoyancy Reynolds number
+Bureau International des Poids et Mesures (BIPM)
+BIPM
+buoyancy scale
+buoyancy scaling
+Burgers vector (b)
+Burst
+bursty bulk flows
+Butcher–Oemler effect
+buoyancy subrange
+butterfly diagram
+Byerlee’s law
+Buys Ballots Law
+B-value
+Bypass
+
+
+
+
+
+
+Cabbeling
+Caldera
+Calendar
+California current
+California nebula
+Callan–Rubakov effect
+cable
+CAI
+Callisto
+calorie
+Calypso
+Canary current
+canonical transformation
+candela
+canonical momentum
+Capella
+CAPE (Convective Available Potential Energy)
+capillarity correction
+capillary fringe
+capillary wave
+carbon-14 dating
+Canopus
+cap cloud
+carbonaceous chondrite
+carbon monoxide
+carbon burning
+carbon cycle
+carbon star
+Caribbean current
+carbon dioxide
+Carme
+Carnot cycle
+Carrington longitude
+Carrington rotation
+Carter–Peter model
+Carnot efficiency
+Carnot engine
+Cartesian coordinates [in a plane]
+Cartesian coordinates [in space]
+Cartesian coordinates
+Casagrande size classification
+case 1 water
+case 2 water
+Cassegrainian
+Cassiopeia A
+Castor
+Castor, John I
+Cassini
+cataclysmic variable (cataclysmic binary)
+Cassini’s division
+cataclysmic variables [phenomenological classification of]
+cataclysmic variables [physical parameters]
+cataclysmic variable [binary models of]
+cataclysmic variable [galactic distribution]
+catastrophic formation of solar system
+cataclysmic variable [outbursts]
+Cauchy singularity 
+causal boundary
+causal curve
+causal future/past
+causality relations
+cD galaxies
+Celaeno
+Celerity
+Celerity
+cavity, magnetic
+celestial equator
+CCD
+celestial poles
+celestial sphere
+Celsius, Anders
+Celsius scale
+Centaur
+Centigrade scale
+centimeter burst
+central meridian passage
+Centaurus A (Cen A)
+central peak
+center of figure
+center of mass
+central pit
+Cepheid variable
+centrifugal force
+centroid moment tensor (CMT)
+Cerenkov radiation
+Ceres
+CGS (Centimeter-Gram-Second)
+Chalcophile
+Challenger Deep
+Chandler wobble
+Chandrasekhar limit (or Chandrasekhar mass)
+Chapman layer
+Chaos
+chaotic cosmology
+chaotic system
+chaotic terrain
+characteristic earthquake
+characteristics, method of
+charge exchange
+Chenier
+Chezy coefficient, Chezy equation
+Charles’ Law
+Charon
+Chlorinity
+Chlorophyll
+Chondrite
+chemically peculiar star
+chondrite, carbonaceous
+chondrite, ordinary
+Chondrule
+chromospheric heating
+Christoffel symbol
+chronological future/past
+CHUMP (Charged Hypothetical Ultra Massive Particle)
+Chromosphere
+chromatic aberration
+chromospheric evaporation
+cigar distribution
+Circulation
+Cirrus
+CISK (Convective Instability of the Second Kind) 
+civil time
+Clapotis
+civil twilight
+classical radius of electron
+Clapeyron–Clausius equation
+classical radius of electron
+Clathrate
+Clay
+clear air turbulence (CAT)
+cleft, polar
+climate regimes
+climatic optimum
+closed magnetosphere
+clump star
+CNO cycle (or tricycle)
+closed universe
+cloud classification
+cnoidal wave
+coastal jet
+coastally trapped waves
+coastal ocean
+coastal upwelling or downwelling
+Cobpoint
+coda wave
+Coastal Zone Color Scanner (CZCS)
+Cobble
+coble creep (grain-boundary diffusion creep)
+coefficient of thermal conductivity
+Coesite
+Cohesionless
+cohesive sediment
+collision boundary
+cohesive sediment
+collisionless shock
+cold dark matter
+cold front
+cold plasma
+color-color diagram
+Coleman–Weinberg potential
+colored dissolved organic matter (CDOM)
+color excess
+Coma
+color index
+Comet
+color-magnitude diagram
+comet(s): dirty iceball or snowball model
+comet(s): chemical composition of
+comet(s): missions to
+comet, artificial
+compact group of galaxies
+Comminution
+common envelope
+Compaction
+compact steep spectrum radio sources
+common envelope binary
+comoving frame
+Compensation
+Compton, Arthur H.
+Compton cooling
+Compton reflection
+compensation depth
+composite volcanos
+Compton scattering
+compound channel
+Compressibility
+computational relativity
+conducting string
+conductive heat transfer
+conductivity of water
+conformal infinity
+conduction (1.)
+conformal tensor
+Congruence
+conical spacetime
+Connection
+connection longitude
+Conics
+conic section
+conjugate depths
+Conrad discontinuity
+Conjunction
+conservation of angular momentum
+conservation of energy
+Constellation
+constitutive law of frictional sliding
+constraint equations
+conservation of momentum
+conservative system
+continental drift
+contact binary
+Continent
+continental climate
+continental collision
+continental margin
+continental plate
+continental shelf
+continental shelf waves
+Continuum
+contravariant vector
+Convection
+convection zone
+convective adjustment
+convective cloud
+convective heat transfer
+convective instability
+convergent boundary
+convective scaling
+convective turbulence
+convergent plate boundaries
+conversion efficiency
+cooling flow
+coordinate singularity
+Coordinated Universal Time (UTC)
+coordinate system
+coordinate time
+Copernicus, Nicholas
+coplanarity theorem
+coordinate transformation in special relativity
+Cordelia
+Cordillera
+Core
+core convection
+core collapse
+core-dominated quasars
+core flow
+core-mantle coupling
+core-mantle boundary
+Coriolis
+Coriolis effect(Coriolisforce)
+corner frequency
+Corona
+Coriolis, Gaspard Gustave de
+Coriolis parameter
+coronal dimming
+Coronagraph
+coronal heating
+coronal hole
+Coronal Diagnostic Spectrometer (CDS)
+coronal lines
+coronal loops
+coronal rain
+coronal transients
+coronal trap
+coronal mass ejection (CME)
+corotating interaction region
+cosmic censorship
+coseismic deformation
+cosine collector
+cosmic abundance
+cosmic microwave background
+cosmic microwave background, quadrupole component
+cosmic microwave background, dipole component
+cosmic microwave background, spectral distortions
+cosmic microwave background, temperature fluctuations
+cosmic nucleosynthesis
+cosmic phase transition
+cosmic rays
+cosmic spring
+cosmic texture
+cosmic topological defect
+cosmic string
+Cosmochemistry
+cosmological constant
+cosmogenic nuclides
+cosmological constant problem
+cosmological model
+cosmological principle
+Cosmology
+coude focus
+Coulomb
+Coulomb collisions
+Coulter counter®
+Courant number
+covariant derivative
+covariant vector
+Cox number
+Crab Nebula
+Crab Pulsar
+CRAND (Cosmic Ray Albedo Neutron Decay)
+Crater
+CP problem
+cratering record
+crater depth-diameter plots
+cratering rates
+crater number: index of age
+crater production function
+critical current (cosmic string)
+crater saturation
+critical density
+critical depth
+Craton
+Creep
+critical flow
+critical frequency
+Cressida
+critical level
+critical phenomena in gravitational collapse
+critical velocity
+cross helicity
+critical point
+critical temperature
+Cross-section
+Cross-shore
+cross slip
+cross waves
+Crust
+crustal deformation
+crustal movement
+CTD
+CTRS
+cumulative size-frequency curves
+Crystal
+Cumulus
+crystallization age
+Curie (Ci)
+Curie point
+Curie point survey
+current, gradient
+current instability (cosmic string)
+Curl
+current, magnetization
+current, curvature
+current generation (cosmic string)
+current, polarization
+current quenching
+current saturation (cosmic string)
+currentscreening (cosmic string)
+curvature invariant
+current sheet
+curvature tensor
+Curve
+curved space-time
+Curvature
+curvilinear coordinates [in space]
+curve of growth
+curvilinear coordinates 
+curvilinear coordinates[in a plane]
+cusp (cosmic string)
+cusp, polar
+cut-off rigidity
+cutoff energy
+Cyclone
+Cyclongenesis
+cyclotron damping and instability
+Cygnus X1 (Cyg-X1)
+Cygnus Loop
+cyclotron frequency
+cyclotron radius
+Cygnus A
+Cynthion
+Cytherean
+
+
+
+
+
+
+D layer
+Dalton’s Law
+Darcy’s law
+Darcy velocity (or specific discharge)
+Darcy–Weisbach friction factor
+dark cloud
+dark matter
+dark matter, cold
+dark nebula
+dart leader
+data assimulation
+dark matter, hot
+Davidson current
+Day
+daylight savings time
+DDO classification scheme
+dead zone
+Debye length
+decelleration parameter
+Decibel
+Declination
+Deep Space 1 (DS1)
+Deep Space 2
+Decollement
+deep(-focus) earthquake
+Deep Space Network (DSN)
+deep water wav
+defect 
+Deferent
+deficit angle (cosmic string)
+Degeneracy
+degree (temperature)
+Deflation
+deformation radius
+de Hoffman–Teller frame
+Delta surface approximation
+Density
+density current
+density inversion
+Deimos
+Delta
+Delta Scuti stars
+depleted mantle
+depletion layer
+depth of compensation
+Derrick theorem
+Despina
+Descartes ray
+Dessler–Parker–Sckopke (DPS) theorem
+Desdemona
+deSitter Universe
+Detritus
+Deuterium
+deuterium burning
+de Vaucouleurs’ law
+de Vaucouleurs’ classification scheme
+deviative absorption
+deviatoric strain
+deviatoric stress
+Dew
+dew point
+Diel
+Dex
+dielectric strength
+dextral fault
+Diapir
+differential charging
+Diapycnal
+differential emission measure
+dichotomy of Mars
+differential heating/cooling
+Differentiation
+differential rotation
+Diffraction
+diffraction grating
+diffuse absorption coefficient
+diffuse attenuation coefficient
+diffuse aurora
+diffuse galactic light
+diffuse scattering coefficient for downwelling (upwelling) irradiance
+Diffusion
+diffusion-convection equation
+diffuse interstellar bands (DIBs)
+diffusion creep
+diffusion, in pitch angle space
+diffusion, in momentum space
+diffusively stable
+diffusive regime
+diffusive shock acceleration
+dilatancy model
+dilatation of time-Lorentz transformation
+Dilaton
+dilaton gravity
+Dike
+dilatonic black hole
+dimensional analysis
+Dilution
+Dimension
+dimensional transmutation
+Dione
+Dip-equator
+dip, magnetic
+dip slip fault
+disappearing filament
+discordant redshift
+discharge coefficient
+disconnection event
+discrete aurora
+discrimination (seismic)
+dislocation creep
+disk warp
+dislocation energy (self-energy of dislocation)
+dislocation glide
+dislocation climb
+disparition brusque
+Dispersion
+dissipation of fields
+Dispersionlessinjection
+dispersion measure (DM)
+Dispersive
+displacement vector
+Dissipation
+dissipation of temperature variance
+dissipation of turbulent kinetic energy
+dissipation profiler
+dissipation range
+dissolved organic matter
+distance indicator
+distance modulus
+Diurnal
+dissipation rate
+divergent plate boundary
+diurnal motion
+Divergence
+divergence law for irradiance
+divergence theorem
+divided bar
+D-layer
+divergent boundary
+dog days
+Doldrums
+domain of dependence
+Doodson number
+domain of outer communication
+domain wall
+Doppler beaming
+dominant energy condition
+Doppler broadening
+Doppler dimming
+Doppler shift
+double couple
+Doppler effect
+double diffusion
+double star
+downward (upward) irradiance diffuse attenuation coefficient
+downward (upward) radiance mean cosine
+downward (upward) scalar irradiance diffuse attenuation coefficient
+Downwelling
+double probe
+draconitic month
+drag coefficient
+Drift
+dragging phenomenon
+drift, curvature
+Dredge
+D region
+drift, electric
+drift, gradient
+drift, magnetization
+Driftmeter
+dry freeze
+duality in elastic string models
+drift, polarization
+driven shock
+Drizzle
+Drumlins
+drunkards walk
+dry-adiabatic lapse
+ductile behavior
+Dune
+dust storm
+dust storm (Mars)
+Dusk
+Dust
+dwarf galaxy
+dwarf nova
+dynamical time (DT)
+dynamic height
+dynamic meter
+dwarf spheroidal galaxies
+dynamic meter
+dynamic pressure
+dynamical friction
+dynamic recrystallization
+Dynamics
+dynamic viscosity
+Dynamo
+
+
+
+
+Eady, E.T.
+Eady model
+EAL
+Earth
+Earth Orbiter (EO-1)
+earth orientation parameters (EOP)
+earth ellipsoid and flattening factor
+Earthquake
+earthquake intensity
+earthquake swarm
+earthquake magnitude
+earthquake moment
+earth radius (RE)
+earthquake precursor
+earth rotation parameters (ERP)
+Earthshine
+earthquake prediction
+East Australian current
+East Greenland current
+Magnitude distance (km) Felt Intensity Damage
+east-west effect
+easy access region
+ebb delta
+ebb shoal
+ebb tide
+Eccentric
+easy access region
+eccentric dipole
+ebb current
+Eccentricity
+echelle spectrograph
+Ecliptic
+Eddington approximation
+echo sounder
+Eddington limit
+Eclipse
+eclipse year
+eclipsing binary
+Eddington luminosity
+Eddington ratio
+eddy viscosity
+edge wave
+effective charge
+Eddy
+eddy correlation method
+effective couplings
+eddy diffusivity
+eddy flux
+Eddy-resolving
+effective pressure
+effective stress
+Effluent
+Eigenray
+effective temperature
+Eigenvalue
+eikonal approximation
+Einstein
+Einstein–Cartan gravity
+Einstein equations
+Einstein–Rosen bridge
+Einstein summation convention
+Einstein tensor
+Einstein Universe
+Ekman convergence
+Ekman layer
+Ejecta
+Ekman mass transport
+Ekman pumping
+Elara
+elastic deformation
+Elayer
+elastic limit
+E-layer screening
+elastic lithosphere
+elastic modulus
+elastic rebound
+elastic string model
+Electra
+electric drift
+electric field, parallel
+Electroglow
+electromagnetic current meter
+electric regime (cosmic string)
+electromagnetic induction
+electromagnetic radiation
+Electromagnetism
+electromagnetism, Lorentz transformation and
+Electron
+elemental abundances: general
+electron precipitation
+elemental abundances: in minerals
+electron temperature
+elemental abundances: in organics
+electron volt
+electrostatic unit
+Electrovacuum
+Element
+elemental abundances: of comet(s)
+Elevation
+Ellison scale
+elevation head (sometimes gravitational head) (z)
+El Niño
+Eliassen–Palm (EP) flux
+elliptical galaxies
+Elongation
+Elongation
+Elves
+Elysium Province
+emerging flux region
+embedded defect
+emission line
+emission lines: interstellar and cometary
+Emissivity
+Enceladus
+Encke’s comet
+Endothermic
+energetic particles
+energetic particles in interplanetary space
+empirical model of the magnetosphere
+Energetic Particle Population in the Heliosphere
+Energenergy storm particles
+energy-containing scale
+Energy
+energy conversion efficiency
+energy grade line
+energy-momentum relations — special relativity
+Enthalpy
+Entrainment
+energy per unit length (cosmic string)
+Entropy
+environmental lapse rate
+ephemeristime (ET)
+Eolian
+Epicenter
+epicentral distance
+Eon
+EOP
+Eötvös experiment
+Epicycle
+Epimetheus
+epeiric sea
+Ephemeris
+Epoch
+Equant
+equation of continuity
+equation of state of pure water
+equation of time
+Equator
+equator, geomagnetic (1.)
+equatorial anomaly
+equation of state
+equation of state (cosmic string)
+equatorial bulge
+equatorial cold tongue
+equatorial easterlies
+equatorial convergence zone
+equatorial electrojet
+equatorial Kelvin wave
+equatorialsurface of the magnetosphere
+equatorial undercurrent
+Equilibrium
+equilibrium beach profile
+equilibrium range
+equatorial upwelling
+equatorial waveguide
+equatorial waves
+equilibrium space-times
+equilibrium tide (gravitational tide)
+equilibrium vapor pressure
+Eratosthenes
+Equinox
+E region
+equivalence principle
+Erg
+ergodic motion
+Ergoregion
+Ergs
+Ernst equation (1967)
+escape velocity
+Eskers
+Erosion
+Estuary
+ERP
+ET
+Ertel potential vorticity
+eternal black hole
+Eruption
+eruptive prominence
+Eudoxos of Cnidus
+Euler equations
+Eulerian
+Eulerian coordinates
+Euler potentials
+Eulerian representation
+Eulerian velocity
+Euler, Leonhard
+euphotic depth
+euphotic zone
+Euler pole
+euphotic zone midpoint
+Europa
+eustatic sea-level
+evening cloud (Mars)
+eutrophic water
+evaporation (E)
+event horizon
+Evershed effect
+evapotranspiration (ET )
+evolutionary track
+exact solution
+exotic terrane
+excitation temperature
+Expansion
+Exosphere
+expansion of the universe
+extended object
+extensions of space-times
+extinction and reddening
+experimental craters
+extratropical storm
+extreme ultraviolet (EUV)
+extreme ultraviolet imaging telescope (EIT)
+eye (of a storm)
+
+
+
+
+
+
+F1-layer
+F2-layer
+Fading
+Faber–Jackson law
+failed arm
+faint young sun paradox
+Falkland current
+Fallout
+Facula
+fall speed (velocity)
+fast magnetohydrodynamic shock
+Fanaroff–Riley (FR) class I and II radio galaxies
+Faraday Cup
+Faraday effect
+Faraday rotation
+fast shock wave
+fast solar wind
+Fata Morgana
+Fathom
+fault parameter
+fault plane solution
+Fault
+fault constitutive law
+fault gouge
+fault scarp
+F corona
+Ferrel cell
+feeder beach
+fertile mantle
+Fetch
+FG Sagittae star
+Fibril
+Feldspar
+Fermat’s principle
+Fermion
+FG Sagittae star
+Fibril
+Fickian flux (Fick’s law)
+fermionic zero mode
+Fick’s second law
+Field
+field of view
+field capacity (θf c)
+field ordering
+field line motion
+figure of the Earth
+Filament
+filament channel
+filter layer
+Finestructure
+Fingering
+finger regime
+finite amplitude wave
+finite difference
+first fundamental form
+first integral
+finite element method
+first law of thermodynamics
+first order phase transitions
+Fireball
+firehose instability
+first-order wave theory
+Fjord
+FK Comae stars
+Flare
+Flare Classification
+flare electromagnetic radiation
+flaring angle
+flat field, sky flat, dome flat
+flare star
+flattening of the Earth
+flat universe
+Florida current
+Flexure
+flow regime
+floating breakwater
+Fluence
+Flocculation
+Fluorescence
+flood current
+flood delta
+flutter fading
+Fluvial
+flood shoal
+flood tide
+Flora
+Flux
+flux density
+Fluxgate
+flux, magnetic
+flux, particle
+flux tube
+flux tube volume
+fly’s eye
+flux Richardson number
+Fluxrope
+Fluxtube
+flywheel effect
+focal length
+focal mechanisms
+Focus
+Focusing
+Foehn
+focused transport equation
+Fog
+Folds
+forbidden orbits
+forbidden region
+following spot
+Fomalhaut
+forbidden lines
+Forbush decrease
+Force
+force balance
+force-free magnetic field
+forecasting (wave)
+Foreshock
+Foreshore
+Forchhammer’s Principle
+forearc basin
+forearc sliver
+Foucault pendulum
+Four-velocity
+Fragmentation
+f-plane approximation
+frame dragging
+Fractal
+Fractionation
+Fracture
+fracture zone
+free-bound continuum emission
+Fraunhofer lines
+free convection
+free-air correction
+free-air gravity anomaly
+free atmosphere
+free bodies
+free-free continuum emission
+free oscillations
+Freeze
+F region
+frequency of optimum traffic (FOT)
+Fresnel reflectance
+Fresnel zone
+fretted channels
+Friction
+friction factor
+fretted terrain
+friction slope
+friction velocity
+Friedmann, Aleksandr Aleksandrovich
+Friedmann–Lemaître cosmological models
+fringe (interference)
+Front
+Frontogenesis
+frozen flux
+frost point
+Froude number
+“frozen-in” magnetic field
+frozen field approximation
+fulvic substance
+fundamental tensors of a worldsheet
+F star
+Fukushima’s theorem
+fundamental tensors of a worldsheet
+fully arisen sea
+fully rough flow
+future/past causal horizon
+future/past event horizon
+
+
+
+
+Gabbro
+galactic bulge
+galactic cluster
+galactic disk
+galactic coordinates
+galactic globular cluster
+galactic noise
+Galacticwind
+galaxy (1.)
+Galatea
+galaxies, classification of
+Galilean invariance
+Galilean relativity
+Galiliean satellite
+Galilean transformation
+Galiliean satellite
+Gallium
+Galilei, Galileo
+Gamma
+Galileo spacecraft
+γ -ray
+gamma ray burst (GRB)
+gamma-ray burst, classification
+gamma-ray burst, black hole accretion disks
+gamma-ray burst, cosmological mechanisms
+gamma-ray burst, classical
+gamma-ray burst, fireball
+gamma-ray burst, magnetic fields
+gamma-ray burst, galactic mechanisms
+gamma-ray burst, mechanisms
+gamma-ray burst, GRB 970508
+gamma-ray burst, hypernova
+gamma-ray burst models, collapsar
+gamma-ray burst models, helium merger
+Ganymede
+garden hose angle
+gas constant
+gamma-ray burst models, merging compact objects
+gaseous shocks
+gamma-ray burst, soft gamma-ray repeaters
+gas thermometer
+Gauge
+gauge pressure
+Gauss
+Gauss–Bonnet topological invariant
+Gegenschein
+Gelbstoff
+Gauss coefficients
+general circulation model (GCM)
+general relativity
+GEO
+Geocentric
+geocentric coordinate time
+geocentric latitude
+Geocorona
+Geodesic
+geodesic completeness
+Geodesy
+geodetic latitude
+Geoid
+geoid anomalies
+geomagnetic activity
+Geodynamics
+Geodynamo
+geomagnetic dip equator
+Geographus
+geomagnetic disturbance
+geomagnetic elements
+geomagnetic indices
+geomagnetic jerk
+geomagnetic field
+geomagnetic potential
+geomagnetic storm
+Geophysics
+Geopotential
+geopotential surface
+Geometrodynamics
+Geospace
+geostrophic adjustment
+Geostrophy
+Geosynchronous Operational Environmental Satellites (GOES)
+geosynchronous orbit
+Geotherm
+geothermal energy
+geostrophic approximation
+geostrophic balance
+geothermal gradient
+Geroch group
+giant cells
+Geroch–Hansen moments (1974)
+giant planet
+Gershun’s law
+Gilvin
+Gershun tube
+Ginzburg temperature
+Gershun tube
+GeV
+giant branch
+Glaciation
+Glacial
+global positioning system (GPS)
+Glacier
+global seismology
+global loop oscillation
+globally hyperbolic space-time
+global thermohaline circulation
+Goldstone model
+global topological defect
+globular cluster
+GMT
+Gnomon
+Goddard, Robert H.
+Goldberg–Sachs theorem (1962)
+Goldstone theorem
+Goldstone boson
+GRACE (Gravity Recovery and Climate Experiment)
+Gondwanaland
+Goto–Nambu string
+Gradient
+gradient drift
+gradient Richardson number Ri
+gradual commencement storm
+GPS
+Graben
+gradual flare
+Grad–Vasyliunas theorem
+grain-boundary migration
+grain-boundary sliding
+gradually varied flow
+grain chemistry: dense interstellar
+grain chemistry: diffuse interstellar
+grains: in other galaxies
+grain size
+grain size analysis
+grand potential
+grand unification
+grains, interstellar: destruction and formation
+grains, interstellar: size and composition
+Granulation
+grating spectrograph
+gravitational collapse
+gravitational constant G
+gravitational deflection of light
+Gravitation
+gravitational equations
+gravitational instability
+gravitational multipole moments
+gravitational lens
+gravitational perturbations
+gravitational potential
+gravitational radius
+gravitational redshift
+Graviton
+gravitational wave
+Gravity
+Gravitywave
+grazing incidence optics
+Great Attractor
+gravity anomaly
+gravity assist
+Great Red Spot
+great salinity anomaly (GSA)
+greenhouse gases
+green line
+Green’s theorem
+Greenhouse Effect
+Green’s theorem
+Greenwich mean (solar) time (GMT)
+Greenwich sidereal date (GSD)
+Gregorian
+Grism
+Gregorian calendar
+Greisen–Kuzmin–Zatsepin cutoff
+Groin
+gross photosynthetic rate
+ground level event (GLE)
+ground stroke
+guiding center approximation (GCA)
+Groundwater
+group velocity
+growing season
+GSD
+G star
+Guiana current
+guiding center
+gulf stream
+Gunn–Peterson bound
+Guyot
+Gyrofrequency
+GUT
+Guttenberg–Richter relation
+Gyroradius
+
+
+
+
+Hadley (cell) circulation
+Hale cycle
+Hadley cell
+Hale–Nicholson Polarity Law
+Halley’s comet
+Hadron
+Halo
+Hail
+Halocline
+Hailstone
+Hα condensation
+Hα radiation
+Hamiltonian
+Hamiltonian and momentum constraints in general relativity
+Hamilton–Jacobi Theory
+hard freeze
+hard radiation
+Hard X-ray Telescope (HXT)
+harmonic analysis
+harmonic model
+heat flow density
+heat flux
+Heaviside, Oliver (1850–1925)
+heat capacity
+heat flow
+heliacal rising
+Helicity
+heavy minerals
+Hebe
+Heliocentric
+hedgehog configuration
+Heliopause
+Helene
+Helioseismology
+Heliosheath
+Helios mission
+heliospheric magnetic field
+Heliosphere
+heliospheric current sheet (HCS)
+heliospheric termination shock
+heliospheric stream structure
+Helium
+Helmholtz free energy (free energy)
+helium burning
+helium flash
+Helmholtz theorem
+Henyey–Greenstein scattering phase function
+Herbig Ae/Be star
+helmet streamer
+Herbig–Haro object
+Higgs mechanism
+herringbone burst
+Hertz (Hz)
+Hertzsprung Gap
+higher derivative theories
+Hertzsprung–Russell diagram
+highlands, lunar
+high-pressure and high-temperature experiment
+Hesperian
+HI 21-cm line
+hindcasting (wave)
+historical climate
+Hoarfrost
+HI region
+HI I region
+Holmberg radius
+Homogeneity
+Himalia
+homologous flares
+homologoustemperature (T /Tm)
+Homothety
+homotopy group
+hopper dredge
+Horizon
+horizontal branch star
+hot towers
+hour angle
+horse latitudes
+Horst
+HR (Hertzsprung–Russell) or color-magnitude diagram
+hot dark matter
+hot spot (1.)
+Hubble diagram
+Hubble parameter (Hubble constant)
+Hubble deep field
+Hubble radius
+Hubble–Reynolds law
+Hubble’s law
+Hubble sequence
+Hubble space telescope (HST)
+Hubble time
+hydraulic head (piezometric head)
+humic substance
+Hurricane
+hydraulic conductivity (K)
+Huygens principle
+Hyades
+hybrid topological defect
+hydraulic depth
+hydraulic-fracturing method
+hydraulic transmissivity
+hydraulic gradient (dh/dl)
+Hydrodynamic
+hydraulic head (h)
+hydrodynamic instability
+Hydrogen
+hydraulic jump
+hydrogen burning
+hydraulic radius
+hydraulic routing
+Hydromagnetics
+hydromagnetic shock wave
+Hydrograph
+hydrographic survey
+hydrologic equation
+Hydromagnetic
+hydromagnetic turbulence
+hydromagnetic wave
+Hydrosphere
+Hydrostatic
+hydrostatic approximation
+hydrostatic equation
+hydrostatic pressure
+Hygiea
+Hygrometer
+Hyperion
+Hypersonic
+hydrostatic equilibrium
+Hysteresis
+
+
+
+
+Iapetus
