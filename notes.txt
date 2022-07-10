@@ -635,4 +635,17 @@
       - if we learn internal token first, can then use this to learn
         beginning and end tokens for expression
       - may be the case that just beginning and end token should be enough
-      
+
+5 july 2022
+  - datasets with testing
+    - build dataset and test with disease name
+    - run a test on nasa dataset (a-g)
+  - hextrato text
+    - accompanying dictionary in same folder on GDrive
+    - don't have annotations, can't measure f1 score
+    - concept will always be found at beginning of sentence
+    - other concepts also in paragraph -- not a full match with
+      any other concept
+      - how many non-full match expressions can we find in the text?
+    - use concept itself as CUID (duplicate)
+      - OR use same cuid for all of them (want to differentiate expression)
