@@ -454,8 +454,8 @@ class PhoneticTrie:
                 if type(word) != str:
                     print("error: ", word)
                     word = ""
-                
-                if word not in resulting_words:    
+
+                if word not in resulting_words:
                     resulting_words.add(word)
 
         if len(resulting_words) == 0:
