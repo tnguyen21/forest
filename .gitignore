@@ -112,6 +112,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+pyvenv.cfg
+./bin/ # created by pyenv
+
+# Vim files
+*.swp
 
 # Spyder project settings
 .spyderproject
