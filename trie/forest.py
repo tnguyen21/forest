@@ -7,11 +7,16 @@ import spacy
 
 from typing import List, Dict
 from .phonetic_trie import PhoneticTrie
+from sklearn.linear_model import LogisticRegression
 from pprint import pprint
 
 
 class Forest:
-    def __init__(self):
+    def __init__(
+        self,
+        logistic_regression_model: LogisticRegression = None,
+        logistic_regression_threshold: float = 0.5,
+    ):
         """
         args:
             TODO info on each argument
@@ -26,9 +31,22 @@ class Forest:
         self.word_expression_gazetteer = {}  # generated from phrases
         self.expression_count = 0
         self.word_to_word_determining_score = {}
+        self.logistic_regression_model = logistic_regression_model
+        self.logistic_regression_model_threshold = logistic_regression_threshold
 
         # https://spacy.io/usage/spacy-101#annotations-token
         self.tokenizer = spacy.load("en_core_web_sm")
+
+    def set_logistic_regression_model(
+        self, logistic_regression_model: LogisticRegression
+    ):
+        """
+        Add logistic regression  model to Forest
+
+        args:
+            logistic_regression_model: sklearn.linear_model.LogisticRegression
+        """
+        self.logistic_regression_model = logistic_regression_model
 
     def add_phrase(self, concept_id: str, phrase: str) -> None:
         """
@@ -59,7 +77,8 @@ class Forest:
 
     def create_tries(self):
         """
-        Create Trie and add to list of Tries used by Forest for fuzzy string search
+        Create PhoneticTrie and add to list of PhoneticTries
+        used by Forest for fuzzy string search
         """
         # ? api to set phonetic representation and other parameters to tries for the forest
         # ? do we just repeat params from phonetic_trie.py? not very DRY
@@ -87,7 +106,7 @@ class Forest:
             self.word_to_word_determining_score[word] = (
                 self.expression_count + 1 - len(expression_list)
             ) / self.expression_count
-            
+
         # ? CUID determining score -- how to calculate
         # ? do multiple expressions have the same CUID in dsyn
 
