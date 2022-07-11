@@ -26,4 +26,9 @@ if __name__ == "__main__":
     
     # pprint(forest.concept_id_expression_gazetteer)
     # pprint(forest.word_expression_gazetteer)
+    annotation_dataset_path = "experiments/multi_word_evaluation_task/test.csv"
+    
+    annotation_df = pd.read_csv(annotation_dataset_path, header=None)
+    
+    print(annotation_df.head())
     forest.search("Bad Man with Gun Tommy Nguyen Bad Man with Gun")

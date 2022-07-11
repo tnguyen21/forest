@@ -16,9 +16,13 @@ sys.path.insert(
 from trie import Forest
 from typing import Set, List
 from tqdm import tqdm
+from pprint import pprint
 import random
 import csv
+import json
 import dill as pickle
+import pandas as pd
+
 
 def create_forest(dictionary_path: str, output_forest_path: str):
     """
@@ -84,8 +88,8 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
         dictionary = [tuple(row) for row in list(reader)]
 
 	# set up file writer for csv file
-    output_data_file = open(dataset_output_path, "w")
-    output_csv_writer = csv.writer(output_data_file, delimiter=",")
+    # output_data_file = open(dataset_output_path, "w")
+    # output_csv_writer = csv.writer(output_data_file, delimiter=",")
 
     # create set of unique words from dictionary
     dictionary_terms_set = set()
@@ -97,7 +101,9 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
 	# convert set->list for ease of use later
     dictionary_terms = list(dictionary_terms_set)
 
-    for (cuid, entry) in dictionary:
+    sample_sentences = {}
+
+    for (cuid, entry) in tqdm(dictionary, desc="Generating sample sentences..."):
         # randomly choose how many sentences will start with entry
         number_of_sentences_that_start_with_entry = random.randint(1, 3)
         # ? token or character position -- token position
@@ -128,20 +134,42 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
             
             # write out sentence and annotations to dataset
             joined_sentence = " ".join(sentence)
+            sample_sentences[joined_sentence] = []
             for annotation in annotations:
-                output_csv_writer.writerow([joined_sentence] + annotation)
-
+                sample_sentences[joined_sentence].append(annotation)
+    
+    with open(dataset_output_path, "w") as f:
+        json.dump(sample_sentences, f, indent=2)
+    
 	# remember to close file after done writing!
-    output_data_file.close()
+    # output_data_file.close()
 
-def generate_dataset(sample_sentence_dataset_path: str, output_dataset_path: str):
+def generate_dataset(
+    sample_sentence_dataset_path: str,
+    forest_pkl_path: str,
+    output_dataset_path: str
+):
     """
     Generate dataset to use as input for training logistic regression
     model for recognizing the beginning of multi-word expressions
     """
+    # loading in dataset and serialized fores
+    with open(sample_sentence_dataset_path, "r") as f:
+        sample_sentence_dict = json.loads(f.read())
+    
+    forest = None
+    with open(forest_pkl_path, "rb") as f:
+        forest = pickle.load(f)
+
+    pprint(sample_sentence_dict)
     
 
+
 if __name__ == "__main__":
-    test_file = "datasets/imdb_movie_titles/-of.csv"
-    dataset_output_path = "experiments/multi_word_evaluation_task/test.csv"
-    generate_sample_sentences(test_file, dataset_output_path)
+    dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
+    dataset_output_path = "experiments/multi_word_evaluation_task/test.json" 
+    forest_output_path = "test_forest.pkl"
+    
+    create_forest(dictionary_input_path, forest_output_path)
+    generate_sample_sentences(dictionary_input_path, dataset_output_path)
+    generate_dataset(dataset_output_path, forest_output_path, "")
