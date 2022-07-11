@@ -69,7 +69,7 @@ class Forest:
 
         # increment expression count
         self.expression_count += 1
-        print(phrase)
+
         document = self.tokenizer(phrase)
         for token in document:
             # ? lowercase words before adding to word list
@@ -186,6 +186,6 @@ class Forest:
             # ? in different positions...are tokens hashable?
             token_concept_dictionary[token.text] = related_concepts
         # need to figure out for each token in input whether or not that token is the
-        # start of an expression, and if so, which expression 
+        # start of an expression, and if so, which expression
         pprint(token_concept_dictionary)
         return []
