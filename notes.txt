@@ -649,3 +649,8 @@
       - how many non-full match expressions can we find in the text?
     - use concept itself as CUID (duplicate)
       - OR use same cuid for all of them (want to differentiate expression)
+
+12 july 2022
+  ? format of output for forest search
+  ? special characters/non-utf friendly characters in text
+    - inclined to clean dictionary of these words out ahead of time
