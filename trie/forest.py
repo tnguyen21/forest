@@ -69,7 +69,7 @@ class Forest:
 
         # increment expression count
         self.expression_count += 1
-
+        print(phrase)
         document = self.tokenizer(phrase)
         for token in document:
             # ? lowercase words before adding to word list
@@ -101,7 +101,7 @@ class Forest:
 
         self.phonetic_trie_list.append(new_phonetic_trie)
 
-    def calculate_determinining_scores(self) -> None:
+    def calculate_determining_scores(self) -> None:
         """
         Calculate "determining scores" for every word that appears in the expression
         gazetteer. "Determining score" is a fraction roughly corresponding to how
@@ -185,6 +185,7 @@ class Forest:
             # ? this is the token text -- could have multiple of the same text
             # ? in different positions...are tokens hashable?
             token_concept_dictionary[token.text] = related_concepts
-
+        # need to figure out for each token in input whether or not that token is the
+        # start of an expression, and if so, which expression 
         pprint(token_concept_dictionary)
         return []
