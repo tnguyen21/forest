@@ -127,9 +127,9 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
 
                 # add another expression to the sentence, 2nd element in tuple
                 new_expression = random.choice(dictionary)[1]
-                start_token_idx = len(sentence) - 1
+                start_token_idx = len(sentence)
                 sentence += new_expression.split(" ")
-                end_token_idx = len(sentence) - 1
+                end_token_idx = len(sentence)
                 annotations.append([start_token_idx, end_token_idx, new_expression])
             
             # write out sentence and annotations to dataset
@@ -160,10 +160,24 @@ def generate_dataset(
     forest = None
     with open(forest_pkl_path, "rb") as f:
         forest = pickle.load(f)
-
-    pprint(sample_sentence_dict)
     
 
+    train_df_col = [
+        "search_result",
+        "expression",
+        "len_expression",
+        "len_result_word",
+        "position_in_expression",
+        "word_determining_score",
+        "cuid_determining_score",
+        "label"
+    ]
+    train_df = pd.DataFrame(columns=train_df_col)
+    train_data_list = []
+    for sentence, expression_list in sample_sentence_dict.items():
+        search_results = forest.search(sentence)
+        
+        print(search_results)           
 
 if __name__ == "__main__":
     dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
