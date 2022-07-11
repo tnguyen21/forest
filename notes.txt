@@ -650,7 +650,45 @@
     - use concept itself as CUID (duplicate)
       - OR use same cuid for all of them (want to differentiate expression)
 
-12 july 2022
+11 july 2022
   ? format of output for forest search
+    - don't create output on token itself
+    - inclined to not use token id, use character id
+      - or both
+  - ideal output -> mimic metamap
+    - full text, split into sentences, each sentence has beginning and end, with character positions
+    - each sentence tokenized, then give character position for the tokens
   ? special characters/non-utf friendly characters in text
     - inclined to clean dictionary of these words out ahead of time
+    - convert to proper format, if can't convert for whatever reason just ignore
+    - put a placeholder symbol
+  - shared task not expect on overlapping of shared tasks
+  - model training process
+    - every row brings example from 5 different tokens
+    - has a label identifying if that is beginning of expression of not
+    - for each token in the sliding window, look at CUIDs that correspond to the tokens
+    - data comes from corresponding scores to CUID
+      - if cuid doesn't correspond to an expression, then place values with 0 or something
+    - CUID we know is there should produce a row
+      - but all rows numbers are 0, but label should be 1
+      - true positives should all be in data
+    - we're able to learn beginning, but will not learn which corresponding expression/concept
+  - search process
+    - search each token and get potential CUIDs per token
+    - do similar to model
+      - get CUID information for tokens in front of and behind token of relevance
+      - then get a rough score identifying if that token is the beginning of token
+    - if model suspect multiple expressions correspond to the token,
+      then return both? or use scores from model to rank
+  - split based on CUIDs
+
+  - handful of approaches
+    - identify just internals
+      - take the beginning as internal (as well)
+      - retrain the model with the internals -- many more positives
+      - finding internals will be "easier" for LR
+      - after that run two separate tasks -- beginning and internal
+        - simple logic to determine if we have an expression or not
+    - identify internals and end of expressions
+    - identify just end of expression
+  - for shared task, don't have two outputs
