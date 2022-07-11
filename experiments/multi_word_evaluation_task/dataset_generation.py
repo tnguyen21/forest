@@ -28,16 +28,18 @@ def create_forest(dictionary_path: str, output_forest_path: str):
     """
     Loads input dictionary of expressions into Forest then pickles
     Forest to `output_forest_path`
-    
+
     args:
         dictionary_path: path to csv containing dictionary with concept IDs and expressions
         output_forest_path: path to output serialized Forest
     """
     forest = Forest()
-    
+
     dict_df = pd.read_csv(dictionary_path)
 
-    for _, id, expression in tqdm(dict_df.itertuples(), desc="Load dictionary into Forest..."):
+    for _, id, expression in tqdm(
+        dict_df.itertuples(), desc="Load dictionary into Forest..."
+    ):
         forest.add_phrase(id, expression)
 
     forest.create_tries()
@@ -45,7 +47,7 @@ def create_forest(dictionary_path: str, output_forest_path: str):
 
     with open(output_forest_path, "wb") as f:
         pickle.dump(forest, f)
-    
+
 
 def add_stop_words(dictionary_words: List[str], sentence: List[str]) -> List[str]:
     """
@@ -87,7 +89,7 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
         reader = csv.reader(f)
         dictionary = [tuple(row) for row in list(reader)]
 
-	# set up file writer for csv file
+    # set up file writer for csv file
     # output_data_file = open(dataset_output_path, "w")
     # output_csv_writer = csv.writer(output_data_file, delimiter=",")
 
@@ -98,7 +100,7 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
         for word in entry.split(" "):
             dictionary_terms_set.add(word)
 
-	# convert set->list for ease of use later
+    # convert set->list for ease of use later
     dictionary_terms = list(dictionary_terms_set)
 
     sample_sentences = {}
@@ -114,11 +116,11 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
 
             # begin sentence with entry
             sentence = entry.split(" ")
-            
+
             # save each label for annoations as a tuple of (int, int, str)
             # where it is (start token idx, end token idx, expression)
             annotations = []
-                   
+
             annotations.append([0, len(sentence) - 1, entry])
 
             # add additional expressions to sentence
@@ -131,23 +133,23 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
                 sentence += new_expression.split(" ")
                 end_token_idx = len(sentence)
                 annotations.append([start_token_idx, end_token_idx, new_expression])
-            
+
             # write out sentence and annotations to dataset
             joined_sentence = " ".join(sentence)
             sample_sentences[joined_sentence] = []
             for annotation in annotations:
                 sample_sentences[joined_sentence].append(annotation)
-    
+
     with open(dataset_output_path, "w") as f:
         json.dump(sample_sentences, f, indent=2)
-    
-	# remember to close file after done writing!
-    # output_data_file.close()
+
+
+# remember to close file after done writing!
+# output_data_file.close()
+
 
 def generate_dataset(
-    sample_sentence_dataset_path: str,
-    forest_pkl_path: str,
-    output_dataset_path: str
+    sample_sentence_dataset_path: str, forest_pkl_path: str, output_dataset_path: str
 ):
     """
     Generate dataset to use as input for training logistic regression
@@ -156,11 +158,10 @@ def generate_dataset(
     # loading in dataset and serialized fores
     with open(sample_sentence_dataset_path, "r") as f:
         sample_sentence_dict = json.loads(f.read())
-    
+
     forest = None
     with open(forest_pkl_path, "rb") as f:
         forest = pickle.load(f)
-    
 
     train_df_col = [
         "search_result",
@@ -170,20 +171,21 @@ def generate_dataset(
         "position_in_expression",
         "word_determining_score",
         "cuid_determining_score",
-        "label"
+        "label",
     ]
     train_df = pd.DataFrame(columns=train_df_col)
     train_data_list = []
     for sentence, expression_list in sample_sentence_dict.items():
         search_results = forest.search(sentence)
-        
-        print(search_results)           
+
+        print(search_results)
+
 
 if __name__ == "__main__":
     dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
-    dataset_output_path = "experiments/multi_word_evaluation_task/test.json" 
+    dataset_output_path = "experiments/multi_word_evaluation_task/test.json"
     forest_output_path = "test_forest.pkl"
-    
+
     create_forest(dictionary_input_path, forest_output_path)
     generate_sample_sentences(dictionary_input_path, dataset_output_path)
     generate_dataset(dataset_output_path, forest_output_path, "")

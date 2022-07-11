@@ -20,9 +20,9 @@ if __name__ == "__main__":
     imbd_df = pd.read_csv("datasets/imdb_movie_titles/-a.csv")
     for _, id, title in tqdm(imbd_df.itertuples(), desc="Processing IMDB titles..."):
         forest.add_phrase(id, title)
-    
+
     forest.create_tries()
     forest.calculate_determining_scores()
-    
+
     results = forest.search("Bad Man with Gun Tommy Nguyen Bad Man with Gun")
     print(results)
