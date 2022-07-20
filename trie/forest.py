@@ -127,7 +127,7 @@ class Forest:
 
         # ? do multiple expressions have the same CUID in dsyn
 
-    def search(self, text: str) -> List[Dict]:
+    def get_token_concept_dictionary(self, text: str) -> Dict[str, List[Dict]]:
         """
         Given non-tokenized block of text, tokenize text, then fuzzy-search on every word
         to identify possible matches.
@@ -187,5 +187,49 @@ class Forest:
             token_concept_dictionary[token.text] = related_concepts
         # need to figure out for each token in input whether or not that token is the
         # start of an expression, and if so, which expression
-        pprint(token_concept_dictionary)
-        return []
+        return token_concept_dictionary
+
+    def format_results(self, search_text: str, search_results: Dict[str, List[Dict]]) -> List[List]:
+        # header row
+        formatted_results = ["Input", "Searched Token", "Matched Token", "Concept ID", "Concept Name"]
+
+        for token, matches in search_results.items():
+            for match in matches:
+                matched_token = match[0]
+                match_concept_name = match[1]
+                match_cuid = match[2]
+                formatted_row = [
+                    search_text,
+                    token,
+                    matched_token,
+                    match_cuid,
+                    match_concept_name
+                ]
+
+                formatted_results.append(formatted_row)
+
+        return formatted_results
+
+    def search(self, text: str, use_lr_model: bool = False) -> List[Dict]:
+        """
+        
+        args:
+            text: sentence to identify named-entities within
+        """
+        token_concept_dictionary = self.get_token_concept_dictionary(text)
+        
+        # for token, matched_concepts in token_concept_dictionary.items():
+        #     print(token, matched_concepts)
+        #     break
+            
+        if (use_lr_model):
+            # use LR model to filter our concepts from search result
+            # in token-concept dictionary match
+            print('use logistic regression model for search')
+        else:
+            # some logic for filtering out potential matches
+            print('do some logic here')
+
+        formatted_return = self.format_results(text, token_concept_dictionary)
+        
+        return formatted_return
