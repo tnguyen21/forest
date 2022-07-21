@@ -696,3 +696,21 @@
 21 july 2022
   ? dealing with tokenizer and punctuation
     - issue with commas, parenthesis, etc in dictionary
+    ! if token cannot be represented phonetically -- ignore it!
+    - if ptrie cannot make the phonetic representation, then it'll
+      just not have the term
+    
+  - edit distance 2 even with trie with no phonetic representation
+    - results in multiple results returned
+    - this is fine!
+  * when we add more phonetic representations, make sure to train
+    logistic regression for single word expression
+  - for non-ascii character just use non-phonetic representation of trie
+  - set max_iter for logistic regression to 10000
+    - for development just test with 5000
+  ? test/train/tuning production
+    - making ptrie & forest -- add all terms in dictionary
+    ! when producing sentences, only using subset of terms
+    ! when inserting words from other concepts -- should only be terms from the same set
+      don't mix test terms into train set!
+  ! labelling is incorrect for some of the rows -- debug and adjust how labels get assigned
