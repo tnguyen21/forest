@@ -692,3 +692,7 @@
     - identify internals and end of expressions
     - identify just end of expression
   - for shared task, don't have two outputs
+
+21 july 2022
+  ? dealing with tokenizer and punctuation
+    - issue with commas, parenthesis, etc in dictionary
