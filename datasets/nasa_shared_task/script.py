@@ -13,6 +13,11 @@ if __name__ == "__main__":
                 if line == "\n":
                     continue
                 stripped_line = line.strip()
-                csv_row = [stripped_line, stripped_line]
+                # non-ascii characters giving headache
+                # TODO is there another way to avoid getting encoding errors
+                # with any arbitrary dictionary? otherwise the system will
+                # be limited
+                ascii_only_line = stripped_line.encode('ascii', 'ignore').decode('ascii')
+                csv_row = [ascii_only_line, ascii_only_line]
                 output_writer.writerow(csv_row)
 
