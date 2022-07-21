@@ -22,6 +22,10 @@ import csv
 import json
 import dill as pickle
 import pandas as pd
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import precision_recall_curve, f1_score
+from sklearn import preprocessing
 
 
 def create_forest(dictionary_path: str, output_forest_path: str):
@@ -77,21 +81,16 @@ def add_stop_words(dictionary_words: List[str], sentence: List[str]) -> List[str
     return sentence
 
 
-def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) -> None:
+def generate_sample_sentences(dictionary_path: str, dataset_output_path: str,) -> None:
     """
     given path to dictionary with cuid and term,
     generate a dataset to use for the multi-word matching task.
     outputs dictionary as a csv
     """
-    training_data = []
     # read csv into List[Tuple[str, str]]
     with open(dictionary_path, "r") as f:
         reader = csv.reader(f)
         dictionary = [tuple(row) for row in list(reader)]
-
-    # set up file writer for csv file
-    # output_data_file = open(dataset_output_path, "w")
-    # output_csv_writer = csv.writer(output_data_file, delimiter=",")
 
     # create set of unique words from dictionary
     dictionary_terms_set = set()
@@ -105,7 +104,7 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
 
     sample_sentences = {}
 
-    for (cuid, entry) in tqdm(dictionary, desc="Generating sample sentences..."):
+    for (_, entry) in tqdm(dictionary, desc="Generating sample sentences..."):
         # randomly choose how many sentences will start with entry
         number_of_sentences_that_start_with_entry = random.randint(1, 3)
         # ? token or character position -- token position
@@ -143,18 +142,52 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str) ->
     with open(dataset_output_path, "w") as f:
         json.dump(sample_sentences, f, indent=2)
 
-
-# remember to close file after done writing!
-# output_data_file.close()
-
-
 def generate_dataset(
-    sample_sentence_dataset_path: str, forest_pkl_path: str, output_dataset_path: str
+    sample_sentence_dataset_path: str, forest_pkl_path: str, search_window: int, output_dataset_path: str
 ):
     """
     Generate dataset to use as input for training logistic regression
     model for recognizing the beginning of multi-word expressions
     """
+    # create fd for writing to csv
+    
+    output_csv_file = open(output_dataset_path, "w", newline="\n")
+    output_csv_writer = csv.writer(output_csv_file, delimiter="|")
+
+    # write header
+    train_df_col = [
+        "sentence",
+        "matched_token",
+        "t1_len_expression",
+        "t1_len_result_word",
+        "t1_position_in_expression",
+        "t1_word_determining_score",
+        "t1_cuid_determining_score",
+        "t2_len_expression",
+        "t2_len_result_word",
+        "t2_position_in_expression",
+        "t2_word_determining_score",
+        "t2_cuid_determining_score",
+        "t3_len_expression",
+        "t3_len_result_word",
+        "t3_position_in_expression",
+        "t3_word_determining_score",
+        "t3_cuid_determining_score",
+        "t4_len_expression",
+        "t4_len_result_word",
+        "t4_position_in_expression",
+        "t4_word_determining_score",
+        "t4_cuid_determining_score",
+        "t5_len_expression",
+        "t5_len_result_word",
+        "t5_position_in_expression",
+        "t5_word_determining_score",
+        "t5_cuid_determining_score",
+        "label",
+    ]
+
+    # output_csv_writer.writerow(train_df_col)
+
     # loading in dataset and serialized fores
     with open(sample_sentence_dataset_path, "r") as f:
         sample_sentence_dict = json.loads(f.read())
@@ -163,29 +196,145 @@ def generate_dataset(
     with open(forest_pkl_path, "rb") as f:
         forest = pickle.load(f)
 
-    train_df_col = [
-        "search_result",
-        "expression",
-        "len_expression",
-        "len_result_word",
-        "position_in_expression",
-        "word_determining_score",
-        "cuid_determining_score",
-        "label",
-    ]
-    train_df = pd.DataFrame(columns=train_df_col)
-    train_data_list = []
-    for sentence, expression_list in sample_sentence_dict.items():
-        search_results = forest.search(sentence)
+    for sentence, expression_list in tqdm(sample_sentence_dict.items(), desc="Querying Forest and generating LR training set..."):
+    # for sentence, expression_list in sample_sentence_dict.items():
+        token_concept_dictionary = forest.get_token_concept_dictionary(sentence)
+        token_concept_tuples = []
+        # convert dict into list of tuples to preserve order and make lookups faster
+        for token, matches in token_concept_dictionary.items():
+            token_concept_tuples.append((token, matches))
+        
+        # pad beginning and end of tokens with None based on our search window
+        # to be used for determining if token is in phrase or not
+        # ! this is bespoke and hacky. should figure more elegant solution, or at least clean up this code
+        token_concept_tuples = [(None, None) for _ in range(search_window)] + token_concept_tuples + [(None, None) for _ in range(search_window)]
 
-        print(search_results)
+        for idx in range(2, len(token_concept_tuples)-2):
+            # TODO explain bespoke logic here
+            search_token_window = token_concept_tuples[idx-search_window:idx+search_window+1]
+            for match in token_concept_tuples[idx][1]:
+                # print("sentence", sentence)
+                # print("match", match)
+                training_row = [sentence, match]
+                m_result_word = match[0]
+                m_concept_id = match[2]
+                for token in search_token_window:
+                    matching_cuid = False
+                    # check if beginning or end of sentence
+                    if token[1] == None:
+                        # mark with -1s
+                        training_row += [-1, -1, -1, -1, -1]
+                        # then go to next token 
+                        continue
+
+                    # check if token in window has matching concept id 
+                    for _, _, concept_id, expr_len, result_len, token_position, word_det_score, cuid_det_score in token[1]:
+                        if m_concept_id == concept_id:
+                            matching_cuid = True
+                            training_row += [expr_len, result_len, token_position, word_det_score, cuid_det_score]
+                    
+                    if not matching_cuid:
+                        training_row += [0, 0, 0, 0, 0]
+                
+                # add label
+                if any([_.startswith(m_result_word) for _ in forest.expression_list]):
+                    training_row += [1]
+                else:
+                    training_row += [0]
+                # print(training_row)
+                output_csv_writer.writerow(training_row)
+                training_row = []
+
+    # don't forget to close open fd!
+    output_csv_file.close()
 
 
 if __name__ == "__main__":
-    dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
-    dataset_output_path = "experiments/multi_word_evaluation_task/test.json"
+    # write header
+    train_df_col = [
+        "sentence",
+        "matched_token",
+        "t1_len_expression",
+        "t1_len_result_word",
+        "t1_position_in_expression",
+        "t1_word_determining_score",
+        "t1_cuid_determining_score",
+        "t2_len_expression",
+        "t2_len_result_word",
+        "t2_position_in_expression",
+        "t2_word_determining_score",
+        "t2_cuid_determining_score",
+        "t3_len_expression",
+        "t3_len_result_word",
+        "t3_position_in_expression",
+        "t3_word_determining_score",
+        "t3_cuid_determining_score",
+        "t4_len_expression",
+        "t4_len_result_word",
+        "t4_position_in_expression",
+        "t4_word_determining_score",
+        "t4_cuid_determining_score",
+        "t5_len_expression",
+        "t5_len_result_word",
+        "t5_position_in_expression",
+        "t5_word_determining_score",
+        "t5_cuid_determining_score",
+        "label",
+    ]
+    # dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
+    train_dictionary_input_path = "datasets/umls_small_dictionary/training.csv"
+    tuning_dictionary_input_path = "datasets/umls_small_dictionary/tuning.csv"
+    test_dictionary_input_path = "datasets/umls_small_dictionary/test.csv"
+    # dictionary_input_path = "datasets/imdb_movie_titles/-a.csv"
+    sample_sentence_output_path = "experiments/multi_word_evaluation_task/"
+    lr_model_dataset_path = "experiments/multi_word_evaluation_task/train_data.csv"
+    tuning_lr_model_dataset_path = "experiments/multi_word_evaluation_task/tuning_data.csv"
+    test_lr_model_dataset_path = "experiments/multi_word_evaluation_task/test_data.csv"
     forest_output_path = "test_forest.pkl"
 
-    create_forest(dictionary_input_path, forest_output_path)
-    generate_sample_sentences(dictionary_input_path, dataset_output_path)
-    generate_dataset(dataset_output_path, forest_output_path, "")
+    create_forest(train_dictionary_input_path, forest_output_path)
+    generate_sample_sentences(train_dictionary_input_path, sample_sentence_output_path + "train_sample_sentences.json")
+    generate_sample_sentences(tuning_dictionary_input_path, sample_sentence_output_path + "tuning_sample_sentences.json")
+    generate_sample_sentences(test_dictionary_input_path, sample_sentence_output_path + "test_sample_sentences.json")
+    generate_dataset(sample_sentence_output_path + "train_sample_sentences.json", forest_output_path, 2, lr_model_dataset_path)
+    generate_dataset(sample_sentence_output_path + "tuning_sample_sentences.json", forest_output_path, 2, tuning_lr_model_dataset_path)
+    generate_dataset(sample_sentence_output_path + "test_sample_sentences.json", forest_output_path, 2, test_lr_model_dataset_path)
+
+    train_df = pd.read_csv(lr_model_dataset_path, delimiter="|", names=train_df_col)
+    print(train_df.head())
+    X_train = train_df.drop(columns=["sentence", "matched_token", "label"])
+    print(X_train.head())
+    y_train = train_df["label"].astype(int)
+    print(y_train.head())
+
+    # had to adjust max_iter
+    # getting warning about failing to converge at default for 100 iters and 1000 iters.
+    # warning goes away at 5000 iters
+    classifier = LogisticRegression(max_iter=1000)
+    classifier.fit(X_train, y_train)
+    print("train score", classifier.score(X_train, y_train))
+    # tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter="|", names=train_df_col)
+    # X_tuning = tuning_df.drop(columns=["sentence", "matched_token", "label"])
+    # y_tuning = tuning_df["label"].astype(int)
+    
+    test_df = pd.read_csv(test_lr_model_dataset_path, delimiter="|", names=train_df_col)
+    X_test = test_df.drop(columns=["sentence", "matched_token", "label"])
+    y_test = test_df["label"].astype(int)
+
+    y_pred = classifier.predict_proba(X_test)[:, 1]
+    y_pred[y_pred >= 0.5] = 1
+    y_pred[y_pred < 0.5] = 0
+    model_f1_score = f1_score(y_test, y_pred)
+    print(f"Model f1 score at threshold 0.5: {model_f1_score}")
+
+    y_pred = classifier.predict_proba(X_test)[:, 1]
+    y_pred[y_pred >= 0.75] = 1
+    y_pred[y_pred < 0.75] = 0
+    model_f1_score = f1_score(y_test, y_pred)
+    print(f"Model f1 score at threshold 0.75: {model_f1_score}")
+
+    y_pred = classifier.predict_proba(X_test)[:, 1]
+    y_pred[y_pred >= 0.9] = 1
+    y_pred[y_pred < 0.9] = 0
+    model_f1_score = f1_score(y_test, y_pred)
+    print(f"Model f1 score at threshold 0.9: {model_f1_score}")

@@ -27,6 +27,7 @@ class Forest:
             word_to_word_determining_score = Dict[str, float]
         """
         self.phonetic_trie_list = []
+        self.expression_list = []
         self.concept_id_expression_gazetteer = {}
         self.word_expression_gazetteer = {}  # generated from expression
         self.word_concept_id_gazetteer = {}  # generated from expression
@@ -62,6 +63,7 @@ class Forest:
         """
         # ? should we lowercase the phrase before adding it to the gazetteer
         # ? can we have multiple phrases for the same concept id
+        self.expression_list.append(phrase)
         concept_id_entry = self.concept_id_expression_gazetteer.setdefault(
             concept_id, []
         )
@@ -191,7 +193,8 @@ class Forest:
 
     def format_results(self, search_text: str, search_results: Dict[str, List[Dict]]) -> List[List]:
         # header row
-        formatted_results = ["Input", "Searched Token", "Matched Token", "Concept ID", "Concept Name"]
+        # formatted_results = ["Input", "Searched Token", "Matched Token", "Concept ID", "Concept Name"]
+        formatted_results = []
 
         for token, matches in search_results.items():
             for match in matches:
@@ -210,7 +213,12 @@ class Forest:
 
         return formatted_results
 
-    def search(self, text: str, use_lr_model: bool = False) -> List[Dict]:
+    def search(
+        self,
+        text: str,
+        search_window: int = 2,
+        use_lr_model: bool = False
+    ) -> List[List]:
         """
         
         args:
@@ -226,9 +234,9 @@ class Forest:
             # use LR model to filter our concepts from search result
             # in token-concept dictionary match
             print('use logistic regression model for search')
-        else:
-            # some logic for filtering out potential matches
-            print('do some logic here')
+        # else:
+        #     # some logic for filtering out potential matches
+        #     print('do some logic here')
 
         formatted_return = self.format_results(text, token_concept_dictionary)
         
