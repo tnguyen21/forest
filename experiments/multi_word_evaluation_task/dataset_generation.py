@@ -152,7 +152,7 @@ def generate_dataset(
     # create fd for writing to csv
     
     output_csv_file = open(output_dataset_path, "w", newline="\n")
-    output_csv_writer = csv.writer(output_csv_file, delimiter="|")
+    output_csv_writer = csv.writer(output_csv_file, delimiter=";")
 
     # write header
     train_df_col = [
@@ -224,7 +224,6 @@ def generate_dataset(
                     if token[1] == None:
                         # mark with -1s
                         training_row += [-1, -1, -1, -1, -1]
-                        # then go to next token 
                         continue
 
                     # check if token in window has matching concept id 
@@ -232,7 +231,8 @@ def generate_dataset(
                         if m_concept_id == concept_id:
                             matching_cuid = True
                             training_row += [expr_len, result_len, token_position, word_det_score, cuid_det_score]
-                    
+                            break
+
                     if not matching_cuid:
                         training_row += [0, 0, 0, 0, 0]
                 
@@ -300,12 +300,12 @@ if __name__ == "__main__":
     generate_dataset(sample_sentence_output_path + "tuning_sample_sentences.json", forest_output_path, 2, tuning_lr_model_dataset_path)
     generate_dataset(sample_sentence_output_path + "test_sample_sentences.json", forest_output_path, 2, test_lr_model_dataset_path)
 
-    train_df = pd.read_csv(lr_model_dataset_path, delimiter="|", names=train_df_col)
-    print(train_df.head())
+    train_df = pd.read_csv(lr_model_dataset_path, delimiter=";", names=train_df_col)
+    # print(train_df.head())
     X_train = train_df.drop(columns=["sentence", "matched_token", "label"])
-    print(X_train.head())
+    # print(X_train.head())
     y_train = train_df["label"].astype(int)
-    print(y_train.head())
+    # print(y_train.head())
 
     # had to adjust max_iter
     # getting warning about failing to converge at default for 100 iters and 1000 iters.
@@ -313,11 +313,11 @@ if __name__ == "__main__":
     classifier = LogisticRegression(max_iter=1000)
     classifier.fit(X_train, y_train)
     print("train score", classifier.score(X_train, y_train))
-    # tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter="|", names=train_df_col)
-    # X_tuning = tuning_df.drop(columns=["sentence", "matched_token", "label"])
-    # y_tuning = tuning_df["label"].astype(int)
+    tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=";", names=train_df_col)
+    X_tuning = tuning_df.drop(columns=["sentence", "matched_token", "label"])
+    y_tuning = tuning_df["label"].astype(int)
     
-    test_df = pd.read_csv(test_lr_model_dataset_path, delimiter="|", names=train_df_col)
+    test_df = pd.read_csv(test_lr_model_dataset_path, delimiter=";", names=train_df_col)
     X_test = test_df.drop(columns=["sentence", "matched_token", "label"])
     y_test = test_df["label"].astype(int)
 
