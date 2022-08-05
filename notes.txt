@@ -714,3 +714,26 @@
     ! when inserting words from other concepts -- should only be terms from the same set
       don't mix test terms into train set!
   ! labelling is incorrect for some of the rows -- debug and adjust how labels get assigned
+
+25 july 2022
+  - create another dictionary for the shared task since current one is too noisy
+    - adding a CUID
+      - and there are acronyms
+      - can split up acronyms and term and have them have the CUID
+      - and some of the words are synonyms
+    - may want to rewrite names in the dictionary
+  - output annoations as JSON
+    - beginning and end
+    - one json entry per annotation
+  - list of tokens in a list
+  
+1 aug 2022
+  - produce dataset with comma separated values -- not semicolons
+  - string quote sentence and match produced by forest
+  - also come up with a model that determines the end of an expression
+    - no need to disambiguate anything -- doesn't matter if we get multiple endings or beginnings
+  - can document on github and/or work on documentation in github
+    - examples, commands to run, etc
+  - place training scripts and test scripts in separate process
+    - want to be able to save off models to reuse in different dictionaries
+    
