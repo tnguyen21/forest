@@ -156,6 +156,7 @@ def generate_dataset(
 
     # write header
     train_df_col = [
+        "expression_labels",
         "sentence",
         "matched_token",
         "t1_len_expression",
@@ -186,7 +187,7 @@ def generate_dataset(
         "label",
     ]
 
-    # output_csv_writer.writerow(train_df_col)
+    output_csv_writer.writerow(train_df_col)
 
     # loading in dataset and serialized fores
     with open(sample_sentence_dataset_path, "r") as f:
@@ -215,7 +216,7 @@ def generate_dataset(
             for match in token_concept_tuples[idx][1]:
                 # print("sentence", sentence)
                 # print("match", match)
-                training_row = [sentence, str(match)]
+                training_row = [expression_list, sentence, str(match)]
                 m_result_word = match[0]
                 m_expression = match[1]
                 m_concept_id = match[2]
@@ -259,6 +260,7 @@ def generate_dataset(
 if __name__ == "__main__":
     # write header
     train_df_col = [
+        "expression_labels",
         "sentence",
         "matched_token",
         "t1_len_expression",
@@ -292,6 +294,9 @@ if __name__ == "__main__":
     train_dictionary_input_path = "datasets/umls_small_dictionary/training.csv"
     tuning_dictionary_input_path = "datasets/umls_small_dictionary/tuning.csv"
     test_dictionary_input_path = "datasets/umls_small_dictionary/test.csv"
+    # train_dictionary_input_path = "datasets/nasa_shared_task/training.csv"
+    # tuning_dictionary_input_path = "datasets/nasa_shared_task/tuning.csv"
+    # test_dictionary_input_path = "datasets/nasa_shared_task/test.csv"
     # dictionary_input_path = "datasets/imdb_movie_titles/-a.csv"
     sample_sentence_output_path = "experiments/multi_word_evaluation_task/"
     lr_model_dataset_path = "experiments/multi_word_evaluation_task/train_data.csv"
@@ -307,9 +312,9 @@ if __name__ == "__main__":
     generate_dataset(sample_sentence_output_path + "tuning_sample_sentences.json", forest_output_path, 2, tuning_lr_model_dataset_path)
     generate_dataset(sample_sentence_output_path + "test_sample_sentences.json", forest_output_path, 2, test_lr_model_dataset_path)
 
-    train_df = pd.read_csv(lr_model_dataset_path, delimiter=",", names=train_df_col)
+    train_df = pd.read_csv(lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
     # print(train_df.head())
-    X_train = train_df.drop(columns=["sentence", "matched_token", "label"])
+    X_train = train_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
     # print(X_train.head())
     y_train = train_df["label"].astype(int)
     # print(y_train.head())
@@ -320,12 +325,12 @@ if __name__ == "__main__":
     classifier = LogisticRegression(max_iter=1000)
     classifier.fit(X_train, y_train)
     print("train score", classifier.score(X_train, y_train))
-    tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=",", names=train_df_col)
-    X_tuning = tuning_df.drop(columns=["sentence", "matched_token", "label"])
+    tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
+    X_tuning = tuning_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
     y_tuning = tuning_df["label"].astype(int)
     
-    test_df = pd.read_csv(test_lr_model_dataset_path, delimiter=",", names=train_df_col)
-    X_test = test_df.drop(columns=["sentence", "matched_token", "label"])
+    test_df = pd.read_csv(test_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
+    X_test = test_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
     y_test = test_df["label"].astype(int)
 
     y_pred = classifier.predict_proba(X_test)[:, 1]
