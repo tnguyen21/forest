@@ -737,3 +737,18 @@
   - place training scripts and test scripts in separate process
     - want to be able to save off models to reuse in different dictionaries
     
+  8 aug 2022
+  - length of token relative to length of sentence
+    - length of search word / length of expression -- add it as a feature
+  - add list of expressions to first column
+    - so we know which expressions are within the sentence 
+  - always print precision and recall
+    - potentially using other f scores during tuning (f 0.5, f 2)
+    - favoring recall for this usecase (f2 score)
+    - depending on score, will help find different number of beginnings
+    - should be prepared to run logistic regression for f score for tuning
+    * start with f1 after fixing labels
+      - if we get a low f1 score, then look at precision and recall
+  - whenever you have a single word -- that word should be a match
+    - word has to be the beginning
+  
