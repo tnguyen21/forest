@@ -104,6 +104,8 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str,) -
 
     sample_sentences = {}
 
+    #! rm this later
+    expression_counts = 0
     for (_, entry) in tqdm(dictionary, desc="Generating sample sentences..."):
         # randomly choose how many sentences will start with entry
         number_of_sentences_that_start_with_entry = random.randint(1, 3)
@@ -113,6 +115,9 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str,) -
             # randomly choose [1, 5] expressions in sentence
             number_of_additional_expressions = random.randint(0, 5)
 
+            #! rm this later
+            expression_counts += number_of_additional_expressions + 1
+            
             # begin sentence with entry
             sentence = entry.split(" ")
 
@@ -138,6 +143,9 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str,) -
             sample_sentences[joined_sentence] = []
             for annotation in annotations:
                 sample_sentences[joined_sentence].append(annotation)
+
+    #! rm this later
+    print("number of expressions:", expression_counts)
 
     with open(dataset_output_path, "w") as f:
         json.dump(sample_sentences, f, indent=2)
@@ -243,13 +251,16 @@ def generate_dataset(
                 split_sentence = sentence.split(" ")
                 for start_idx, _, expression in expression_list:
                     if (m_expression == expression) and (split_sentence[start_idx] == m_result_word):
+                        # print("match expression", m_expression)
+                        # print("match result word", m_result_word)
+                        # print("stard idx, label expression", start_idx, expression)
+                        # print(sentence)
                         correct = True
                         break
                 if correct:
                     training_row += [1]
                 else:
                     training_row += [0]
-                # print(training_row)
                 output_csv_writer.writerow(training_row)
                 training_row = []
 
@@ -290,7 +301,7 @@ if __name__ == "__main__":
         "t5_cuid_determining_score",
         "label",
     ]
-    # dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
+    dictionary_input_path = "datasets/umls_small_dictionary/dictionary.csv"
     train_dictionary_input_path = "datasets/umls_small_dictionary/training.csv"
     tuning_dictionary_input_path = "datasets/umls_small_dictionary/tuning.csv"
     test_dictionary_input_path = "datasets/umls_small_dictionary/test.csv"
@@ -304,7 +315,7 @@ if __name__ == "__main__":
     test_lr_model_dataset_path = "experiments/multi_word_evaluation_task/test_data.csv"
     forest_output_path = "test_forest.pkl"
 
-    create_forest(train_dictionary_input_path, forest_output_path)
+    create_forest(dictionary_input_path, forest_output_path)
     generate_sample_sentences(train_dictionary_input_path, sample_sentence_output_path + "train_sample_sentences.json")
     generate_sample_sentences(tuning_dictionary_input_path, sample_sentence_output_path + "tuning_sample_sentences.json")
     generate_sample_sentences(test_dictionary_input_path, sample_sentence_output_path + "test_sample_sentences.json")
@@ -313,7 +324,8 @@ if __name__ == "__main__":
     generate_dataset(sample_sentence_output_path + "test_sample_sentences.json", forest_output_path, 2, test_lr_model_dataset_path)
 
     train_df = pd.read_csv(lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
-    # print(train_df.head())
+    print(train_df.value_counts("label"))
+
     X_train = train_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
     # print(X_train.head())
     y_train = train_df["label"].astype(int)
@@ -350,3 +362,7 @@ if __name__ == "__main__":
     y_pred[y_pred < 0.9] = 0
     model_f1_score = f1_score(y_test, y_pred)
     print(f"Model f1 score at threshold 0.9: {model_f1_score}")
+
+    print("train_df value counts", train_df.value_counts("label"))
+    print("tuning_df value counts", tuning_df.value_counts("label"))
+    print("test_df value counts", test_df.value_counts("label"))
