@@ -24,7 +24,7 @@ import dill as pickle
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_recall_curve, f1_score
+from sklearn.metrics import precision_recall_curve, f1_score, fbeta_score
 from sklearn import preprocessing
 
 
@@ -341,32 +341,38 @@ if __name__ == "__main__":
     classifier = LogisticRegression(max_iter=1000)
     classifier.fit(X_train, y_train)
     print("train score", classifier.score(X_train, y_train))
-    # tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
-    # X_tuning = tuning_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
-    # y_tuning = tuning_df["label"].astype(int)
+    tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
+    X_tuning = tuning_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
+    y_tuning = tuning_df["label"].astype(int)
     
     test_df = pd.read_csv(test_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
     X_test = test_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
     y_test = test_df["label"].astype(int)
 
-    y_pred = classifier.predict_proba(X_test)[:, 1]
+    y_pred = classifier.predict_proba(X_tuning)[:, 1]
     y_pred[y_pred >= 0.5] = 1
     y_pred[y_pred < 0.5] = 0
-    model_f1_score = f1_score(y_test, y_pred)
+    model_f1_score = f1_score(y_tuning, y_pred)
     print(f"Model f1 score at threshold 0.5: {model_f1_score}")
+    print(f"Model f2 score at threshold 0.5: {fbeta_score(y_tuning, y_pred, beta=2)}")
+    print(f"Model f0.5 score at threshold 0.5: {fbeta_score(y_tuning, y_pred, beta=0.5)}")
 
-    y_pred = classifier.predict_proba(X_test)[:, 1]
+    y_pred = classifier.predict_proba(X_tuning)[:, 1]
     y_pred[y_pred >= 0.75] = 1
     y_pred[y_pred < 0.75] = 0
-    model_f1_score = f1_score(y_test, y_pred)
+    model_f1_score = f1_score(y_tuning, y_pred)
     print(f"Model f1 score at threshold 0.75: {model_f1_score}")
+    print(f"Model f2 score at threshold 0.75: {fbeta_score(y_tuning, y_pred, beta=2)}")
+    print(f"Model f0.5 score at threshold 0.75: {fbeta_score(y_tuning, y_pred, beta=0.5)}")
 
-    y_pred = classifier.predict_proba(X_test)[:, 1]
+    y_pred = classifier.predict_proba(X_tuning)[:, 1]
     y_pred[y_pred >= 0.9] = 1
     y_pred[y_pred < 0.9] = 0
-    model_f1_score = f1_score(y_test, y_pred)
+    model_f1_score = f1_score(y_tuning, y_pred)
     print(f"Model f1 score at threshold 0.9: {model_f1_score}")
+    print(f"Model f2 score at threshold 0.9: {fbeta_score(y_tuning, y_pred, beta=2)}")
+    print(f"Model f0.5 score at threshold 0.9: {fbeta_score(y_tuning, y_pred, beta=0.5)}")
 
     print("train_df value counts", train_df.value_counts("label"))
-    # print("tuning_df value counts", tuning_df.value_counts("label"))
+    print("tuning_df value counts", tuning_df.value_counts("label"))
     print("test_df value counts", test_df.value_counts("label"))
