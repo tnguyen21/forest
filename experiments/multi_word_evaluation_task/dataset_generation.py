@@ -169,26 +169,31 @@ def generate_dataset(
         "matched_token",
         "t1_len_expression",
         "t1_len_result_word",
+        "t1_result_expression_len_ratio",
         "t1_position_in_expression",
         "t1_word_determining_score",
         "t1_cuid_determining_score",
         "t2_len_expression",
         "t2_len_result_word",
+        "t2_result_expression_len_ratio",
         "t2_position_in_expression",
         "t2_word_determining_score",
         "t2_cuid_determining_score",
         "t3_len_expression",
         "t3_len_result_word",
+        "t3_result_expression_len_ratio",
         "t3_position_in_expression",
         "t3_word_determining_score",
         "t3_cuid_determining_score",
         "t4_len_expression",
         "t4_len_result_word",
+        "t4_result_expression_len_ratio",
         "t4_position_in_expression",
         "t4_word_determining_score",
         "t4_cuid_determining_score",
         "t5_len_expression",
         "t5_len_result_word",
+        "t5_result_expression_len_ratio",
         "t5_position_in_expression",
         "t5_word_determining_score",
         "t5_cuid_determining_score",
@@ -222,8 +227,6 @@ def generate_dataset(
             # TODO explain bespoke logic here
             search_token_window = token_concept_tuples[idx-search_window:idx+search_window+1]
             for match in token_concept_tuples[idx][1]:
-                # print("sentence", sentence)
-                # print("match", match)
                 training_row = [expression_list, sentence, str(match)]
                 m_result_word = match[0]
                 m_expression = match[1]
@@ -233,28 +236,24 @@ def generate_dataset(
                     # check if beginning or end of sentence
                     if token[1] == None:
                         # mark with -1s
-                        training_row += [-1, -1, -1, -1, -1]
+                        training_row += [-1, -1, -1, -1, -1, -1]
                         continue
 
                     # check if token in window has matching concept id 
-                    for _, _, concept_id, expr_len, result_len, token_position, word_det_score, cuid_det_score in token[1]:
+                    for _, _, concept_id, expr_len, result_len, result_expression_len_ratio, token_position, word_det_score, cuid_det_score in token[1]:
                         if m_concept_id == concept_id:
                             matching_cuid = True
-                            training_row += [expr_len, result_len, token_position, word_det_score, cuid_det_score]
+                            training_row += [expr_len, result_len, result_expression_len_ratio, token_position, word_det_score, cuid_det_score]
                             break
 
                     if not matching_cuid:
-                        training_row += [0, 0, 0, 0, 0]
+                        training_row += [0, 0, 0, 0, 0, 0]
                 
                 # add label
                 correct = False
                 split_sentence = sentence.split(" ")
                 for start_idx, _, expression in expression_list:
                     if (m_expression == expression) and (split_sentence[start_idx] == m_result_word):
-                        # print("match expression", m_expression)
-                        # print("match result word", m_result_word)
-                        # print("stard idx, label expression", start_idx, expression)
-                        # print(sentence)
                         correct = True
                         break
                 if correct:
@@ -276,26 +275,31 @@ if __name__ == "__main__":
         "matched_token",
         "t1_len_expression",
         "t1_len_result_word",
+        "t1_result_expression_len_ratio",
         "t1_position_in_expression",
         "t1_word_determining_score",
         "t1_cuid_determining_score",
         "t2_len_expression",
         "t2_len_result_word",
+        "t2_result_expression_len_ratio",
         "t2_position_in_expression",
         "t2_word_determining_score",
         "t2_cuid_determining_score",
         "t3_len_expression",
         "t3_len_result_word",
+        "t3_result_expression_len_ratio",
         "t3_position_in_expression",
         "t3_word_determining_score",
         "t3_cuid_determining_score",
         "t4_len_expression",
         "t4_len_result_word",
+        "t4_result_expression_len_ratio",
         "t4_position_in_expression",
         "t4_word_determining_score",
         "t4_cuid_determining_score",
         "t5_len_expression",
         "t5_len_result_word",
+        "t5_result_expression_len_ratio",
         "t5_position_in_expression",
         "t5_word_determining_score",
         "t5_cuid_determining_score",
@@ -305,6 +309,8 @@ if __name__ == "__main__":
     train_dictionary_input_path = "datasets/umls_small_dictionary/training.csv"
     tuning_dictionary_input_path = "datasets/umls_small_dictionary/tuning.csv"
     test_dictionary_input_path = "datasets/umls_small_dictionary/test.csv"
+    
+    # dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
     # train_dictionary_input_path = "datasets/nasa_shared_task/training.csv"
     # tuning_dictionary_input_path = "datasets/nasa_shared_task/tuning.csv"
     # test_dictionary_input_path = "datasets/nasa_shared_task/test.csv"
@@ -327,9 +333,7 @@ if __name__ == "__main__":
     print(train_df.value_counts("label"))
 
     X_train = train_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
-    # print(X_train.head())
     y_train = train_df["label"].astype(int)
-    # print(y_train.head())
 
     # had to adjust max_iter
     # getting warning about failing to converge at default for 100 iters and 1000 iters.
@@ -337,9 +341,9 @@ if __name__ == "__main__":
     classifier = LogisticRegression(max_iter=1000)
     classifier.fit(X_train, y_train)
     print("train score", classifier.score(X_train, y_train))
-    tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
-    X_tuning = tuning_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
-    y_tuning = tuning_df["label"].astype(int)
+    # tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
+    # X_tuning = tuning_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
+    # y_tuning = tuning_df["label"].astype(int)
     
     test_df = pd.read_csv(test_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
     X_test = test_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
@@ -364,5 +368,5 @@ if __name__ == "__main__":
     print(f"Model f1 score at threshold 0.9: {model_f1_score}")
 
     print("train_df value counts", train_df.value_counts("label"))
-    print("tuning_df value counts", tuning_df.value_counts("label"))
+    # print("tuning_df value counts", tuning_df.value_counts("label"))
     print("test_df value counts", test_df.value_counts("label"))
