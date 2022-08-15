@@ -172,6 +172,7 @@ class Forest:
                                         concept_id,
                                         len(expression.split(" ")),
                                         len(result_word),
+                                        len(result_word)/len(expression),
                                         expression.find(
                                             result_word
                                         ),  # token position in expression
