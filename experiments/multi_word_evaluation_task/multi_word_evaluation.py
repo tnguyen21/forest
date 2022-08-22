@@ -18,7 +18,8 @@ import dill as pickle
 
 if __name__ == "__main__":
     forest = Forest()
-    dict = pd.read_csv("datasets/umls_small_dictionary/dictionary.csv")
+    # dict = pd.read_csv("datasets/umls_small_dictionary/dictionary.csv")
+    dict = pd.read_csv("datasets/nasa_shared_task/HEXTRATO_dictionary.csv")
     for _, id, term in tqdm(dict.itertuples(), desc="Processing terms..."):
         forest.add_phrase(id, term)
 
@@ -32,6 +33,20 @@ if __name__ == "__main__":
 
     forest.set_logistic_regression_model(lr_models)
     
-    results = forest.search("Language Natural Phenomenon or Process Organic Chemical", use_lr_model=True)
-    print("search text: Language Natural Phenomenon or Process Organic Chemical")
-    pprint(results)
+    # results = forest.search("Language Natural Phenomenon or Process Organic Chemical", use_lr_model=True)
+    # print("search text: Language Natural Phenomenon or Process Organic Chemical")
+    # pprint(results)
+    results = forest.search("Abneys law of additivity The luminous power of a source is the sum of the powers of the components of any spectral decomposition of the light.", use_lr_model=True)
+    print("search text: Abneys law of additivity The luminous power of a source is the sum of the powers of the components of any spectral decomposition of the light.")
+    for _ in results:
+        print(_)
+    
+    results = forest.search("friction slope sojourner salinity grating disks unpleasant Geroch group GUT hexad gaseous shocks abiogenist friendliness hydraulic conductivity (K) cupulate heavy minerals", use_lr_model=True)
+    print("search text: friction slope sojourner salinity grating disks unpleasant Geroch group GUT hexad gaseous shocks abiogenist friendliness hydraulic conductivity (K) cupulate heavy minerals")
+    for _ in results:
+        print(_)
+
+    results = forest.search("FriedmannLematre cosmological models leatherjacket precipitousness illuminate fetid illegibly grain-boundary migration junior radioimmunoassay degust duration geodetic Hygiea coolheaded Hesperian bloomers shoveller money herringbone burst", use_lr_model=True)
+    print("search text: FriedmannLematre cosmological models leatherjacket precipitousness illuminate fetid illegibly grain-boundary migration junior radioimmunoassay degust duration geodetic Hygiea coolheaded Hesperian bloomers shoveller money herringbone burst")
+    for _ in results:
+        print(_)
