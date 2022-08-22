@@ -763,4 +763,12 @@
     Model f1 score at threshold 0.9: 0.6719999999999999
     Model f2 score at threshold 0.9: 0.5706521739130436
     Model f0.5 score at threshold 0.9: 0.8171206225680935
-  
+- choose when to use an expression
+  - before creating each sentence, randomly hold out 80% of sentences generates
+    - generate random number [0,1], if < .2 then we add the sentence
+- need to test it
+- add LR model to Forest
+- think about output for forest search
+  - consider multiple true concepts for each expression
+  - preferably json with list of all beginnings in a sentence
+- try doing the same thing with the end of sentences
