@@ -341,6 +341,11 @@ if __name__ == "__main__":
     classifier = LogisticRegression(max_iter=1000)
     classifier.fit(X_train, y_train)
     print("train score", classifier.score(X_train, y_train))
+
+    # pickle logistic regression model
+    with open(sample_sentence_output_path + "lr_model.pkl", "wb") as f:
+        pickle.dump(classifier, f)
+
     tuning_df = pd.read_csv(tuning_lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
     X_tuning = tuning_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
     y_tuning = tuning_df["label"].astype(int)
