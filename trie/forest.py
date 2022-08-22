@@ -8,6 +8,8 @@ import spacy
 from typing import List, Dict
 from .phonetic_trie import PhoneticTrie
 from sklearn.linear_model import LogisticRegression
+import numpy as np
+import warnings
 from pprint import pprint
 
 
@@ -225,20 +227,55 @@ class Forest:
         args:
             text: sentence to identify named-entities within
         """
+        warnings.filterwarnings('ignore')
         token_concept_dictionary = self.get_token_concept_dictionary(text)
-        
-        # for token, matched_concepts in token_concept_dictionary.items():
-        #     print(token, matched_concepts)
-        #     break
-            
-        if (use_lr_model):
+
+        if (use_lr_model and self.logistic_regression_model is not None):
             # use LR model to filter our concepts from search result
             # in token-concept dictionary match
-            print('use logistic regression model for search')
-        # else:
-        #     # some logic for filtering out potential matches
-        #     print('do some logic here')
+            unformatted_results = []
+            token_concept_tuples = []
+            # convert dict into list of tuples to preserve order and make lookups faster
+            for token, matches in token_concept_dictionary.items():
+                token_concept_tuples.append((token, matches))
 
-        formatted_return = self.format_results(text, token_concept_dictionary)
-        
+            # pad beginning and end of tokens with None based on our search window
+            # to be used for determining if token is in phrase or not
+            # ! this is bespoke and hacky. should figure more elegant solution, or at least clean up this code
+            token_concept_tuples = [(None, None) for _ in range(search_window)] + token_concept_tuples + [(None, None) for _ in range(search_window)]
+
+            for idx in range(2, len(token_concept_tuples)-2):
+                # TODO explain bespoke logic here
+                search_token_window = token_concept_tuples[idx-search_window:idx+search_window+1]
+                for match in token_concept_tuples[idx][1]:
+                    training_row = []
+                    m_concept_id = match[2]
+                    for token in search_token_window:
+                        matching_cuid = False
+                        # check if beginning or end of sentence
+                        if token[1] == None:
+                            # mark with -1s
+                            training_row += [-1, -1, -1, -1, -1, -1]
+                            continue
+
+                        # check if token in window has matching concept id 
+                        for _, _, concept_id, expr_len, result_len, result_expression_len_ratio, token_position, word_det_score, cuid_det_score in token[1]:
+                            if m_concept_id == concept_id:
+                                matching_cuid = True
+                                training_row += [expr_len, result_len, result_expression_len_ratio, token_position, word_det_score, cuid_det_score]
+                                break
+
+                        if not matching_cuid:
+                            training_row += [0, 0, 0, 0, 0, 0]
+                    
+                    proba = self.logistic_regression_model.predict_proba(np.array(training_row).reshape(1, -1))
+                    if proba[0][1] > 0.5:
+                        # print("proba", proba[0][1])
+                        # print("match", match)
+                        unformatted_results.append(match)
+
+            formatted_return = unformatted_results
+        else:
+            formatted_return = self.format_results(text, token_concept_dictionary)
+    
         return formatted_return

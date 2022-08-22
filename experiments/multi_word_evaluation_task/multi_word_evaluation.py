@@ -14,20 +14,24 @@ from trie import Forest
 import pandas as pd
 from tqdm import tqdm
 from pprint import pprint
+import dill as pickle
 
 if __name__ == "__main__":
     forest = Forest()
-    imbd_df = pd.read_csv("datasets/umls_small_dictionary/training.csv")
-    for _, id, title in tqdm(imbd_df.itertuples(), desc="Processing IMDB titles..."):
-    # nasa_df = pd.read_csv("datasets/nasa_shared_task/HEXTRATO_dictionary.csv")
-    # for _, id, title in tqdm(nasa_df.itertuples(), desc="Processing NASA shared task dictionary..."):
-        forest.add_phrase(id, title)
+    dict = pd.read_csv("datasets/umls_small_dictionary/dictionary.csv")
+    for _, id, term in tqdm(dict.itertuples(), desc="Processing terms..."):
+        forest.add_phrase(id, term)
 
     forest.create_tries()
     forest.calculate_determining_scores()
 
-    results = forest.get_token_concept_dictionary("Bad Man with Gun Tommy Nguyen Bad Man with Gun")
-    # results = forest.search("Bad Man with Gun Tommy Nguyen Bad Man with Gun")
+    # load logistic regression model
+    sample_sentence_output_path = "experiments/multi_word_evaluation_task/"
+    with open(sample_sentence_output_path + "lr_model.pkl", "rb") as f:
+        lr_models = pickle.load(f)
+
+    forest.set_logistic_regression_model(lr_models)
+    
+    results = forest.search("Language Natural Phenomenon or Process Organic Chemical", use_lr_model=True)
+    print("search text: Language Natural Phenomenon or Process Organic Chemical")
     pprint(results)
-    # for _ in results:
-        # print(_)
