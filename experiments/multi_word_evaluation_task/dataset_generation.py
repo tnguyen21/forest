@@ -111,7 +111,13 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str,) -
         number_of_sentences_that_start_with_entry = random.randint(1, 3)
         # ? token or character position -- token position
         # ? separating cuids -- don't mix expressions with same CUID
+        
+        
         for _ in range(number_of_sentences_that_start_with_entry):
+            if (random.random() > 0.2):
+                # * hacky way to reduce the amount of sentences generated so we can fit training
+                # * data into memory
+                continue
             # randomly choose [1, 5] expressions in sentence
             number_of_additional_expressions = random.randint(0, 5)
 
@@ -305,15 +311,15 @@ if __name__ == "__main__":
         "t5_cuid_determining_score",
         "label",
     ]
-    dictionary_input_path = "datasets/umls_small_dictionary/dictionary.csv"
-    train_dictionary_input_path = "datasets/umls_small_dictionary/training.csv"
-    tuning_dictionary_input_path = "datasets/umls_small_dictionary/tuning.csv"
-    test_dictionary_input_path = "datasets/umls_small_dictionary/test.csv"
+    # dictionary_input_path = "datasets/umls_small_dictionary/dictionary.csv"
+    # train_dictionary_input_path = "datasets/umls_small_dictionary/training.csv"
+    # tuning_dictionary_input_path = "datasets/umls_small_dictionary/tuning.csv"
+    # test_dictionary_input_path = "datasets/umls_small_dictionary/test.csv"
     
-    # dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
-    # train_dictionary_input_path = "datasets/nasa_shared_task/training.csv"
-    # tuning_dictionary_input_path = "datasets/nasa_shared_task/tuning.csv"
-    # test_dictionary_input_path = "datasets/nasa_shared_task/test.csv"
+    dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
+    train_dictionary_input_path = "datasets/nasa_shared_task/training.csv"
+    tuning_dictionary_input_path = "datasets/nasa_shared_task/tuning.csv"
+    test_dictionary_input_path = "datasets/nasa_shared_task/test.csv"
     # dictionary_input_path = "datasets/imdb_movie_titles/-a.csv"
     sample_sentence_output_path = "experiments/multi_word_evaluation_task/"
     lr_model_dataset_path = "experiments/multi_word_evaluation_task/train_data.csv"
