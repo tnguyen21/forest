@@ -14,18 +14,15 @@ sys.path.insert(
 )  # noqa: E501
 
 from trie import Forest
-from typing import Set, List
+from typing import List
 from tqdm import tqdm
-from pprint import pprint
 import random
 import csv
 import json
 import dill as pickle
 import pandas as pd
-import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_recall_curve, f1_score, fbeta_score
-from sklearn import preprocessing
+from sklearn.metrics import f1_score, fbeta_score
 
 
 def create_forest(dictionary_path: str, output_forest_path: str):
@@ -150,11 +147,9 @@ def generate_sample_sentences(dictionary_path: str, dataset_output_path: str,) -
             for annotation in annotations:
                 sample_sentences[joined_sentence].append(annotation)
 
-    #! rm this later
-    print("number of expressions:", expression_counts)
-
     with open(dataset_output_path, "w") as f:
         json.dump(sample_sentences, f, indent=2)
+
 
 def generate_dataset(
     sample_sentence_dataset_path: str, forest_pkl_path: str, search_window: int, output_dataset_path: str
@@ -311,16 +306,10 @@ if __name__ == "__main__":
         "t5_cuid_determining_score",
         "label",
     ]
-    # dictionary_input_path = "datasets/umls_small_dictionary/dictionary.csv"
-    # train_dictionary_input_path = "datasets/umls_small_dictionary/training.csv"
-    # tuning_dictionary_input_path = "datasets/umls_small_dictionary/tuning.csv"
-    # test_dictionary_input_path = "datasets/umls_small_dictionary/test.csv"
-    
     dictionary_input_path = "datasets/nasa_shared_task/HEXTRATO_dictionary.csv"
     train_dictionary_input_path = "datasets/nasa_shared_task/training.csv"
     tuning_dictionary_input_path = "datasets/nasa_shared_task/tuning.csv"
     test_dictionary_input_path = "datasets/nasa_shared_task/test.csv"
-    # dictionary_input_path = "datasets/imdb_movie_titles/-a.csv"
     sample_sentence_output_path = "experiments/multi_word_evaluation_task/"
     lr_model_dataset_path = "experiments/multi_word_evaluation_task/train_data.csv"
     tuning_lr_model_dataset_path = "experiments/multi_word_evaluation_task/tuning_data.csv"
@@ -336,7 +325,6 @@ if __name__ == "__main__":
     generate_dataset(sample_sentence_output_path + "test_sample_sentences.json", forest_output_path, 2, test_lr_model_dataset_path)
 
     train_df = pd.read_csv(lr_model_dataset_path, delimiter=",", names=train_df_col, header=0)
-    print(train_df.value_counts("label"))
 
     X_train = train_df.drop(columns=["expression_labels", "sentence", "matched_token", "label"])
     y_train = train_df["label"].astype(int)
@@ -383,7 +371,3 @@ if __name__ == "__main__":
     print(f"Model f1 score at threshold 0.9: {model_f1_score}")
     print(f"Model f2 score at threshold 0.9: {fbeta_score(y_tuning, y_pred, beta=2)}")
     print(f"Model f0.5 score at threshold 0.9: {fbeta_score(y_tuning, y_pred, beta=0.5)}")
-
-    print("train_df value counts", train_df.value_counts("label"))
-    print("tuning_df value counts", tuning_df.value_counts("label"))
-    print("test_df value counts", test_df.value_counts("label"))
