@@ -75,7 +75,8 @@ Refer to README.md file contained within each sub-directory in `./experiments/`
 
 ## References
 
-[Integrating Approximate String Matching with Phonetic String Similarity](https://link.springer.com/chapter/10.1007/978-3-319-98398-1_12)
+- [Integrating Approximate String Matching with Phonetic String Similarity](https://link.springer.com/chapter/10.1007/978-3-319-98398-1_12)
+- [Efficient Interactive Fuzzy Keyword Search](https://www.ics.uci.edu/~chenli/pub/www2009-tastier-fuzzy.pdf)
 
 ## Acknowledgements
 
