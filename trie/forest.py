@@ -269,10 +269,8 @@ class Forest:
                             training_row += [0, 0, 0, 0, 0, 0]
                     
                     proba = self.logistic_regression_model.predict_proba(np.array(training_row).reshape(1, -1))
-                    if proba[0][1] > 0.5:
-                        # print("proba", proba[0][1])
-                        # print("match", match)
-                        unformatted_results.append(match)
+                    if proba[0][1] > self.logistic_regression_model_threshold:
+                        unformatted_results.append((match, proba[0][1]))
 
             formatted_return = unformatted_results
         else:
