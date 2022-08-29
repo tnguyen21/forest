@@ -37,7 +37,7 @@ Implementation of a Trie that considers edit distance.
 ## How To Run
 
 **Pre-requisites**
-- Access to `tux.cs.drexel.edu` or `Ubuntu 20.04.04 (Focal Fossa)` machine
+- Access to `tux.cs.drexel.edu` or `Ubuntu 20.04.04 (Focal Fossa)` machine. Code can run in other environments, but these instructions may not apply for all systems.
 - Python version `3.8.10`
 - [`venv`](https://docs.python.org/3/tutorial/venv.html)
 
