@@ -23,11 +23,15 @@ Given a dictionary of various FDA terms and queries which introduce typos, mispe
 
 #### Single Word Evaluation Task
 
+Follow these instructions from the root of the `/single_word_evaluation_task` directory.
+
+**Note, this will take ~10 minutes and > 16 GB of memory for larger datasets. If running into timing or memory errors during development, reduce dataset size**
+
 1. Create a `PhoneticTrie` using the script in `common.py`. Assumes there is a text file (.txt, .csv) with dictionary entry separated by newlines
 
 ```
 $ python common.py \
-    --data_path="./datasets/dictionary.csv" \
+    --data_path="../../datasets/single_word_task/dictionary.csv" \
     --pkl_output_path="./phonetic_trie.pkl"
 ```
 
@@ -37,11 +41,11 @@ Will output `.pkl` file at `pkl_output_path` which contains serialized `Phonetic
 
 ```
 $ python single_word_evaluation.py \
-    --trie_pkl_path="path/to/phonetic_trie.pkl" \
-    --training_data_path="path/to/train.csv" \
-    --validation_data_path="path/to/val.csv" \
-    --test_data_path="path/to/test.csv" \
-    --save_data
+    --trie_pkl_path="./phonetic_trie.pkl" \
+    --training_data_path="../../datasets/single_word_task/training.csv" \
+    --validation_data_path="../../datasets/single_word_task/tuning.csv" \
+    --test_data_path="../../datasets/single_word_task/test.csv" \
+    --save_data=True
 ```
 
 Outputs `*.csv` datasets that's used to train `LogisticRegression` models at `/experiments/single_word_evaluation_task/datasets`, the `LogisticRegression` models themselves serialized into `.pkl` files, and a `*.json` file containing metrics from the model at root.

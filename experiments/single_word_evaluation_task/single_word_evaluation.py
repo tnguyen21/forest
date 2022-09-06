@@ -53,10 +53,10 @@ def train_phonetic_model(
     # If datasets already generated, then load them in
     if dataset_dir:
         train_df = pd.read_csv(
-            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv"
+            f"./train_df_ed{edit_distance}_phonetic.csv"
         )
         val_df = pd.read_csv(
-            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv"
+            f"./val_df_ed{edit_distance}_phonetic.csv"
         )
     # Generate data sets and save them
     else:
@@ -77,11 +77,11 @@ def train_phonetic_model(
 
         # Save phonetic data set
         train_df.to_csv(
-            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv",
+            f"./train_df_ed{edit_distance}_phonetic.csv",
             index=False,
         )
         val_df.to_csv(
-            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv",
+            f"./val_df_ed{edit_distance}_phonetic.csv",
             index=False,
         )
 
@@ -100,7 +100,7 @@ def train_phonetic_model(
 
     # Serialize and save model
     with open(
-        f"./experiments/single_word_evaluation_task/models/phonetic_model_ed_{edit_distance}.pkl",
+        f"./phonetic_model_ed_{edit_distance}.pkl",
         "wb",
     ) as f:
         pickle.dump(classifier, f)
@@ -175,10 +175,10 @@ def train_no_phonetic_model(
     # If datasets already generated, then load them in
     if dataset_dir:
         train_df = pd.read_csv(
-            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv"
+            f"./train_df_ed{edit_distance}_phonetic.csv"
         )
         val_df = pd.read_csv(
-            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv"
+            f"./val_df_ed{edit_distance}_phonetic.csv"
         )
     # Generate train data set
     else:
@@ -199,11 +199,11 @@ def train_no_phonetic_model(
 
         # Save phonetic data set
         train_df.to_csv(
-            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_no_phonetic.csv",
+            f"./train_df_ed{edit_distance}_no_phonetic.csv",
             index=False,
         )
         val_df.to_csv(
-            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_no_phonetic.csv",
+            f"./val_df_ed{edit_distance}_no_phonetic.csv",
             index=False,
         )
 
@@ -222,7 +222,7 @@ def train_no_phonetic_model(
 
     # Serialize and save model
     with open(
-        f"./experiments/single_word_evaluation_task/models/no_phonetic_model_ed_{edit_distance}.pkl",
+        f"./no_phonetic_model_ed_{edit_distance}.pkl",
         "wb",
     ) as f:
         pickle.dump(classifier, f)
@@ -294,10 +294,10 @@ def train_dmetaphone_model(
     # If datasets already generated, then load them in
     if dataset_dir:
         train_df = pd.read_csv(
-            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_phonetic.csv"
+            f"./train_df_ed{edit_distance}_phonetic.csv"
         )
         val_df = pd.read_csv(
-            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_phonetic.csv"
+            f"./val_df_ed{edit_distance}_phonetic.csv"
         )
     # Generate train data set
     else:
@@ -318,11 +318,11 @@ def train_dmetaphone_model(
 
         # Save phonetic data set
         train_df.to_csv(
-            f"./experiments/single_word_evaluation_task/datasets/train_df_ed{edit_distance}_dmetaphone.csv",
+            f"./train_df_ed{edit_distance}_dmetaphone.csv",
             index=False,
         )
         val_df.to_csv(
-            f"./experiments/single_word_evaluation_task/datasets/val_df_ed{edit_distance}_dmetaphone.csv",
+            f"./val_df_ed{edit_distance}_dmetaphone.csv",
             index=False,
         )
 
@@ -341,7 +341,7 @@ def train_dmetaphone_model(
 
     # Serialize and save model
     with open(
-        f"./experiments/single_word_evaluation_task/models/dmetaphone_model_ed_{edit_distance}.pkl",
+        f"./dmetaphone_model_ed_{edit_distance}.pkl",
         "wb",
     ) as f:
         pickle.dump(classifier, f)
